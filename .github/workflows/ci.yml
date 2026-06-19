@@ -30,9 +30,6 @@ jobs:
         run: |
           bun run oxfmt apps packages
 
-      - name: Generate Prisma Client
-        run: cd packages/database && bunx prisma generate
-
       - name: Check types
         run: bun check-types
 
