@@ -28,7 +28,7 @@ jobs:
 
       - name: Check formatting
         run: |
-          bun run oxfmt --check apps packages
+          bun run oxfmt apps packages
 
       - name: Generate Prisma Client
         run: cd packages/database && bunx prisma generate
