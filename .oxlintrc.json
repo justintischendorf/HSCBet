@@ -3,5 +3,25 @@
     "browser": true,
     "node": true,
     "es2021": true
-  }
+  },
+  "plugins": ["react", "react-perf", "typescript", "nextjs"],
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "warn",
+    "react/no-danger": "warn",
+    "react/no-direct-mutation-state": "error",
+"typescript/no-explicit-any": "warn",
+    "typescript/no-unused-vars": "warn",
+    "nextjs/no-img-element": "warn",
+    "nextjs/no-html-link-for-pages": "warn",
+    "no-unused-vars": "off",
+    "no-undef": "off"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    ".next",
+    "dist",
+    "build",
+    ".turbo"
+  ]
 }
