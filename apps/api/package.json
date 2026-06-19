@@ -7,7 +7,8 @@
     "lint": "oxlint ."
   },
   "dependencies": {
-    "elysia": "latest"
+    "elysia": "latest",
+    "@repo/database": "workspace:*"
   },
   "devDependencies": {
     "bun-types": "latest"

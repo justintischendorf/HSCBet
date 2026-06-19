@@ -1,0 +1,43 @@
+# ============================================================
+# Docker Compose – Development
+# PostgreSQL-Konfiguration passend zu:
+#   packages/database/.env        → DATABASE_URL
+#   packages/database/prisma.config.ts
+#   packages/database/src/index.ts
+# ============================================================
+
+name: hscbet-dev
+
+services:
+  # ----------------------------------------------------------
+  # PostgreSQL Datenbank
+  # Zugangsdaten spiegeln DATABASE_URL aus packages/database/.env:
+  #   postgresql://postgres:postgres@localhost:5432/hscbet?schema=public
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: hscbet-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hscbet
+    ports:
+      # Host-Port:Container-Port  →  passend zu @localhost:5432 in DATABASE_URL
+      - '5432:5432'
+    volumes:
+      # Persistente Daten zwischen Container-Neustarts
+      - postgres_data_dev:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d hscbet']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+# ----------------------------------------------------------
+# Named Volumes
+# ----------------------------------------------------------
+volumes:
+  postgres_data_dev:
+    driver: local
