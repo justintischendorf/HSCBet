@@ -10,9 +10,12 @@
     "lint": "oxlint ."
   },
   "dependencies": {
-    "elysia": "latest",
+    "@elysiajs/cors": "^1.4.2",
+    "@repo/auth": "workspace:*",
     "@repo/database": "workspace:*",
-    "@repo/logger": "workspace:*"
+    "@repo/logger": "workspace:*",
+    "cors": "^2.8.6",
+    "elysia": "latest"
   },
   "devDependencies": {
     "bun-types": "latest"
