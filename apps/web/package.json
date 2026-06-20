@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@repo/database": "workspace:*",
+    "@repo/auth": "workspace:*",
+    "@repo/logger": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.21.0",

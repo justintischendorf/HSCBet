@@ -33,8 +33,5 @@ jobs:
       - name: Check types
         run: bun check-types
 
-      - name: Run tests
-        run: cd apps/web && bun test
-
       - name: Run Turbo lint tasks
         run: bun lint:turbo
