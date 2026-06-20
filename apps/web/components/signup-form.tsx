@@ -68,8 +68,8 @@ export function SignupForm({
               <div className="flex flex-col items-center gap-2 text-center">
                 <h1 className="text-2xl font-bold">Erstelle deinen Account</h1>
                 <p className="text-sm text-balance text-muted-foreground">
-                  Gib deine E-Mail-Adresse und dein Passwort ein, um einen
-                  Account zu erstellen
+                  Gib deinen Nutzernamen, deine E-Mail-Adresse und ein sicheres
+                  Passwort ein, um loszulegen.
                 </p>
               </div>
               <Field>
