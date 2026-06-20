@@ -1,6 +1,9 @@
 {
-  "name": "api",
+  "name": "@repo/api",
   "version": "1.0.50",
+  "exports": {
+    ".": "./src/index.ts"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
@@ -8,7 +11,8 @@
   },
   "dependencies": {
     "elysia": "latest",
-    "@repo/database": "workspace:*"
+    "@repo/database": "workspace:*",
+    "@repo/logger": "workspace:*"
   },
   "devDependencies": {
     "bun-types": "latest"
