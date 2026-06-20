@@ -1,7 +1,12 @@
-import { Elysia } from 'elysia';
+import { Elysia } from "elysia";
+import { createLogger } from "@repo/logger";
 
-const app = new Elysia().get('/', () => 'Hello Elysia').listen(3000);
+const logger = createLogger("api");
 
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
-);
+const app = new Elysia({ prefix: "/api" })
+  .get("/", () => "Hello Elysia")
+  .listen(process.env.API_SERVER_PORT || 3001);
+
+logger.info(`🦊 Elysia läuft auf http://localhost:${app.server?.port}`);
+
+export type App = typeof app;

@@ -22,11 +22,11 @@ export default function ScreensLayout({
         <div className="flex items-center justify-between">
           <Navbar />
           <div className="flex items-center sm:gap-2 gap-0.5">
-            <Button variant="destructive" size="lg">
+            <Button variant="destructive" size="default">
               <LogOut className="sm:hidden" />
               <span className="hidden sm:inline">Logout</span>
             </Button>
-            <Button variant="outline" size="lg">
+            <Button variant="outline" size="icon">
               <Inbox />
             </Button>
             <ModeToggle />
