@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { createLogger } from "@repo/logger";
+import { socket } from "./modules/socket";
 import { authPlugin } from "./modules/auth";
 
 const logger = createLogger("api");
@@ -16,6 +17,7 @@ const app = new Elysia({ prefix: "/api" })
     }),
   )
   .use(authPlugin)
+  .use(socket)
   .onError(({ error, set }) => {
     if (error instanceof Error && error.message === "Unauthorized") {
       set.status = 401;
