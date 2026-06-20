@@ -27,12 +27,7 @@ export default function ScreensLayout({
     router.replace("/signin");
   }
   return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
+    <main>
       <div className="sm:py-10 py-10 sm:px-10 px-1">
         <div className="flex items-center justify-between">
           <Navbar />
@@ -49,6 +44,6 @@ export default function ScreensLayout({
         </div>
       </div>
       <div>{children}</div>
-    </ThemeProvider>
+    </main>
   );
 }

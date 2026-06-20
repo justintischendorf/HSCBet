@@ -173,7 +173,7 @@ export function SignupForm({
               height={1080}
               src="/assets/images/max.png"
               alt="Image"
-              className="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </div>
         </CardContent>
