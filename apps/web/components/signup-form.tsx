@@ -79,7 +79,7 @@ export function SignupForm({
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   type="text"
-                  placeholder="Max"
+                  placeholder="Dein Nutzername"
                   required
                 />
               </Field>
