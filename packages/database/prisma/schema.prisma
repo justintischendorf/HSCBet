@@ -22,6 +22,8 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  image            String?
+  files            File[]
   twoFactorEnabled Boolean     @default(false)
   twoFactors       TwoFactor[]
 
@@ -85,4 +87,26 @@ model TwoFactor {
   @@index([secret])
   @@index([userId])
   @@map("twoFactor")
+}
+
+model File {
+  id       String   @id @default(cuid())
+  filename String
+  mimetype MimeType
+  size     Int
+  s3Key    String
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([s3Key])
+  @@map("file")
+}
+
+enum MimeType {
+  IMAGE_JPEG
+  IMAGE_PNG
 }
