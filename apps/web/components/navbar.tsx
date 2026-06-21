@@ -19,20 +19,29 @@ export function Navbar() {
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/dashboard">Übersicht</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
             <Link href="/season">Saison</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
 
         <NavigationMenuItem>
-          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/tips">Meine Tipps</Link>
-          </NavigationMenuLink>
-        </NavigationMenuItem>
-
-        <NavigationMenuItem>
-          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/groups">Meine Gruppen</Link>
-          </NavigationMenuLink>
+          <NavigationMenuTrigger>Aktivitäten</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="w-96">
+              <ListItem href="/tips" title="Meine Tipps">
+                Sehen Sie Ihre abgegebenen Tipps.
+              </ListItem>
+              <ListItem href="/groups" title="Meine Gruppen">
+                Sehen Sie Gruppen denen Sie angehören oder erstellen Sie eine
+                neue Gruppe.
+              </ListItem>
+            </ul>
+          </NavigationMenuContent>
         </NavigationMenuItem>
 
         <NavigationMenuItem>

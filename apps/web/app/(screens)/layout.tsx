@@ -71,15 +71,10 @@ export default function ScreensLayout({
 
   return (
     <main>
-      <div className="sm:py-10 py-6 sm:px-10 px-4 relative">
-        {isConnected ? (
-          <div className="absolute top-5 right-5 h-3 w-3 rounded-full bg-positive shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-        ) : (
-          <div className="absolute top-5 right-5 h-3 w-3 rounded-full bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
-        )}
-
+      <div className="sm:pt-10 pt-6 sm:px-10 px-4 relative">
         <div className="flex items-center justify-center mb-6">
           <Image
+            loading="eager"
             src="assets/logos/logo.light.svg"
             alt="Logo"
             width={40}
@@ -87,6 +82,7 @@ export default function ScreensLayout({
             className="block dark:hidden"
           />
           <Image
+            loading="eager"
             src="assets/logos/logo.dark.svg"
             alt="Logo"
             width={40}
@@ -99,6 +95,11 @@ export default function ScreensLayout({
             <Navbar />
           </div>
           <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
+            {isConnected ? (
+              <div className="animate-pulse h-3 w-3 rounded-full bg-positive shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+            ) : (
+              <div className="animate-pulse h-3 w-3 rounded-full bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
+            )}
             <Button variant="destructive" size="default" onClick={handleLogout}>
               <LogOut className="sm:hidden" />
               <span className="hidden sm:inline">Logout</span>
