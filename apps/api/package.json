@@ -10,12 +10,15 @@
     "lint": "oxlint ."
   },
   "dependencies": {
+    "@elysia/cron": "^1.4.2",
     "@elysiajs/cors": "^1.4.2",
     "@repo/auth": "workspace:*",
+    "@repo/bucket": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/logger": "workspace:*",
     "cors": "^2.8.6",
-    "elysia": "latest"
+    "elysia": "latest",
+    "elysia-rate-limit": "^4.6.2"
   },
   "devDependencies": {
     "bun-types": "latest"
