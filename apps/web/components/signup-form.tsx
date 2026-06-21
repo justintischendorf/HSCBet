@@ -50,7 +50,7 @@ export function SignupForm({
     }
 
     toast.success("Account erfolgreich erstellt");
-    router.push("/season");
+    router.push("/dashboard");
   }
 
   return (

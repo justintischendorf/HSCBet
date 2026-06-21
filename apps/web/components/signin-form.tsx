@@ -39,7 +39,7 @@ export function SigninForm({
       return;
     }
 
-    router.replace("/season");
+    router.replace("/dashboard");
   }
 
   return (
