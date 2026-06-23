@@ -15,11 +15,14 @@ import { authClient, useSession } from "@/lib/auth-client";
 import React, { useEffect } from "react";
 import { toast } from "sonner";
 import { InputFile } from "./input-file";
+import { ConfirmAlert } from "./confirm-alert";
 
 export function AccountCredentialsCard() {
   const session = useSession();
   const user = session?.data?.user;
 
+  const [showChangeCredentialsConfirm, setShowChangeCredentialsConfirm] =
+    React.useState(false);
   const [username, setUsername] = React.useState(user?.name || "");
   const [email, setEmail] = React.useState(user?.email || "");
 
@@ -63,9 +66,9 @@ export function AccountCredentialsCard() {
         </CardDescription>
       </CardHeader>
       <form
-        onSubmit={async (e) => {
+        onSubmit={(e) => {
           e.preventDefault();
-          await handleUpdateUserCredentials(username, email);
+          setShowChangeCredentialsConfirm(true);
         }}
       >
         <CardContent>
@@ -97,10 +100,18 @@ export function AccountCredentialsCard() {
         </CardContent>
         <CardFooter className="flex-col gap-2 mt-5">
           <Button type="submit" className="w-full">
-            Aktualisieren
+            Kontoinformationen aktualisieren
           </Button>
         </CardFooter>
       </form>
+      <ConfirmAlert
+        message="Deine Kontoinformationen werden entsprechend aktualisiert."
+        open={showChangeCredentialsConfirm}
+        onOpenChange={setShowChangeCredentialsConfirm}
+        onConfirm={async () => {
+          await handleUpdateUserCredentials(username, email);
+        }}
+      />
     </Card>
   );
 }

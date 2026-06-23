@@ -139,7 +139,7 @@ export async function handleFileChange(
   }
 }
 
-async function handleDeleteProfilePicture(
+export async function handleDeleteProfilePicture(
   imageUrl: string | null | undefined,
   refetch: () => Promise<unknown>,
 ) {
