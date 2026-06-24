@@ -13,7 +13,7 @@ export default function AccountSettings() {
 
   return (
     <main className="sm:py-10 py-6 sm:px-10 px-4">
-      <div className="flex flex-col justify-center items-center sm:gap-10 gap-6">
+      <div className="flex flex-col justify-center items-center sm:gap-10 gap-6 bg-huk-neutral h-full py-10 rounded-xl">
         <AccountSettingsMenubar setActiveTab={setActiveTab} />
         {activeTab === "credentials" && <AccountCredentialsCard />}
         {activeTab === "password" && <AccountPasswordCard />}
