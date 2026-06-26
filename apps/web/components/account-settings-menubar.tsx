@@ -1,31 +1,42 @@
-"use client";
+'use client';
 
-import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
+import { Menubar, MenubarMenu, MenubarTrigger } from '@/components/ui/menubar';
 
 interface AccountSettingsMenubarProps {
-  setActiveTab: (tab: "credentials" | "password" | "delete") => void;
+  activeTab: 'credentials' | 'password' | 'delete';
+  setActiveTab: (tab: 'credentials' | 'password' | 'delete') => void;
 }
 
 export function AccountSettingsMenubar({
+  activeTab,
   setActiveTab,
 }: AccountSettingsMenubarProps) {
   return (
-    <Menubar className="w-94">
+    <Menubar className="w-71">
       <MenubarMenu>
-        <MenubarTrigger onClick={() => setActiveTab("credentials")}>
-          Konto aktualisieren
+        <MenubarTrigger
+          onClick={() => setActiveTab('credentials')}
+          className={activeTab === 'credentials' ? 'bg-muted' : ''}
+        >
+          Konto Informationen
         </MenubarTrigger>
       </MenubarMenu>
 
       <MenubarMenu>
-        <MenubarTrigger onClick={() => setActiveTab("password")}>
-          Passwort ändern
+        <MenubarTrigger
+          onClick={() => setActiveTab('password')}
+          className={activeTab === 'password' ? 'bg-muted' : ''}
+        >
+          Passwort
         </MenubarTrigger>
       </MenubarMenu>
 
       <MenubarMenu>
-        <MenubarTrigger onClick={() => setActiveTab("delete")}>
-          Account löschen
+        <MenubarTrigger
+          onClick={() => setActiveTab('delete')}
+          className={activeTab === 'delete' ? 'bg-muted' : ''}
+        >
+          Account
         </MenubarTrigger>
       </MenubarMenu>
     </Menubar>
