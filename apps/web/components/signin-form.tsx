@@ -33,6 +33,7 @@ import {
   InputOTPSlot,
   InputOTPSeparator,
 } from './ui/input-otp';
+import { BackupAccordion } from './backup-accordion';
 
 export function SigninForm({
   className,
@@ -186,17 +187,36 @@ export function SigninForm({
             pattern={REGEXP_ONLY_DIGITS}
           >
             <InputOTPGroup>
-              <InputOTPSlot index={0} className="w-12 h-12 text-xl" />
-              <InputOTPSlot index={1} className="w-12 h-12 text-xl" />
-              <InputOTPSlot index={2} className="w-12 h-12 text-xl" />
+              <InputOTPSlot
+                index={0}
+                className="sm:w-12 sm:h-12 w-10 h-10 text-xl"
+              />
+              <InputOTPSlot
+                index={1}
+                className="sm:w-12 sm:h-12 w-10 h-10 text-xl"
+              />
+              <InputOTPSlot
+                index={2}
+                className="sm:w-12 sm:h-12 w-10 h-10 text-xl"
+              />
             </InputOTPGroup>
             <InputOTPSeparator />
             <InputOTPGroup>
-              <InputOTPSlot index={3} className="w-12 h-12 text-xl" />
-              <InputOTPSlot index={4} className="w-12 h-12 text-xl" />
-              <InputOTPSlot index={5} className="w-12 h-12 text-xl" />
+              <InputOTPSlot
+                index={3}
+                className="sm:w-12 sm:h-12 w-10 h-10 text-xl"
+              />
+              <InputOTPSlot
+                index={4}
+                className="sm:w-12 sm:h-12 w-10 h-10 text-xl"
+              />
+              <InputOTPSlot
+                index={5}
+                className="sm:w-12 sm:h-12 w-10 h-10 text-xl"
+              />
             </InputOTPGroup>
           </InputOTP>
+          <BackupAccordion />
         </AlertDialogContent>
       </AlertDialog>
     </div>
