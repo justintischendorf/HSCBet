@@ -19,8 +19,8 @@ export default function AccountSettings() {
           Konto-Einstellungen
         </h1>
         <p className="text-base">
-          Verwalte deine persönlichen Daten, Sicherheitseinstellungen und dein
-          Konto.
+          Hier kannst du deine Kontoeinstellungen verwalten, einschließlich
+          Anmeldeinformationen, Passwortänderungen und Kontolöschung.
         </p>
         <Separator className="sm:my-8 my-6" />
         <div className="flex flex-col gap-6 md:gap-8">
