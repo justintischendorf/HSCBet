@@ -32,7 +32,7 @@ export function Navbar() {
         <NavigationMenuItem>
           <NavigationMenuTrigger>Aktivitäten</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="w-96">
+            <ul className="sm:w-96 w-76">
               <ListItem href="/tips" title="Meine Tipps">
                 Sehen Sie Ihre abgegebenen Tipps.
               </ListItem>
@@ -47,7 +47,7 @@ export function Navbar() {
         <NavigationMenuItem>
           <NavigationMenuTrigger>Account</NavigationMenuTrigger>
           <NavigationMenuContent>
-            <ul className="w-96">
+            <ul className="sm:w-96 w-76">
               <ListItem href="/account-settings" title="Kontoeinstellungen">
                 Verwalten Sie Ihre Kontoeinstellungen, ändern Sie Ihr Passwort
                 oder löschen Sie Ihren Account.
