@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import Link from "next/link";
+import * as React from 'react';
+import Link from 'next/link';
 
 import {
   NavigationMenu,
@@ -11,7 +11,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+} from '@/components/ui/navigation-menu';
 
 export function Navbar() {
   return (
@@ -48,11 +48,11 @@ export function Navbar() {
           <NavigationMenuTrigger>Account</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="sm:w-96 w-76">
-              <ListItem href="/account-settings" title="Kontoeinstellungen">
+              <ListItem href="/account-settings" title="Konto-Einstellungen">
                 Verwalten Sie Ihre Kontoeinstellungen, ändern Sie Ihr Passwort
                 oder löschen Sie Ihren Account.
               </ListItem>
-              <ListItem href="/2fa" title="2-Faktor-Authentifizierung">
+              <ListItem href="/2fa" title="2FA">
                 Aktivieren Sie die 2-Faktor-Authentifizierung, um die Sicherheit
                 Ihres Accounts zu erhöhen.
               </ListItem>
@@ -69,7 +69,7 @@ function ListItem({
   children,
   href,
   ...props
-}: React.ComponentPropsWithoutRef<"li"> & { href: string }) {
+}: React.ComponentPropsWithoutRef<'li'> & { href: string }) {
   return (
     <li {...props}>
       <NavigationMenuLink asChild>

@@ -19,6 +19,20 @@ import { toast } from 'sonner';
 import React from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Footer from './footer';
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+} from './ui/alert-dialog';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+  InputOTPSeparator,
+} from './ui/input-otp';
 
 export function SigninForm({
   className,
@@ -28,15 +42,40 @@ export function SigninForm({
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
+  const [code, setCode] = React.useState('');
+  const [codeDialogOpen, setCodeDialogOpen] = React.useState(false);
 
   async function handleLogin() {
-    const { error } = await authClient.signIn.email({
-      email,
-      password,
-    });
+    const { error } = await authClient.signIn.email(
+      {
+        email,
+        password,
+      },
+      {
+        async onSuccess(context) {
+          if (context.data.twoFactorRedirect) {
+            setCodeDialogOpen(true);
+          } else {
+            router.replace('/dashboard');
+          }
+        },
+      },
+    );
 
     if (error) {
       toast.error(error.status + ': ' + error.message);
+      return;
+    }
+  }
+
+  async function handleCodeValidation(code: string) {
+    const { error } = await authClient.twoFactor.verifyTotp({
+      code: code.trim(),
+      trustDevice: false,
+    });
+
+    if (error) {
+      toast.error('Ungültiger Code. Bitte versuche es erneut.');
       return;
     }
 
@@ -125,6 +164,41 @@ export function SigninForm({
         </CardContent>
       </Card>
       <Footer />
+      <AlertDialog open={codeDialogOpen} onOpenChange={setCodeDialogOpen}>
+        <AlertDialogContent className="flex items-center justify-center flex-col gap-5 p-5">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Zwei-Faktor-Authentifizierung</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bitte gib den 6-stelligen Verifizierungscode von deiner
+              Authentifizierungs-App ein, um dich anzumelden.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <InputOTP
+            id="digits-only"
+            maxLength={6}
+            value={code}
+            onChange={(e) => {
+              setCode(e);
+              if (e.length === 6) {
+                void handleCodeValidation(e);
+              }
+            }}
+            pattern={REGEXP_ONLY_DIGITS}
+          >
+            <InputOTPGroup>
+              <InputOTPSlot index={0} className="w-12 h-12 text-xl" />
+              <InputOTPSlot index={1} className="w-12 h-12 text-xl" />
+              <InputOTPSlot index={2} className="w-12 h-12 text-xl" />
+            </InputOTPGroup>
+            <InputOTPSeparator />
+            <InputOTPGroup>
+              <InputOTPSlot index={3} className="w-12 h-12 text-xl" />
+              <InputOTPSlot index={4} className="w-12 h-12 text-xl" />
+              <InputOTPSlot index={5} className="w-12 h-12 text-xl" />
+            </InputOTPGroup>
+          </InputOTP>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

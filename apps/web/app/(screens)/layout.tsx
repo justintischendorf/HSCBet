@@ -4,19 +4,23 @@ import { useEffect, useRef, useState } from 'react';
 import { ModeToggle } from '@/components/mode-toggle';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
-import { authClient } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import { Inbox, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import Image from 'next/image';
 import React from 'react';
 import Footer from '@/components/footer';
+import { TwoFactorWarning } from '@/components/2fa-warning';
 
 export default function ScreensLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = useSession();
+  const user = session?.data?.user;
+
   const router = useRouter();
   const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -71,7 +75,7 @@ export default function ScreensLayout({
   }
 
   return (
-    <main>
+    <main className="flex min-h-screen flex-col">
       <div className="sm:pt-10 pt-6 sm:px-10 px-4 relative">
         <div className="flex items-center justify-center mb-6">
           <Image
@@ -95,12 +99,13 @@ export default function ScreensLayout({
           <div className="w-full sm:w-auto flex justify-center sm:justify-start">
             <Navbar />
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
+          <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
             {isConnected ? (
               <div className="animate-pulse h-3 w-3 rounded-full bg-positive shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
             ) : (
               <div className="animate-pulse h-3 w-3 rounded-full bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
             )}
+            {!user?.twoFactorEnabled && <TwoFactorWarning />}
             <Button variant="destructive" size="default" onClick={handleLogout}>
               <LogOut className="sm:hidden" />
               <span className="hidden sm:inline">Logout</span>
@@ -112,8 +117,8 @@ export default function ScreensLayout({
           </div>
         </div>
       </div>
-      <div>
-        {children}
+      <div className="flex flex-1 flex-col">
+        <div className="flex-1">{children}</div>
         <div className="sm:pb-16 pb-8">
           <Footer />
         </div>
