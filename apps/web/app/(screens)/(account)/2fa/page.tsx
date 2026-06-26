@@ -15,7 +15,7 @@ import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { authClient, useSession } from '@/lib/auth-client';
-import { Eye, EyeOff, ShieldAlert } from 'lucide-react';
+import { Eye, EyeOff, Info, ShieldAlert } from 'lucide-react';
 import React from 'react';
 import { toast } from 'sonner';
 import Image from 'next/image';
@@ -226,11 +226,21 @@ export default function AccountSettings() {
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-huk-accent shrink-0">
                   <span className="text-sm font-bold text-black">2</span>
                 </div>
-                <p className="text-left text-sm text-muted-foreground">
-                  Notiere die Backup-Codes an einem sicheren Ort. Sie können
-                  verwendet werden, falls du keinen Zugriff auf deine
-                  Authenticator-App hast.
-                </p>
+                <div className="flex flex-col gap-2">
+                  <p className="text-left text-sm text-muted-foreground">
+                    Notiere die Backup-Codes an einem sicheren Ort. Sie können
+                    verwendet werden, falls du keinen Zugriff auf deine
+                    Authenticator-App hast.
+                  </p>
+                  <p className="flex items-center flex-row gap-2 text-left dark:bg-warning/10 text-sm text-warning bg-warning-subdued px-4 py-2 rounded-md">
+                    <span>
+                      <Info size={18} />
+                    </span>
+                    Backup-Codes können nur einmal verwendet werden. Richte
+                    deinen Authenticator erneut ein, solltest du alle
+                    Backup-Codes verbraucht haben.
+                  </p>
+                </div>
               </div>
 
               <ul className="flex flex-col sm:flex-row justify-center gap-2 mx-auto">

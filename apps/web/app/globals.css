@@ -1,6 +1,6 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -100,8 +100,8 @@
   --huk-neutral: oklch(0.4967 0.0668 214.86);
   --huk-neutral-subdued: oklch(0.8999 0.0175 219.67);
 
-  --font-sans: "Inter", sans-serif;
-  --font-mono: "JetBrains Mono", mono;
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', mono;
   font-family: var(--font-sans);
 }
 
@@ -165,6 +165,6 @@
     font-family: Inter;
   }
   .font-mono {
-    font-family: "JetBrains Mono";
+    font-family: 'JetBrains Mono';
   }
 }
