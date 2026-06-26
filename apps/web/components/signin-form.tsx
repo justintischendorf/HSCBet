@@ -1,31 +1,32 @@
-"use client";
+'use client';
 
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/components/ui/field";
-import Image from "next/image";
-import { Input } from "@/components/ui/input";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client";
-import { toast } from "sonner";
-import React from "react";
-import { Eye, EyeOff } from "lucide-react";
+} from '@/components/ui/field';
+import Image from 'next/image';
+import { Input } from '@/components/ui/input';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { authClient } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import React from 'react';
+import { Eye, EyeOff } from 'lucide-react';
+import Footer from './footer';
 
 export function SigninForm({
   className,
   ...props
-}: React.ComponentProps<"div">) {
+}: React.ComponentProps<'div'>) {
   const router = useRouter();
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
 
   async function handleLogin() {
@@ -35,15 +36,15 @@ export function SigninForm({
     });
 
     if (error) {
-      toast.error(error.status + ": " + error.message);
+      toast.error(error.status + ': ' + error.message);
       return;
     }
 
-    router.replace("/dashboard");
+    router.replace('/dashboard');
   }
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn('flex flex-col gap-6', className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form
@@ -84,7 +85,7 @@ export function SigninForm({
                 <div className="relative">
                   <Input
                     id="password"
-                    type={showPassword ? "text" : "password"}
+                    type={showPassword ? 'text' : 'password'}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -106,7 +107,7 @@ export function SigninForm({
                 oder
               </FieldSeparator>
               <FieldDescription className="text-center">
-                Du hast noch keinen Account?{" "}
+                Du hast noch keinen Account?{' '}
                 <Link href="/signup">Registrieren</Link>
               </FieldDescription>
             </FieldGroup>
@@ -123,9 +124,7 @@ export function SigninForm({
           </div>
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center">
-        © 2026 HSCBet. Alle Rechte vorbehalten.
-      </FieldDescription>
+      <Footer />
     </div>
   );
 }

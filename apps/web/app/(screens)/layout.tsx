@@ -1,15 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState } from "react";
-import { ModeToggle } from "@/components/mode-toggle";
-import { Navbar } from "@/components/navbar";
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
-import { Inbox, LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import Image from "next/image";
-import React from "react";
+import { useEffect, useRef, useState } from 'react';
+import { ModeToggle } from '@/components/mode-toggle';
+import { Navbar } from '@/components/navbar';
+import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth-client';
+import { Inbox, LogOut } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import Image from 'next/image';
+import React from 'react';
+import Footer from '@/components/footer';
 
 export default function ScreensLayout({
   children,
@@ -22,7 +23,7 @@ export default function ScreensLayout({
 
   useEffect(() => {
     const wsUrl =
-      process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001/api/socket";
+      process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001/api/socket';
 
     const socket = new WebSocket(wsUrl);
 
@@ -34,12 +35,12 @@ export default function ScreensLayout({
       try {
         const message = JSON.parse(event.data);
       } catch (err) {
-        toast.error("Fehler beim Verarbeiten der WebSocket-Nachricht:" + err);
+        toast.error('Fehler beim Verarbeiten der WebSocket-Nachricht:' + err);
       }
     };
 
     socket.onerror = (error) => {
-      console.log("WebSocket-Fehler:", error);
+      console.log('WebSocket-Fehler:', error);
     };
 
     socket.onclose = (event) => {
@@ -62,11 +63,11 @@ export default function ScreensLayout({
     const { error } = await authClient.signOut();
 
     if (error) {
-      toast.error(error.status + ": " + error.message);
+      toast.error(error.status + ': ' + error.message);
       return;
     }
 
-    router.replace("/signin");
+    router.replace('/signin');
   }
 
   return (
@@ -111,7 +112,12 @@ export default function ScreensLayout({
           </div>
         </div>
       </div>
-      <div>{children}</div>
+      <div>
+        {children}
+        <div className="sm:pb-16 pb-8">
+          <Footer />
+        </div>
+      </div>
     </main>
   );
 }
