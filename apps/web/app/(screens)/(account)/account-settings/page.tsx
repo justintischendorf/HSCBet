@@ -18,12 +18,15 @@ export default function AccountSettings() {
         <h1 className="text-3xl font-bold tracking-tight">
           Konto-Einstellungen
         </h1>
-        <p className="text-base">
+        <p className="text-base text-muted-foreground mt-2">
           Hier kannst du deine Kontoeinstellungen verwalten, einschließlich
           Anmeldeinformationen, Passwortänderungen und Kontolöschung.
         </p>
+
         <Separator className="sm:my-8 my-6" />
+
         <div className="flex flex-col gap-6 md:gap-8">
+          {/* Menüleiste */}
           <div className="w-full flex justify-start">
             <AccountSettingsMenubar
               setActiveTab={setActiveTab}
@@ -31,10 +34,48 @@ export default function AccountSettings() {
             />
           </div>
 
-          <div className="w-full">
-            {activeTab === 'credentials' && <AccountCredentialsCard />}
-            {activeTab === 'password' && <AccountPasswordCard />}
-            {activeTab === 'delete' && <AccountDeleteCard />}
+          {/* Container für die Tabs im 2FA-Karten-Design */}
+          <div className="w-full animate-in fade-in duration-300 ease-in-out">
+            {activeTab === 'credentials' && (
+              <div className="flex flex-col border border-border rounded-lg p-4 sm:p-6 gap-6">
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-semibold">Persönliche Daten</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Passe deinen Namen, deine E-Mail und weitere Profildaten an.
+                  </p>
+                </div>
+                {/* WICHTIG: Die Card selbst sollte keinen eigenen Rahmen mehr haben,
+                    sondern nur noch die Eingabefelder enthalten */}
+                <AccountCredentialsCard />
+              </div>
+            )}
+
+            {activeTab === 'password' && (
+              <div className="flex flex-col border border-border rounded-lg p-4 sm:p-6 gap-6">
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-semibold">Passwort ändern</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Aktualisiere dein Passwort, um dein Konto abzusichern.
+                  </p>
+                </div>
+                <AccountPasswordCard />
+              </div>
+            )}
+
+            {activeTab === 'delete' && (
+              <div className="flex flex-col border border-destructive/30 bg-destructive/5 rounded-lg p-4 sm:p-6 gap-6">
+                <div className="flex flex-col">
+                  <h2 className="text-lg font-semibold text-destructive">
+                    Gefahrenzone
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Sobald du dein Konto löschst, gibt es kein Zurück mehr.
+                    Bitte sei dir sicher.
+                  </p>
+                </div>
+                <AccountDeleteCard />
+              </div>
+            )}
           </div>
         </div>
       </div>
