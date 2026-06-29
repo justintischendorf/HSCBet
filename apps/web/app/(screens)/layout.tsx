@@ -12,6 +12,8 @@ import Image from 'next/image';
 import React from 'react';
 import Footer from '@/components/footer';
 import { TwoFactorWarning } from '@/components/2fa-warning';
+import { Avatar, AvatarBadge, AvatarImage } from '@/components/ui/avatar';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ScreensLayout({
   children,
@@ -100,16 +102,28 @@ export default function ScreensLayout({
             <Navbar />
           </div>
           <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
-            {isConnected ? (
-              <div className="animate-pulse h-3 w-3 rounded-full bg-positive shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
-            ) : (
-              <div className="animate-pulse h-3 w-3 rounded-full bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.6)]"></div>
-            )}
             {!user?.twoFactorEnabled && <TwoFactorWarning />}
             <Button variant="destructive" size="default" onClick={handleLogout}>
               <LogOut className="sm:hidden" />
               <span className="hidden sm:inline">Logout</span>
             </Button>
+            {user ? (
+              <Avatar>
+                <AvatarImage
+                  id="profile-picture"
+                  src={
+                    user?.image ||
+                    `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user?.name}`
+                  }
+                  alt="Profilbild"
+                />
+                <AvatarBadge
+                  className={isConnected ? 'bg-positive' : 'bg-destructive'}
+                />
+              </Avatar>
+            ) : (
+              <Skeleton className="h-8 w-8 rounded-full" />
+            )}
             <Button variant="outline" size="icon">
               <Inbox className="h-5 w-5" />
             </Button>
