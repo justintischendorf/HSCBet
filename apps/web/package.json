@@ -9,6 +9,7 @@
     "lint": "oxlint ."
   },
   "dependencies": {
+    "@base-ui/react": "^1.6.0",
     "@repo/auth": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/logger": "workspace:*",
