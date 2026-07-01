@@ -12,8 +12,8 @@ import Image from 'next/image';
 import React from 'react';
 import Footer from '@/components/footer';
 import { TwoFactorWarning } from '@/components/2fa-warning';
-import { Avatar, AvatarBadge, AvatarImage } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
+import NavbarAvatar from '@/components/navbar-avatar';
 
 export default function ScreensLayout({
   children,
@@ -108,19 +108,7 @@ export default function ScreensLayout({
               <span className="hidden sm:inline">Logout</span>
             </Button>
             {user ? (
-              <Avatar>
-                <AvatarImage
-                  id="profile-picture"
-                  src={
-                    user?.image ||
-                    `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user?.name}`
-                  }
-                  alt="Profilbild"
-                />
-                <AvatarBadge
-                  className={isConnected ? 'bg-positive' : 'bg-destructive'}
-                />
-              </Avatar>
+              <NavbarAvatar connected={isConnected} />
             ) : (
               <Skeleton className="h-8 w-8 rounded-full" />
             )}

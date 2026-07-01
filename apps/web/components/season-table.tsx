@@ -302,19 +302,17 @@ export function SeasonTable() {
           );
         })}
       </div>
-      <div className="hidden md:block overflow-x-auto rounded-lg border border-border shadow-sm">
+      <div className="hidden md:block">
         <Table>
           <TableCaption className="mb-4">
             Alle neuesten Entwicklungen aus der Saison 2026/27
           </TableCaption>
-          <TableHeader className="bg-huk-accent">
+          <TableHeader>
             <TableRow>
-              <TableHead className="w-[120px] text-black">Spielzeit</TableHead>
-              <TableHead className="text-right text-black">Heimteam</TableHead>
-              <TableHead className="w-[100px] text-center text-black">
-                Ergebnis
-              </TableHead>
-              <TableHead className="text-left text-black">Gastteam</TableHead>
+              <TableHead className="w-[120px]">Spielzeit</TableHead>
+              <TableHead className="text-right">Heimteam</TableHead>
+              <TableHead className="w-[100px] text-center">Ergebnis</TableHead>
+              <TableHead className="text-left">Gastteam</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -324,10 +322,7 @@ export function SeasonTable() {
               const isCoburgAway = match.away === 'HSC 2000 Coburg';
 
               return (
-                <TableRow
-                  key={match.home + match.away}
-                  className="hover:bg-muted/50"
-                >
+                <TableRow key={match.home + match.away}>
                   <TableCell className="whitespace-nowrap py-3">
                     <div className="text-sm font-medium">{date}</div>
                     <div className="text-xs text-muted-foreground">
