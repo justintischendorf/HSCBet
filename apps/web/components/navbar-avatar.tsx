@@ -1,12 +1,13 @@
 'use client';
 
-import { AvatarBadge, Avatar, AvatarImage } from './ui/avatar';
+import { AvatarBadge, Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { HoverCardTrigger, HoverCardContent, HoverCard } from './ui/hover-card';
 import { useSession } from '@/lib/auth-client';
 
 export default function NavbarAvatar(connected: { connected: boolean }) {
   const session = useSession();
   const user = session?.data?.user;
+  const fallBackChar = user?.name.charAt(0).toUpperCase();
 
   return (
     <HoverCard openDelay={10} closeDelay={100}>
@@ -23,9 +24,10 @@ export default function NavbarAvatar(connected: { connected: boolean }) {
           <AvatarBadge
             className={connected ? 'bg-positive' : 'bg-destructive'}
           />
+          <AvatarFallback>{fallBackChar}</AvatarFallback>
         </Avatar>
       </HoverCardTrigger>
-      <HoverCardContent className="flex w-full items-center justify-center p-2">
+      <HoverCardContent className="flex w-full items-center justify-center px-2 py-1">
         {connected ? (
           <p className="text-xs text-positive">Online</p>
         ) : (
