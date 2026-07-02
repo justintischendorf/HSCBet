@@ -249,7 +249,7 @@ export default function AccountSettings() {
                     key={index}
                     className="text-sm border border-border rounded-md px-4 py-1"
                   >
-                    <div className="flex flex-row items-center gap-2">
+                    <div className="flex flex-row items-center justify-center gap-2">
                       <span>{c}</span>
                       <CopyButton textToCopy={c} />
                     </div>
