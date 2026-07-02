@@ -14,6 +14,7 @@ import { Skeleton } from './ui/skeleton';
 export function InputFile() {
   const { data: session, refetch } = useSession();
   const user = session?.user;
+  const fallBackChar = user?.name.charAt(0).toUpperCase();
 
   return (
     <Field className="w-fit items-center gap-6">
@@ -32,6 +33,9 @@ export function InputFile() {
                 }
                 alt="Profilbild"
               />
+              <AvatarFallback className="text-3xl">
+                {fallBackChar}
+              </AvatarFallback>
               <Input
                 id="profile-picture-input"
                 type="file"
