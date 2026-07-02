@@ -8,7 +8,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-const matchesF = [
+export const matchesF = [
   {
     home: 'HSC 2000 Coburg',
     away: 'VfL Eintracht Hagen',

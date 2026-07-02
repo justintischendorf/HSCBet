@@ -14,6 +14,7 @@ import Footer from '@/components/footer';
 import { TwoFactorWarning } from '@/components/2fa-warning';
 import { Skeleton } from '@/components/ui/skeleton';
 import NavbarAvatar from '@/components/navbar-avatar';
+import Link from 'next/link';
 
 export default function ScreensLayout({
   children,
@@ -80,22 +81,24 @@ export default function ScreensLayout({
     <main className="flex min-h-screen flex-col">
       <div className="sm:pt-10 pt-6 sm:px-10 px-4 relative">
         <div className="flex items-center justify-center mb-6">
-          <Image
-            loading="eager"
-            src="assets/logos/logo.light.svg"
-            alt="Logo"
-            width={40}
-            height={40}
-            className="block dark:hidden"
-          />
-          <Image
-            loading="eager"
-            src="assets/logos/logo.dark.svg"
-            alt="Logo"
-            width={40}
-            height={40}
-            className="hidden dark:block"
-          />
+          <Link href="/dashboard">
+            <Image
+              loading="eager"
+              src="assets/logos/logo.light.svg"
+              alt="Logo"
+              width={40}
+              height={40}
+              className="block dark:hidden"
+            />
+            <Image
+              loading="eager"
+              src="assets/logos/logo.dark.svg"
+              alt="Logo"
+              width={40}
+              height={40}
+              className="hidden dark:block"
+            />
+          </Link>
         </div>
         <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="w-full sm:w-auto flex justify-center sm:justify-start">
@@ -103,7 +106,7 @@ export default function ScreensLayout({
           </div>
           <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
             {!user?.twoFactorEnabled && <TwoFactorWarning />}
-            <Button variant="destructive" size="default" onClick={handleLogout}>
+            <Button variant="destructive" size="lg" onClick={handleLogout}>
               <LogOut className="sm:hidden" />
               <span className="hidden sm:inline">Logout</span>
             </Button>
