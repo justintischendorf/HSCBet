@@ -14,49 +14,41 @@ import { Skeleton } from './ui/skeleton';
 export function InputFile() {
   const { data: session, refetch } = useSession();
   const user = session?.user;
-  const fallBackChar = user?.name.charAt(0).toUpperCase();
 
   return (
     <Field className="w-fit items-center gap-6">
       <div className="relative inline-block">
         <label className="group inline-flex cursor-pointer rounded-full">
-          {user ? (
-            <Avatar
-              size="lg"
-              className="overflow-hidden transition-transform duration-200"
-            >
-              <AvatarImage
-                id="profile-picture"
-                src={
-                  user?.image ||
-                  `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user?.name}`
+          <Avatar
+            size="lg"
+            className="overflow-hidden transition-transform duration-200"
+          >
+            <AvatarImage
+              id="profile-picture"
+              src={
+                user?.image ||
+                `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user?.name}`
+              }
+              alt="Profilbild"
+            />
+            <Input
+              id="profile-picture-input"
+              type="file"
+              accept="image/*"
+              className="sr-only"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  await handleFileChange(file, user?.image ?? undefined);
+                  await refetch();
                 }
-                alt="Profilbild"
-              />
-              <AvatarFallback className="text-3xl">
-                {fallBackChar}
-              </AvatarFallback>
-              <Input
-                id="profile-picture-input"
-                type="file"
-                accept="image/*"
-                className="sr-only"
-                onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    await handleFileChange(file, user?.image ?? undefined);
-                    await refetch();
-                  }
-                }}
-              />
-              <span className="pointer-events-none absolute inset-0 rounded-full bg-black/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100" />
-              <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-                <Camera className="size-9" />
-              </span>
-            </Avatar>
-          ) : (
-            <Skeleton className="h-29 w-29 rounded-full" />
-          )}
+              }}
+            />
+            <span className="pointer-events-none absolute inset-0 rounded-full bg-black/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100" />
+            <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
+              <Camera className="size-9" />
+            </span>
+          </Avatar>
         </label>
 
         <Button
