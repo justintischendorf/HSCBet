@@ -36,6 +36,7 @@ export function InputFile() {
               }
               alt="Profilbild"
             />
+            <AvatarFallback>{fallbackChar}</AvatarFallback>
             <Input
               id="profile-picture-input"
               type="file"
