@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -8,14 +8,14 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { authClient, useSession } from "@/lib/auth-client";
-import React, { useEffect } from "react";
-import { toast } from "sonner";
-import { InputFile } from "./input-file";
-import { ConfirmAlert } from "./confirm-alert";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { authClient, useSession } from '@/lib/auth-client';
+import React, { useEffect } from 'react';
+import { toast } from 'sonner';
+import { ConfirmAlert } from './confirm-alert';
+import { InputProfilePicture } from './input-profile-picture';
 
 export function AccountCredentialsCard() {
   const session = useSession();
@@ -23,13 +23,13 @@ export function AccountCredentialsCard() {
 
   const [showChangeCredentialsConfirm, setShowChangeCredentialsConfirm] =
     React.useState(false);
-  const [username, setUsername] = React.useState(user?.name || "");
-  const [email, setEmail] = React.useState(user?.email || "");
+  const [username, setUsername] = React.useState(user?.name || '');
+  const [email, setEmail] = React.useState(user?.email || '');
 
   useEffect(() => {
     if (user) {
-      setUsername(user.name || "");
-      setEmail(user.email || "");
+      setUsername(user.name || '');
+      setEmail(user.email || '');
     }
   }, [user]);
 
@@ -39,7 +39,7 @@ export function AccountCredentialsCard() {
         newEmail: email,
       });
       if (emailChangeError) {
-        toast.error(emailChangeError.status + ": " + emailChangeError.message);
+        toast.error(emailChangeError.status + ': ' + emailChangeError.message);
         return;
       }
     }
@@ -49,12 +49,12 @@ export function AccountCredentialsCard() {
         name: username,
       });
       if (updateUserError) {
-        toast.error(updateUserError.status + ": " + updateUserError.message);
+        toast.error(updateUserError.status + ': ' + updateUserError.message);
         return;
       }
     }
 
-    toast.success("Profilinformationen erfolgreich aktualisiert!");
+    toast.success('Profilinformationen erfolgreich aktualisiert!');
   }
 
   return (
@@ -74,7 +74,7 @@ export function AccountCredentialsCard() {
         <CardContent>
           <div className="flex flex-col gap-6">
             <div className="flex justify-center">
-              <InputFile />
+              <InputProfilePicture />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="username">Nutzername</Label>

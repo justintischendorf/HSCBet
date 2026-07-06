@@ -1,5 +1,7 @@
+'use client';
+
 import Group from '@/components/group';
-import { Button } from '@/components/ui/button';
+import { NewGroupPopup } from '@/components/new-group-popup';
 import { Separator } from '@/components/ui/separator';
 
 export default function GroupsScreen() {
@@ -13,11 +15,10 @@ export default function GroupsScreen() {
             Mitglied bist. Außerdem kannst du neue Gruppen erstellen oder
             bestehenden Gruppen beitreten.
           </p>
-          <Button className="w-full sm:w-auto">Gruppe erstellen</Button>
+          <NewGroupPopup />
         </div>
         <Separator className="sm:my-8 my-6" />
         <div className="justify-between flex sm:flex-row flex-col flex-wrap gap-4">
-          <Group></Group>
           <Group></Group>
           <Group></Group>
           <Group></Group>
