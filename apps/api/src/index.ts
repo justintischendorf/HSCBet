@@ -9,6 +9,7 @@ import { S3Service } from "./global/services/s3-service";
 import { WebAppStore } from "./context";
 import cron, { Patterns } from "@elysia/cron";
 import { rateLimit } from "elysia-rate-limit";
+import { season } from "./modules/season";
 
 const logger = createLogger("api");
 const s3Manager = new S3Manager();
@@ -52,6 +53,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(authPlugin)
   .use(socket)
   .use(media)
+  .use(season)
   .onError(({ error, set }) => {
     if (error instanceof Error && error.message === "rate-limit") {
       set.status = 429;
