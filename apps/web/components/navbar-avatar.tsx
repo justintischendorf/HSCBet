@@ -6,7 +6,7 @@ import { HoverCardTrigger, HoverCardContent, HoverCard } from './ui/hover-card';
 import { useSession } from '@/lib/auth-client';
 import { Skeleton } from './ui/skeleton';
 
-export default function NavbarAvatar(connected: { connected: boolean }) {
+export default function NavbarAvatar({ connected }: { connected: boolean }) {
   const { data: session, isPending } = useSession();
   const user = session?.user;
   const fallbackChar = user?.name?.charAt(0).toUpperCase() ?? '?';
@@ -28,6 +28,7 @@ export default function NavbarAvatar(connected: { connected: boolean }) {
               }
               alt="Profilbild"
             />
+            <AvatarFallback>{fallbackChar}</AvatarFallback>
             <AvatarBadge
               className={connected ? 'bg-positive' : 'bg-destructive'}
             />
