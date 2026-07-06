@@ -110,3 +110,21 @@ enum MimeType {
   IMAGE_JPEG
   IMAGE_PNG
 }
+
+model Game {
+  id          String   @id @default(cuid())
+  season      Season   @relation(fields: [seasonId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  seasonId    String
+  date        DateTime
+  host        String
+  guest       String
+  hostPoints  Int
+  guestPoints Int
+  result      Int
+}
+
+model Season {
+  id    String @id @default(cuid())
+  title String
+  game  Game[]
+}
