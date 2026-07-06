@@ -12,8 +12,13 @@ import { Button } from './ui/button';
 import { Skeleton } from './ui/skeleton';
 
 export function InputFile() {
-  const { data: session, refetch } = useSession();
+  const { data: session, refetch, isPending } = useSession();
   const user = session?.user;
+  const fallbackChar = user?.name?.charAt(0).toUpperCase() ?? '?';
+
+  if (isPending) {
+    return <Skeleton className="size-30 rounded-full" />;
+  }
 
   return (
     <Field className="w-fit items-center gap-6">

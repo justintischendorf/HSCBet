@@ -1,13 +1,19 @@
 'use client';
 
 import Link from 'next/link';
-import { AvatarBadge, Avatar, AvatarImage } from './ui/avatar';
+import { AvatarBadge, Avatar, AvatarImage, AvatarFallback } from './ui/avatar';
 import { HoverCardTrigger, HoverCardContent, HoverCard } from './ui/hover-card';
 import { useSession } from '@/lib/auth-client';
+import { Skeleton } from './ui/skeleton';
 
 export default function NavbarAvatar(connected: { connected: boolean }) {
-  const session = useSession();
-  const user = session?.data?.user;
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
+  const fallbackChar = user?.name?.charAt(0).toUpperCase() ?? '?';
+
+  if (isPending) {
+    return <Skeleton className="size-8 rounded-full" />;
+  }
 
   return (
     <HoverCard openDelay={10} closeDelay={100}>
