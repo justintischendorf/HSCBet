@@ -12,7 +12,7 @@ export function AccountSettingsMenubar({
   setActiveTab,
 }: AccountSettingsMenubarProps) {
   return (
-    <Menubar className="w-71">
+    <Menubar className="w-84">
       <MenubarMenu>
         <MenubarTrigger
           onClick={() => setActiveTab('credentials')}

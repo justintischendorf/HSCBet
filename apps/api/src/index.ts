@@ -16,6 +16,14 @@ const s3Manager = new S3Manager();
 const app = new Elysia({ prefix: "/api" })
   .state("s3Manager", s3Manager)
   .use(
+    cors({
+      origin: process.env.WEB_SERVER_URL,
+      credentials: true,
+      allowedHeaders: ["Content-Type", "Authorization"],
+      methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+    }),
+  )
+  .use(
     rateLimit({
       duration: 60000,
       max: 50,
@@ -28,14 +36,6 @@ const app = new Elysia({ prefix: "/api" })
         return ip || "unknown";
       },
       errorResponse: new Error("rate-limit"),
-    }),
-  )
-  .use(
-    cors({
-      origin: process.env.WEB_SERVER_URL,
-      credentials: true,
-      allowedHeaders: ["Content-Type", "Authorization"],
-      methods: ["GET", "POST", "PATCH", "DELETE"],
     }),
   )
   .use(
