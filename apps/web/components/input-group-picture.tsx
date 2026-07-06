@@ -11,10 +11,10 @@ import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Skeleton } from './ui/skeleton';
 
-export function InputFile() {
+export function InputGroupPicture() {
   const { data: session, refetch, isPending } = useSession();
   const user = session?.user;
-  const fallbackChar = user?.name?.charAt(0).toUpperCase() ?? '?';
+  const fallbackChar = '?';
 
   if (isPending) {
     return <Skeleton className="size-30 rounded-full" />;
@@ -30,13 +30,10 @@ export function InputFile() {
           >
             <AvatarImage
               id="profile-picture"
-              src={
-                user?.image ||
-                `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user?.name}`
-              }
+              src={user?.image || undefined}
               alt="Profilbild"
             />
-            <AvatarFallback>{fallbackChar}</AvatarFallback>
+            <AvatarFallback className="text-3xl">{fallbackChar}</AvatarFallback>
             <Input
               id="profile-picture-input"
               type="file"
