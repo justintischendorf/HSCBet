@@ -15,6 +15,8 @@ import { TwoFactorWarning } from '@/components/2fa-warning';
 import { Skeleton } from '@/components/ui/skeleton';
 import NavbarAvatar from '@/components/navbar-avatar';
 import Link from 'next/link';
+import { queryClient } from '@/lib/queryClient';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 export default function ScreensLayout({
   children,
@@ -78,56 +80,58 @@ export default function ScreensLayout({
   }
 
   return (
-    <main className="flex min-h-screen flex-col">
-      <div className="sm:pt-10 pt-6 sm:px-10 px-4 relative">
-        <div className="flex items-center justify-center mb-6">
-          <Link href="/dashboard">
-            <Image
-              loading="eager"
-              src="assets/logos/logo.light.svg"
-              alt="Logo"
-              width={40}
-              height={40}
-              className="block dark:hidden"
-            />
-            <Image
-              loading="eager"
-              src="assets/logos/logo.dark.svg"
-              alt="Logo"
-              width={40}
-              height={40}
-              className="hidden dark:block"
-            />
-          </Link>
-        </div>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-          <div className="w-full sm:w-auto flex justify-center sm:justify-start">
-            <Navbar />
+    <QueryClientProvider client={queryClient}>
+      <main className="flex min-h-screen flex-col">
+        <div className="sm:pt-10 pt-6 sm:px-10 px-4 relative">
+          <div className="flex items-center justify-center mb-6">
+            <Link href="/dashboard">
+              <Image
+                loading="eager"
+                src="assets/logos/logo.light.svg"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="block dark:hidden"
+              />
+              <Image
+                loading="eager"
+                src="assets/logos/logo.dark.svg"
+                alt="Logo"
+                width={40}
+                height={40}
+                className="hidden dark:block"
+              />
+            </Link>
           </div>
-          <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
-            {!user?.twoFactorEnabled && <TwoFactorWarning />}
-            <Button variant="destructive" size="lg" onClick={handleLogout}>
-              <LogOut className="sm:hidden" />
-              <span className="hidden sm:inline">Logout</span>
-            </Button>
-            {user ? (
-              <NavbarAvatar connected={isConnected} />
-            ) : (
-              <Skeleton className="h-8 w-8 rounded-full" />
-            )}
-            <Button variant="outline" size="icon">
-              <Inbox className="h-5 w-5" />
-            </Button>
-            <ModeToggle />
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div className="w-full sm:w-auto flex justify-center sm:justify-start">
+              <Navbar />
+            </div>
+            <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
+              {!user?.twoFactorEnabled && <TwoFactorWarning />}
+              <Button variant="destructive" size="lg" onClick={handleLogout}>
+                <LogOut className="sm:hidden" />
+                <span className="hidden sm:inline">Logout</span>
+              </Button>
+              {user ? (
+                <NavbarAvatar connected={isConnected} />
+              ) : (
+                <Skeleton className="h-8 w-8 rounded-full" />
+              )}
+              <Button variant="outline" size="icon">
+                <Inbox className="h-5 w-5" />
+              </Button>
+              <ModeToggle />
+            </div>
           </div>
         </div>
-      </div>
-      <div className="flex flex-1 flex-col">
-        <div className="flex-1">{children}</div>
-        <div className="sm:pb-16 pb-8">
-          <Footer />
+        <div className="flex flex-1 flex-col">
+          <div className="flex-1">{children}</div>
+          <div className="sm:pb-16 pb-8">
+            <Footer />
+          </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </QueryClientProvider>
   );
 }
