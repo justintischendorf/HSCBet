@@ -16,6 +16,7 @@ export function GroupDescriptionTextarea() {
         <p className="text-sm">{available}</p>
       </div>
       <Textarea
+        required
         id="group-description"
         placeholder="..."
         maxLength={32}

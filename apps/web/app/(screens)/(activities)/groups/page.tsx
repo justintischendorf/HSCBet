@@ -18,7 +18,7 @@ export default function GroupsScreen() {
           <NewGroupPopup />
         </div>
         <Separator className="sm:my-8 my-6" />
-        <div className="justify-between flex sm:flex-row flex-col flex-wrap gap-4">
+        <div className="w-full items-center flex flex-col gap-4">
           <Group></Group>
           <Group></Group>
           <Group></Group>
