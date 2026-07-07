@@ -1,22 +1,28 @@
 import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
-import { SeasonModel } from "./model";
+import { IdParams } from "src/global/models";
 
 const logger = createLogger("api:season");
 
 export abstract class SeasonService {
-  //----------------------------------------------------------------> GET all seasons
+  // --------------------------------------------------------------------------> GET api/season
+  //                                                                             - get all seasons from the database
   static async getAllSeasons() {
     logger.info("fetching season data");
-    const seasons = await prisma.season.findMany();
+    const seasons = await prisma.season.findMany({
+      include: {
+        game: true,
+      },
+    });
     return seasons;
   }
 
-  // --------------------------------------------------------------------------> GET season by id
+  // --------------------------------------------------------------------------> GET api/season/:id
+  //                                                                             - get a season by its ID from the database
   static async getSeasonByID({
     params,
   }: {
-    params: (typeof SeasonModel.GetSeasonByID)["static"];
+    params: (typeof IdParams)["static"];
   }) {
     logger.info("fetching season by id: " + params.id);
     const seasons = await prisma.season.findUnique({

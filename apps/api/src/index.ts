@@ -10,6 +10,7 @@ import { WebAppStore } from "./context";
 import cron, { Patterns } from "@elysia/cron";
 import { rateLimit } from "elysia-rate-limit";
 import { season } from "./modules/season";
+import { admin } from "./modules/admin";
 
 const logger = createLogger("api");
 const s3Manager = new S3Manager();
@@ -20,8 +21,8 @@ const app = new Elysia({ prefix: "/api" })
     cors({
       origin: process.env.WEB_SERVER_URL,
       credentials: true,
-      allowedHeaders: ["Content-Type", "Authorization"],
-      methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     }),
   )
   .use(
@@ -39,6 +40,17 @@ const app = new Elysia({ prefix: "/api" })
       errorResponse: new Error("rate-limit"),
     }),
   )
+  .derive({ as: "global" }, () => ({
+    requestStart: Date.now(),
+  }))
+  .onAfterHandle(({ request, set, requestStart }) => {
+    const durationMs = Date.now() - requestStart;
+    const url = new URL(request.url);
+    const path = `${url.pathname}${url.search}`;
+    logger.info(
+      `${request.method} ${path} status=${set.status ?? 200} duration=${durationMs}ms`,
+    );
+  })
   .use(
     cron({
       name: "s3-cleanup",
@@ -50,6 +62,7 @@ const app = new Elysia({ prefix: "/api" })
       },
     }),
   )
+  .use(admin)
   .use(authPlugin)
   .use(socket)
   .use(media)
