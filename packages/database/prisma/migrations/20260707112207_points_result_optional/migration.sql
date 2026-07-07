@@ -1,0 +1,4 @@
+-- AlterTable
+ALTER TABLE "Game" ALTER COLUMN "hostPoints" DROP NOT NULL,
+ALTER COLUMN "guestPoints" DROP NOT NULL,
+ALTER COLUMN "result" DROP NOT NULL;

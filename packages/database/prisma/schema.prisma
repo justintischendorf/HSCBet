@@ -118,13 +118,16 @@ model Game {
   date        DateTime
   host        String
   guest       String
-  hostPoints  Int
-  guestPoints Int
-  result      Int
+  hostPoints  Int?     @default(0)
+  guestPoints Int?     @default(0)
+  result      Int?     @default(0)
 }
 
 model Season {
-  id    String @id @default(cuid())
-  title String
-  game  Game[]
+  id     String   @id @default(cuid())
+  title  String
+  from   DateTime
+  to     DateTime
+  game   Game[]
+  league String
 }

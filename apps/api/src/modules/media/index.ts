@@ -9,7 +9,8 @@ import { WebAppStore } from "src/context";
 export const media = new Elysia({ prefix: "/media" })
   .use(sessionPlugin)
 
-  // --------------------------------------------------------------------------> POST Media
+  // --------------------------------------------------------------------------> POST api/media/upload/get-presigned-url
+  //                                                                             - get a presigned URL for uploading media to S3 and catalog the media in the database
   .post(
     "/upload/get-presigned-url",
     async ({ body, store, user }) => {
@@ -27,8 +28,8 @@ export const media = new Elysia({ prefix: "/media" })
         s3Key,
         userId,
       });
-
       return {
+        success: true,
         pre_signed_url,
         file_id: file.id,
         s3Key: file.s3Key,
@@ -42,14 +43,19 @@ export const media = new Elysia({ prefix: "/media" })
     },
   )
 
-  // --------------------------------------------------------------------------> GET Media
+  // --------------------------------------------------------------------------> GET api/media
+  //                                                                             - get all media files for the authenticated user
   .get("/", async ({ user }) => {
-    return await MediaService.fetchFiles({
-      userId: user.id,
-    });
+    return {
+      success: true,
+      files: await MediaService.fetchFiles({
+        userId: user.id,
+      }),
+    };
   })
 
-  // --------------------------------------------------------------------------> DELETE Media
+  // --------------------------------------------------------------------------> DELETE api/media/:id
+  //                                                                             - delete a media file by its ID from the database and S3
   .delete(
     "/:id",
     async ({ params: { id }, store, set }) => {
@@ -70,6 +76,8 @@ export const media = new Elysia({ prefix: "/media" })
     },
   )
 
+  // --------------------------------------------------------------------------> DELETE api/media/by-url
+  //                                                                             - delete a media file by its URL from the database and S3
   .delete(
     "/by-url",
     async ({ body, store, set }) => {
@@ -92,7 +100,8 @@ export const media = new Elysia({ prefix: "/media" })
     },
   )
 
-  // --------------------------------------------------------------------------> GET download URL
+  // --------------------------------------------------------------------------> GET api/media/:id/download-url
+  //
   .get(
     "/:id/download-url",
     async ({ params: { id }, store }) => {
