@@ -13,6 +13,11 @@ const nextConfig: NextConfig = {
         hostname: "api.qrserver.com",
         pathname: "/v1/create-qr-code/**",
       },
+      {
+        protocol: "http",
+        hostname: "localhost:9000",
+        pathname: "/**",
+      },
     ],
   },
 };

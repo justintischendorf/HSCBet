@@ -58,7 +58,7 @@ export function AccountCredentialsCard() {
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full flex flex-1">
       <CardHeader>
         <CardTitle>Konto Informationen</CardTitle>
         <CardDescription>
@@ -70,6 +70,7 @@ export function AccountCredentialsCard() {
           e.preventDefault();
           setShowChangeCredentialsConfirm(true);
         }}
+        className="flex flex-col flex-1"
       >
         <CardContent>
           <div className="flex flex-col gap-6">
@@ -98,8 +99,8 @@ export function AccountCredentialsCard() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex-col gap-2 mt-5">
-          <Button type="submit" className="w-full">
+        <CardFooter className="flex-col gap-2 mt-auto">
+          <Button variant="outline" type="submit" className="w-full">
             Kontoinformationen aktualisieren
           </Button>
         </CardFooter>

@@ -32,7 +32,7 @@ export default function SeasonScreen() {
   return (
     <main className="w-full sm:py-16 py-8 px-4 md:px-12 sm:px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col sm:gap-2 gap-1">
+        <div className="flex flex-col gap-1">
           <span className="text-lg">
             {isSeasonsPending ? (
               <Skeleton className="h-6 w-46" />
