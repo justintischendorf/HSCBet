@@ -99,7 +99,9 @@ export default function TipsScreen() {
               return <Tip key={tip.id} tipData={tip} gameData={matchingGame} />;
             })
           ) : (
-            <EmptyTips />
+            <div className="mt-20">
+              <EmptyTips />
+            </div>
           )}
         </div>
       </div>

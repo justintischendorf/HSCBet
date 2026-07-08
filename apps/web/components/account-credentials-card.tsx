@@ -58,7 +58,7 @@ export function AccountCredentialsCard() {
   }
 
   return (
-    <Card className="w-full flex flex-1">
+    <Card className="w-full flex flex-2">
       <CardHeader>
         <CardTitle>Konto Informationen</CardTitle>
         <CardDescription>
@@ -72,7 +72,7 @@ export function AccountCredentialsCard() {
         }}
         className="flex flex-col flex-1"
       >
-        <CardContent>
+        <CardContent className="flex flex-1 flex-col justify-center">
           <div className="flex flex-col gap-6">
             <div className="flex justify-center">
               <InputProfilePicture />
@@ -99,7 +99,7 @@ export function AccountCredentialsCard() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex-col gap-2 mt-auto">
+        <CardFooter className="flex-col gap-2 mt-5">
           <Button variant="outline" type="submit" className="w-full">
             Kontoinformationen aktualisieren
           </Button>

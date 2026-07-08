@@ -118,50 +118,52 @@ export function AccountPasswordCard() {
                 </button>
               </div>
             </div>
-            <div className="grid gap-2">
-              <Label htmlFor="newPassword">Neues Passwort</Label>
-              <div className="relative">
-                <Input
-                  id="newPassword"
-                  aria-invalid={newPassword !== confirmPassword}
-                  type={showNewPassword ? 'text' : 'password'}
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  className="pr-7"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNewPassword((s) => !s)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
-                >
-                  {showNewPassword ? <Eye size={15} /> : <EyeOff size={15} />}
-                </button>
+            <div className="flex flex-row gap-2 w-full">
+              <div className="grid gap-2 flex-1">
+                <Label htmlFor="newPassword">Neues Passwort</Label>
+                <div className="relative">
+                  <Input
+                    id="newPassword"
+                    aria-invalid={newPassword !== confirmPassword}
+                    type={showNewPassword ? 'text' : 'password'}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    className="pr-7"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword((s) => !s)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                  >
+                    {showNewPassword ? <Eye size={15} /> : <EyeOff size={15} />}
+                  </button>
+                </div>
               </div>
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="confirmPassword">Neues Passwort bestätigen</Label>
-              <div className="relative">
-                <Input
-                  id="confirmPassword"
-                  aria-invalid={confirmPassword !== newPassword}
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pr-7"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword((s) => !s)}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
-                >
-                  {showConfirmPassword ? (
-                    <Eye size={15} />
-                  ) : (
-                    <EyeOff size={15} />
-                  )}
-                </button>
+              <div className="grid gap-2 flex-1">
+                <Label htmlFor="confirmPassword">Passwort bestätigen</Label>
+                <div className="relative">
+                  <Input
+                    id="confirmPassword"
+                    aria-invalid={confirmPassword !== newPassword}
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pr-7"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword((s) => !s)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-foreground"
+                  >
+                    {showConfirmPassword ? (
+                      <Eye size={15} />
+                    ) : (
+                      <EyeOff size={15} />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

@@ -62,8 +62,7 @@ export default function AccountDeleteCard() {
       <CardHeader>
         <CardTitle>Account</CardTitle>
         <CardDescription>
-          Lösche deinen Account und alle damit verbundenen Daten. Dies kann
-          nicht rückgängig gemacht werden.
+          Lösche deinen Account und alle damit verbundenen Daten.
         </CardDescription>
       </CardHeader>
       <form

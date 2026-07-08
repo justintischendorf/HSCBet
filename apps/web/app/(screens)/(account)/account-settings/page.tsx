@@ -18,9 +18,9 @@ export default function AccountSettings() {
           Anmeldeinformationen, Passwortänderungen und Kontolöschung.
         </p>
         <Separator className="sm:my-8 my-6" />
-        <div className="w-full flex justify-center gap-5">
+        <div className="w-full flex sm:flex-row flex-col justify-center gap-5">
           <AccountCredentialsCard />
-          <div className="flex sm:flex-col gap-5 flex-row flex-1">
+          <div className="flex flex-col gap-5 flex-3">
             <AccountPasswordCard />
             <AccountDeleteCard />
           </div>
