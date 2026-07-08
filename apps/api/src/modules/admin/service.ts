@@ -42,6 +42,8 @@ export abstract class AdminService {
         },
       },
     });
+
+    quue.push(NEW_SEASON_AVAILABLE);
   }
 
   // --------------------------------------------------------------------------> DELETE api/admin/delete-season/:id
