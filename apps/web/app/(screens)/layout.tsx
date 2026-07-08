@@ -83,8 +83,14 @@ export default function ScreensLayout({
     <QueryClientProvider client={queryClient}>
       <main className="flex min-h-screen flex-col">
         <div className="sm:pt-10 pt-6 sm:px-10 px-4 relative">
-          <div className="flex items-center justify-center mb-6">
-            <Link href="/dashboard">
+          <div className="flex flex-col md:flex-row md:relative items-center justify-between gap-2">
+            <div className="order-2 md:order-1 w-full md:w-auto flex justify-center md:justify-start">
+              <Navbar />
+            </div>
+            <Link
+              href="/dashboard"
+              className="order-1 md:order-2 flex items-center justify-center md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+            >
               <Image
                 loading="eager"
                 src="assets/logos/logo.light.svg"
@@ -102,12 +108,7 @@ export default function ScreensLayout({
                 className="hidden dark:block"
               />
             </Link>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-2">
-            <div className="w-full sm:w-auto flex justify-center sm:justify-start">
-              <Navbar />
-            </div>
-            <div className="flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
+            <div className="order-3 flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">
               {!user?.twoFactorEnabled && <TwoFactorWarning />}
               <Button variant="destructive" size="lg" onClick={handleLogout}>
                 <LogOut className="sm:hidden" />

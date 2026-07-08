@@ -13,6 +13,9 @@ export abstract class SeasonService {
       include: {
         game: true,
       },
+      orderBy: {
+        from: "desc",
+      },
     });
     return seasons;
   }
