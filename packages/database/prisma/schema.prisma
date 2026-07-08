@@ -22,6 +22,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  rank             Rank?
   image            String?
   files            File[]
   twoFactorEnabled Boolean     @default(false)
@@ -148,4 +149,20 @@ model Tip {
   tipGuest  Int
 
   @@unique([userId, gameId])
+}
+
+model Rank {
+  id       String   @id @default(cuid())
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId   String   @unique
+  points   Int      @default(0)
+  position Position
+}
+
+enum Position {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  DIAMOND
 }
