@@ -1,5 +1,5 @@
-import React from "react";
-import { Button } from "./ui/button";
+import React from 'react';
+import { Button } from './ui/button';
 import {
   Card,
   CardHeader,
@@ -7,21 +7,21 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "./ui/card";
-import { Input } from "./ui/input";
-import { Label } from "@/components/ui/label";
-import { authClient, useSession } from "@/lib/auth-client";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { apiClient } from "@/lib/api-client";
-import { Eye, EyeOff } from "lucide-react";
-import { ConfirmAlert } from "./confirm-alert";
+} from './ui/card';
+import { Input } from './ui/input';
+import { Label } from '@/components/ui/label';
+import { authClient, useSession } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { apiClient } from '@/lib/api-client';
+import { Eye, EyeOff } from 'lucide-react';
+import { ConfirmAlert } from './confirm-alert';
 
 export default function AccountDeleteCard() {
   const router = useRouter();
   const session = useSession();
   const user = session?.data?.user;
-  const [password, setPassword] = React.useState("");
+  const [password, setPassword] = React.useState('');
   const [showPassword, setShowPassword] = React.useState(false);
   const [showDeleteAccountConfirm, setShowDeleteAccountConfirm] =
     React.useState(false);
@@ -29,12 +29,12 @@ export default function AccountDeleteCard() {
   async function handleDeleteProfilePicture(
     imageUrl: string | null | undefined,
   ) {
-    const { error } = await apiClient.api.media["by-url"].delete({
-      imageUrl: imageUrl ? imageUrl : "",
+    const { error } = await apiClient.api.media['by-url'].delete({
+      imageUrl: imageUrl ? imageUrl : '',
     });
 
     if (error) {
-      toast.error(error.status + ": " + error.value.message);
+      toast.error(error.status + ': ' + error.value.message);
       return;
     }
   }
@@ -43,27 +43,26 @@ export default function AccountDeleteCard() {
     try {
       await handleDeleteProfilePicture(user?.image);
     } catch (error) {
-      toast.error("Fehler beim Löschen des Profilbildes: " + error);
+      toast.error('Fehler beim Löschen des Profilbildes: ' + error);
     }
 
     const { error: deleteError } = await authClient.deleteUser({ password });
 
     if (deleteError) {
-      toast.error(deleteError.status + ": " + deleteError.message);
+      toast.error(deleteError.status + ': ' + deleteError.message);
       return;
     }
 
-    toast.success("Account erfolgreich gelöscht.");
-    router.push("/signin");
+    toast.success('Account erfolgreich gelöscht.');
+    router.push('/signin');
   }
 
   return (
-    <Card className="w-full max-w-sm">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Account</CardTitle>
         <CardDescription>
-          Lösche deinen Account und alle damit verbundenen Daten. Dies kann
-          nicht rückgängig gemacht werden.
+          Lösche deinen Account und alle damit verbundenen Daten.
         </CardDescription>
       </CardHeader>
       <form
@@ -79,7 +78,7 @@ export default function AccountDeleteCard() {
               <div className="relative">
                 <Input
                   id="currentPassword"
-                  type={showPassword ? "text" : "password"}
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -97,7 +96,7 @@ export default function AccountDeleteCard() {
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-2 mt-5">
-          <Button type="submit" className="w-full">
+          <Button type="submit" variant="destructive" className="w-full">
             Account löschen
           </Button>
         </CardFooter>

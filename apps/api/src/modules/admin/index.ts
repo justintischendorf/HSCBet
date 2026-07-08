@@ -63,4 +63,49 @@ export const admin = new Elysia({ prefix: "/admin" })
     {
       params: IdParams,
     },
+  )
+
+  // --------------------------------------------------------------------------> GET api/admin/game-by-id/:id
+  //                                                                             - get a game by id from the database
+  .get(
+    "/game-by-id/:id",
+    async ({ params, set, request }) => {
+      const apiKey = request.headers.get("x-api-key");
+      if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
+        set.status = 401;
+        return { success: false, error: "UNAUTHORIZED" };
+      }
+
+      set.status = 200;
+      return {
+        success: true,
+        season: await AdminService.getGameById({ params }),
+      };
+    },
+    {
+      params: IdParams,
+    },
+  )
+
+  // --------------------------------------------------------------------------> PATCH api/admin/update-game/:id
+  //                                                                             - update a game by id in the database
+  .patch(
+    "/update-game/:id",
+    async ({ params, set, request, body }) => {
+      const apiKey = request.headers.get("x-api-key");
+      if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
+        set.status = 401;
+        return { success: false, error: "UNAUTHORIZED" };
+      }
+
+      set.status = 200;
+      return {
+        success: true,
+        season: await AdminService.updateGameById({ params, body }),
+      };
+    },
+    {
+      params: IdParams,
+      body: AdminModel.UpdateGame,
+    },
   );
