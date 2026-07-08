@@ -10,18 +10,18 @@ interface TipProps {
 
 export default function Tip({ tipData, gameData }: TipProps) {
   return (
-    <div className="flex flex-col gap-2 border border-muted-200 rounded-lg p-4 relative">
+    <div className="flex flex-col gap-2 border border-border rounded-xl bg-card p-4 shadow-sm relative">
       <div className="flex sm:flex-row flex-col sm:items-center justify-between">
         <div className="flex flex-row items-baseline sm:gap-3 gap-2 text-lg font-bold">
           <span className="text-sm sm:text-base font-bold">
             {gameData.host}
           </span>
           <span className="text-sm sm:text-base font-bold text-muted-foreground">
-            {tipData.tipHost}
+            {gameData.hostPoints}
           </span>
           <span className="text-sm sm:text-base font-bold">:</span>
           <span className="text-sm sm:text-base font-bold text-muted-foreground">
-            {tipData.tipGuest}
+            {gameData.guestPoints}
           </span>
           <span className="text-sm sm:text-base font-bold">
             {gameData.guest}

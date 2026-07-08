@@ -134,7 +134,7 @@ export default function AccountSettings() {
         <Separator className="sm:my-8 my-6" />
 
         <div className="flex flex-col gap-6 md:gap-8">
-          <div className="flex flex-row items-center justify-between border border-border rounded-lg p-4">
+          <div className="flex flex-row items-center justify-between border border-border rounded-xl bg-card p-4 sm:p-6 shadow-sm">
             <div className="flex flex-col">
               <h2 className="text-lg font-semibold">Status</h2>
               <p className={`text-sm ${statusClass}`}>{statusText}</p>
@@ -195,7 +195,7 @@ export default function AccountSettings() {
           </AlertDialog>
 
           {step === 'qr' && (
-            <div className="flex flex-col border border-border rounded-lg p-4 sm:gap-8 gap-6">
+            <div className="flex flex-col border border-border rounded-xl bg-card p-4 sm:p-6 shadow-sm sm:gap-8 gap-6">
               <div className="flex flex-row items-center gap-2">
                 <ShieldAlert />
                 <h2 className="text-lg font-bold">

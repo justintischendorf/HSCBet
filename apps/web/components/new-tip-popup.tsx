@@ -176,7 +176,9 @@ function TipForm({ className, onTipCreated }: TipFormProps) {
 
     if (error) {
       const message =
-        error.value && typeof error.value === 'object' && 'message' in error.value
+        error.value &&
+        typeof error.value === 'object' &&
+        'message' in error.value
           ? String(error.value.message)
           : `${error.status}: ${error.value}`;
       toast.error(message);
@@ -235,7 +237,20 @@ function TipForm({ className, onTipCreated }: TipFormProps) {
             <ComboboxList>
               {(item) => (
                 <ComboboxItem key={item.id} value={item.id}>
-                  {item.host} : {item.guest}
+                  <div className="flex flex-col">
+                    <span>
+                      {item.host} : {item.guest}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(item.date).toLocaleString('de-DE', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
+                    </span>
+                  </div>
                 </ComboboxItem>
               )}
             </ComboboxList>
@@ -249,6 +264,7 @@ function TipForm({ className, onTipCreated }: TipFormProps) {
             required
             type="number"
             min={0}
+            max={99}
             disabled={!selectedGameId}
             value={tipHost}
             onChange={(e) => setTipHost(e.target.value)}
@@ -260,6 +276,7 @@ function TipForm({ className, onTipCreated }: TipFormProps) {
             required
             type="number"
             min={0}
+            max={99}
             disabled={!selectedGameId}
             value={tipGuest}
             onChange={(e) => setTipGuest(e.target.value)}
