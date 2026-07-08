@@ -100,8 +100,8 @@
   --huk-neutral: oklch(0.4967 0.0668 214.86);
   --huk-neutral-subdued: oklch(0.8999 0.0175 219.67);
 
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', mono;
+  --font-sans: var(--font-geist-sans), sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
   font-family: var(--font-sans);
 }
 
@@ -160,11 +160,3 @@
   }
 }
 
-@layer utilities {
-  .font-sans {
-    font-family: Inter;
-  }
-  .font-mono {
-    font-family: 'JetBrains Mono';
-  }
-}

@@ -14,6 +14,11 @@ export namespace AdminModel {
       }),
     ),
   });
+
+  export const UpdateGame = t.Object({
+    hostPoints: t.Number(),
+    guestPoints: t.Number(),
+  });
 }
 
 export type AdminModel = {

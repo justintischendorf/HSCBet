@@ -11,6 +11,7 @@ import cron, { Patterns } from "@elysia/cron";
 import { rateLimit } from "elysia-rate-limit";
 import { season } from "./modules/season";
 import { admin } from "./modules/admin";
+import { tip } from "./modules/tip";
 
 const logger = createLogger("api");
 const s3Manager = new S3Manager();
@@ -66,6 +67,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(authPlugin)
   .use(socket)
   .use(media)
+  .use(tip)
   .use(season)
   .onError(({ error, set }) => {
     if (error instanceof Error && error.message === "rate-limit") {
@@ -75,6 +77,16 @@ const app = new Elysia({ prefix: "/api" })
         success: false,
         message: "Zu viele Anfragen, bitte warte einen Moment.",
         error: "RATE_LIMITED",
+      };
+    }
+
+    if (error instanceof Error && error.message === "DUPLICATE_TIP") {
+      set.status = 409;
+      logger.warn("Tipp für dieses Spiel bereits abgegeben");
+      return {
+        success: false,
+        message: "Du hast für dieses Spiel bereits einen Tipp abgegeben",
+        error: "DUPLICATE_TIP",
       };
     }
 
