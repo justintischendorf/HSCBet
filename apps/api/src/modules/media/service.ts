@@ -6,16 +6,12 @@ import { createLogger } from "@repo/logger";
 const logger = createLogger("MediaService");
 
 export abstract class MediaService {
-  static extractS3KeyFromImageUrl(imageUrl: string) {
+  static extractFileIdFromImageUrl(imageUrl: string) {
     try {
       const pathname = new URL(imageUrl).pathname;
-      const segments = pathname.split("/").filter(Boolean);
+      const match = pathname.match(/\/media\/([^/]+)\/image$/);
 
-      if (segments.length < 2) {
-        return undefined;
-      }
-
-      return segments.slice(1).join("/");
+      return match?.[1];
     } catch {
       return undefined;
     }
@@ -94,24 +90,14 @@ export abstract class MediaService {
   }
 
   static async deleteMediaByImageUrl({ imageUrl }: { imageUrl: string }) {
-    const s3Key = this.extractS3KeyFromImageUrl(imageUrl);
+    const fileId = this.extractFileIdFromImageUrl(imageUrl);
 
-    if (!s3Key) {
+    if (!fileId) {
       return { s3Key: undefined };
     }
 
-    logger.info(`Deleting media from DB with s3Key ${s3Key}`);
-    const { count } = await prisma.file.deleteMany({
-      where: {
-        s3Key,
-      },
-    });
-
-    if (!count) {
-      return { s3Key: undefined };
-    }
-
-    return { s3Key };
+    logger.info(`Deleting media from DB with id ${fileId} (from image URL)`);
+    return await this.deleteMediaFromDb({ id: fileId });
   }
 
   static async generateDownloadURL({

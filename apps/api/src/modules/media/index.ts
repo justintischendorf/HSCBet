@@ -117,4 +117,27 @@ export const media = new Elysia({ prefix: "/media" })
       return { url };
     },
     { params: IdParams },
+  )
+
+  // --------------------------------------------------------------------------> GET api/media/:id/image
+  //                                                                             - stable image reference that never expires: redirects to a freshly
+  //                                                                               signed S3 URL on every request instead of persisting one that expires
+  //                                                                               after MINIO_S3_PRESIGNED_URL_EXPIRATION_TIME
+  .get(
+    "/:id/image",
+    async ({ params: { id }, store, set, redirect }) => {
+      const { s3Manager } = store as WebAppStore;
+      const file = await prisma.file.findUniqueOrThrow({
+        where: { id },
+        select: { s3Key: true },
+      });
+      const url = await MediaService.generateDownloadURL({
+        s3Key: file.s3Key,
+        s3Manager,
+      });
+
+      set.headers["cache-control"] = "no-store";
+      return redirect(url);
+    },
+    { params: IdParams },
   );

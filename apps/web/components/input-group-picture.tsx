@@ -110,17 +110,13 @@ export async function handleFileChange(
     return;
   }
 
-  const { error: downloadUrlError, data: downloadUrlData } = await apiClient.api
-    .media({ id: presignedUrlData.file_id })
-    ['download-url'].get();
-
-  if (downloadUrlError) {
-    toast.error('Failed to get download URL. Please try again.');
-    return;
-  }
+  // Stable reference that never expires: the API redirects to a freshly
+  // signed S3 URL on every request instead of us persisting one that expires
+  // after MINIO_S3_PRESIGNED_URL_EXPIRATION_TIME.
+  const imageUrl = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/media/${presignedUrlData.file_id}/image`;
 
   const { error: updateUserError } = await authClient.updateUser({
-    image: downloadUrlData.url,
+    image: imageUrl,
   });
 
   if (updateUserError) {
@@ -128,7 +124,7 @@ export async function handleFileChange(
     return;
   }
 
-  if (previousImageUrl && previousImageUrl !== downloadUrlData.url) {
+  if (previousImageUrl && previousImageUrl !== imageUrl) {
     const { error: previousImageDeleteError } = await apiClient.api.media[
       'by-url'
     ].delete({

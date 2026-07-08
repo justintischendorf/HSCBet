@@ -13,7 +13,7 @@ export default function Group() {
     <Accordion
       type="single"
       collapsible
-      className="w-full border rounded-xl px-4 h-full"
+      className="w-full border border-border rounded-xl bg-card px-4 h-full shadow-sm"
     >
       <AccordionItem value="backup" className="border-none">
         <AccordionTrigger className="hover:no-underline">
