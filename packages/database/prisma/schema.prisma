@@ -147,6 +147,7 @@ model Tip {
   userId    String
   tipHost   Int
   tipGuest  Int
+  result    Int?     @default(0)
 
   @@unique([userId, gameId])
 }
