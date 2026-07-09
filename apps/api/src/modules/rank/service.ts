@@ -1,17 +1,16 @@
 import { Position, prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
-import { IdParams } from "src/global/models";
 import { RankModel } from "./model";
 
 const logger = createLogger("api:rank");
 export abstract class RankService {
   // --------------------------------------------------------------------------> GET api/rank
   //                                                                             - get user rank from the database
-  static async getRankById({ userId }: { userId: string }) {
-    logger.info("fetching position by ID" + userId);
+  static async getRankById({ user }: { user: { id: string } }) {
+    logger.info("fetching position by ID" + user.id);
     const rank = await prisma.rank.findUnique({
       where: {
-        userId: userId,
+        userId: user.id,
       },
     });
     return rank;
@@ -20,19 +19,19 @@ export abstract class RankService {
   // --------------------------------------------------------------------------> GET api/rank
   //                                                                             - get user rank from the database
   static async evaluatePoints({
-    userId,
+    user,
     body,
   }: {
-    userId: string;
+    user: { id: string };
     body: (typeof RankModel.UpdateUserRank)["static"];
   }) {
     logger.info(
-      "updating points and position in the database with id: " + userId,
+      "updating points and position in the database with id: " + user.id,
     );
 
     const rank = await prisma.rank.findUnique({
       where: {
-        userId: userId,
+        userId: user.id,
       },
     });
 
@@ -57,7 +56,7 @@ export abstract class RankService {
 
     return await prisma.rank.update({
       where: {
-        id: userId,
+        userId: user.id,
       },
       data: {
         points: (rank?.points ?? 0) + body.rankPoints,

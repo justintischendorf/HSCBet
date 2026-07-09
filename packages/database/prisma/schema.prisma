@@ -25,9 +25,11 @@ model User {
   rank             Rank?
   image            String?
   files            File[]
-  twoFactorEnabled Boolean     @default(false)
+  twoFactorEnabled Boolean        @default(false)
   twoFactors       TwoFactor[]
   tips             Tip[]
+  groups           Group[]
+  notifications    Notification[]
 
   @@unique([email])
   @@map("user")
@@ -103,6 +105,8 @@ model File {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  group     Group?   @relation(fields: [groupId], references: [id])
+  groupId   String?
 
   @@index([s3Key])
   @@map("file")
@@ -152,6 +156,15 @@ model Tip {
   @@unique([userId, gameId])
 }
 
+model Group {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  files       File[]
+  user        User[]
+  createdAt   DateTime @default(now())
+}
+
 model Rank {
   id       String   @id @default(cuid())
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
@@ -160,10 +173,20 @@ model Rank {
   position Position
 }
 
+model Notification {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId    String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
 enum Position {
   BRONZE
   SILVER
   GOLD
   PLATINUM
   DIAMOND
+  DEFAULT
 }

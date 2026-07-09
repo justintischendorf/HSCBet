@@ -2,6 +2,7 @@
 
 import { TipChart } from '@/components/tip-chart';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useSession } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
@@ -20,14 +21,17 @@ export default function DashboardScreen() {
 
   const points = 1000;
   const currentRank =
-    [...RANKS].reverse().find((rank) => points >= rank.threshold) ??
-    RANKS[0];
+    [...RANKS].reverse().find((rank) => points >= rank.threshold) ?? RANKS[0];
 
   return (
     <main className="w-full sm:py-16 py-8 px-4 md:px-12 sm:px-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold tracking-tight">
-          Hallo {user?.name}!
+          {!user ? (
+            <Skeleton className="h-9 w-48" />
+          ) : (
+            `Hallo ${user.name}!`
+          )}
         </h1>
         <div className="flex sm:flex-row flex-col items-end justify-between gap-4">
           <p className="text-base">
@@ -80,7 +84,8 @@ export default function DashboardScreen() {
                       height={118}
                       className={cn(
                         'h-auto w-11 sm:w-14',
-                        isCurrent && 'drop-shadow-[0_0_6px_var(--color-primary)]',
+                        isCurrent &&
+                          'drop-shadow-[0_0_6px_var(--color-primary)]',
                       )}
                     />
                     <span className="w-full truncate text-[10px] font-medium sm:text-sm">

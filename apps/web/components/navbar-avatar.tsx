@@ -22,10 +22,7 @@ export default function NavbarAvatar({ connected }: { connected: boolean }) {
           <Avatar>
             <AvatarImage
               id="profile-picture"
-              src={
-                user?.image ||
-                `https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user?.name}`
-              }
+              src={user?.image || undefined}
               alt="Profilbild"
             />
             <AvatarFallback>{fallbackChar}</AvatarFallback>
