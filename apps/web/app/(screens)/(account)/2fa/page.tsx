@@ -219,7 +219,7 @@ export default function AccountSettings() {
                 alt="QR Code"
                 width={200}
                 height={200}
-                className="rounded-md p-1 border border-accent-foreground mx-auto"
+                className="size-50 rounded-md p-1 border border-accent-foreground mx-auto"
               />
 
               <div className="flex flex-row gap-4">
