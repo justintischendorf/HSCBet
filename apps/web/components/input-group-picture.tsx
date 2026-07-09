@@ -1,49 +1,62 @@
 'use client';
 
+import { useState } from 'react';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Camera, Trash } from 'lucide-react';
-import { authClient, useSession } from '@/lib/auth-client';
 import { apiClient } from '@/lib/api-client';
 import { MimeType } from '@repo/database';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
-import { Skeleton } from './ui/skeleton';
 
-export function InputGroupPicture() {
-  const { data: session, refetch, isPending } = useSession();
-  const user = session?.user;
-  const fallbackChar = '?';
+export function InputGroupPicture({
+  fileId,
+  onFileIdChange,
+  fallbackChar,
+}: {
+  fileId: string | undefined;
+  onFileIdChange: (fileId: string | undefined) => void;
+  fallbackChar: string;
+}) {
+  const [imageUrl, setImageUrl] = useState<string | undefined>();
 
-  if (isPending) {
-    return <Skeleton className="size-30 rounded-full" />;
+  async function handleFileChange(file: File) {
+    await handleGroupFileChange(file, fileId, (newFileId, newImageUrl) => {
+      onFileIdChange(newFileId);
+      setImageUrl(newImageUrl);
+    });
+  }
+
+  async function handleDelete() {
+    await handleDeleteGroupPicture(fileId);
+    onFileIdChange(undefined);
+    setImageUrl(undefined);
   }
 
   return (
     <Field className="w-fit items-center gap-6">
-      <div className="relative inline-block">
+      <div className="relative inline-flex">
         <label className="group inline-flex cursor-pointer rounded-full">
           <Avatar
             size="lg"
             className="overflow-hidden transition-transform duration-200"
           >
             <AvatarImage
-              id="profile-picture"
-              src={user?.image || undefined}
-              alt="Profilbild"
+              id="group-profile-picture"
+              src={imageUrl}
+              alt="Gruppenbild"
             />
-            <AvatarFallback className="text-3xl">{fallbackChar}</AvatarFallback>
+            <AvatarFallback className="text-4xl">{fallbackChar}</AvatarFallback>
             <Input
-              id="profile-picture-input"
+              id="group-profile-picture-input"
               type="file"
               accept="image/*"
               className="sr-only"
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (file) {
-                  await handleFileChange(file, user?.image ?? undefined);
-                  await refetch();
+                  await handleFileChange(file);
                 }
               }}
             />
@@ -61,7 +74,7 @@ export function InputGroupPicture() {
           className="absolute -bottom-1 -right-5 hover:-translate-y-0.5 transition-transform duration-200"
           onClick={async (e) => {
             e.preventDefault();
-            await handleDeleteProfilePicture(user?.image, refetch);
+            await handleDelete();
           }}
         >
           <Trash className="size-4" />
@@ -71,9 +84,10 @@ export function InputGroupPicture() {
   );
 }
 
-export async function handleFileChange(
+async function handleGroupFileChange(
   file: File,
-  previousImageUrl?: string | null,
+  previousFileId: string | undefined,
+  onUploaded: (fileId: string, imageUrl: string) => void,
 ) {
   let fileType: MimeType = 'IMAGE_JPEG';
   if (file.type === 'image/png') {
@@ -110,63 +124,38 @@ export async function handleFileChange(
     return;
   }
 
-  // Stable reference that never expires: the API redirects to a freshly
-  // signed S3 URL on every request instead of us persisting one that expires
-  // after MINIO_S3_PRESIGNED_URL_EXPIRATION_TIME.
-  const imageUrl = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/media/${presignedUrlData.file_id}/image`;
+  if (previousFileId) {
+    const { error: previousFileDeleteError } = await apiClient.api
+      .media({
+        id: previousFileId,
+      })
+      .delete();
 
-  const { error: updateUserError } = await authClient.updateUser({
-    image: imageUrl,
-  });
-
-  if (updateUserError) {
-    toast.error(updateUserError.status + ': ' + updateUserError.message);
-    return;
-  }
-
-  if (previousImageUrl && previousImageUrl !== imageUrl) {
-    const { error: previousImageDeleteError } = await apiClient.api.media[
-      'by-url'
-    ].delete({
-      imageUrl: previousImageUrl,
-    });
-
-    if (previousImageDeleteError) {
+    if (previousFileDeleteError) {
       console.error(
-        'Failed to delete previous profile picture:',
-        previousImageDeleteError,
+        'Failed to delete previous group picture:',
+        previousFileDeleteError,
       );
     }
   }
+
+  const imageUrl = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/media/${presignedUrlData.file_id}/image`;
+
+  onUploaded(presignedUrlData.file_id, imageUrl);
 }
 
-export async function handleDeleteProfilePicture(
-  imageUrl: string | null | undefined,
-  refetch: () => Promise<unknown>,
-) {
-  if (!imageUrl) {
-    toast.error('Du hast kein Profilbild gesetzt.');
+async function handleDeleteGroupPicture(fileId: string | undefined) {
+  if (!fileId) {
+    toast.error('Du hast kein Gruppenbild ausgewählt.');
     return;
   }
 
-  const { error } = await apiClient.api.media['by-url'].delete({
-    imageUrl: imageUrl,
-  });
+  const { error } = await apiClient.api.media({ id: fileId }).delete();
 
   if (error) {
     toast.error(error.status + ': ' + error.value.message);
     return;
   }
 
-  const { error: updateUserError } = await authClient.updateUser({
-    image: null,
-  });
-
-  if (updateUserError) {
-    toast.error(updateUserError.status + ': ' + updateUserError.message);
-    return;
-  }
-
-  await refetch();
-  toast.success('Profilbild erfolgreich gelöscht!');
+  toast.success('Gruppenbild erfolgreich gelöscht!');
 }
