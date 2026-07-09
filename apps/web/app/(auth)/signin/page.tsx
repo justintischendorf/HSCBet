@@ -11,14 +11,14 @@ export default function SigninScreen() {
             alt="Logo"
             width={100}
             height={100}
-            className="block dark:hidden"
+            className="size-25 block dark:hidden"
           />
           <Image
             src="assets/logos/logo-konzern.dark.svg"
             alt="Logo"
             width={100}
             height={100}
-            className="hidden dark:block"
+            className="size-25 hidden dark:block"
           />
         </div>
         <SigninForm />

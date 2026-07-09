@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Tip from '@/components/tip';
 import {
   Combobox,
@@ -12,9 +12,8 @@ import {
 } from '@/components/ui/combobox';
 import { Separator } from '@/components/ui/separator';
 import { useSeasons } from '@/hooks/use-seasons';
-import { apiClient } from '@/lib/api-client';
+import { useTips } from '@/hooks/use-tips';
 import { toast } from 'sonner';
-import { TipModel } from '@repo/database';
 import { EmptyTips } from '@/components/empty-tips';
 import { NewTipPopup } from '@/components/new-tip-popup';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -27,8 +26,6 @@ export default function TipsScreen() {
   }, [seasonsResponse?.data?.season]);
 
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
-  const [tipsData, setTipsData] = useState<TipModel[]>([]);
-  const [isTipsLoading, setIsTipsLoading] = useState(true);
 
   useEffect(() => {
     if (seasonsList.length > 0 && !selectedSeasonId) {
@@ -36,27 +33,23 @@ export default function TipsScreen() {
     }
   }, [seasonsList, selectedSeasonId]);
 
-  const fetchTips = useCallback(async () => {
-    if (!selectedSeasonId) return;
-
-    setIsTipsLoading(true);
-    const { data: responseData, error: tipError } = await apiClient.api
-      .tip({ id: selectedSeasonId })
-      .get();
-
-    if (tipError) {
-      toast.error(`${tipError.status}: ${tipError.value}`);
-      setTipsData([]);
-      setIsTipsLoading(false);
-      return;
-    }
-    setTipsData(responseData?.season ?? []);
-    setIsTipsLoading(false);
-  }, [selectedSeasonId]);
+  const {
+    data: tipsResponse,
+    isPending: isTipsPending,
+    refetch: refetchTips,
+  } = useTips(selectedSeasonId);
+  const tipsData = useMemo(
+    () => tipsResponse?.data?.season ?? [],
+    [tipsResponse?.data?.season],
+  );
 
   useEffect(() => {
-    fetchTips();
-  }, [fetchTips]);
+    if (tipsResponse?.error) {
+      toast.error(
+        `${tipsResponse.error.status}: ${tipsResponse.error.value}`,
+      );
+    }
+  }, [tipsResponse?.error]);
 
   const currentSeason = seasonsList.find((s) => s.id === selectedSeasonId);
   const selectedSeasonTitle = currentSeason?.title ?? '';
@@ -71,7 +64,7 @@ export default function TipsScreen() {
             abgegeben hast.
           </p>
           <div className="shrink-0">
-            <NewTipPopup onTipCreated={fetchTips} />
+            <NewTipPopup onTipCreated={refetchTips} />
           </div>
         </div>
         <Separator className="sm:my-8 my-6" />
@@ -97,7 +90,7 @@ export default function TipsScreen() {
               </ComboboxList>
             </ComboboxContent>
           </Combobox>
-          {isTipsLoading ? (
+          {isTipsPending ? (
             <Skeleton className="h-96 w-full" />
           ) : tipsData.length > 0 ? (
             tipsData.map((tip) => {
