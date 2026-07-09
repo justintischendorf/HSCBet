@@ -40,8 +40,9 @@ export abstract class TipService {
         gameId: body.gameId,
       },
     });
+
     if (existingTip) {
-      throw new Error("DUPLICATE_TIP");
+      return { success: false, message: "Tip already exists for this game." };
     }
 
     const createdTip = await prisma.tip.create({

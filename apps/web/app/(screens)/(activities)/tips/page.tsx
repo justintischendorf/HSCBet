@@ -17,6 +17,7 @@ import { toast } from 'sonner';
 import { TipModel } from '@repo/database';
 import { EmptyTips } from '@/components/empty-tips';
 import { NewTipPopup } from '@/components/new-tip-popup';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function TipsScreen() {
   const { data: seasonsResponse, isPending: isSeasonsPending } = useSeasons();
@@ -27,6 +28,7 @@ export default function TipsScreen() {
 
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
   const [tipsData, setTipsData] = useState<TipModel[]>([]);
+  const [isTipsLoading, setIsTipsLoading] = useState(true);
 
   useEffect(() => {
     if (seasonsList.length > 0 && !selectedSeasonId) {
@@ -37,6 +39,7 @@ export default function TipsScreen() {
   const fetchTips = useCallback(async () => {
     if (!selectedSeasonId) return;
 
+    setIsTipsLoading(true);
     const { data: responseData, error: tipError } = await apiClient.api
       .tip({ id: selectedSeasonId })
       .get();
@@ -44,9 +47,11 @@ export default function TipsScreen() {
     if (tipError) {
       toast.error(`${tipError.status}: ${tipError.value}`);
       setTipsData([]);
+      setIsTipsLoading(false);
       return;
     }
     setTipsData(responseData?.season ?? []);
+    setIsTipsLoading(false);
   }, [selectedSeasonId]);
 
   useEffect(() => {
@@ -61,11 +66,13 @@ export default function TipsScreen() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold tracking-tight">Meine Tipps</h1>
         <div className="flex sm:flex-row flex-col items-end justify-between gap-4">
-          <p className="text-base">
+          <p className="text-base flex-1 min-w-0">
             Hier findest du eine Übersicht über alle Tipps, die du bisher
             abgegeben hast.
           </p>
-          <NewTipPopup onTipCreated={fetchTips} />
+          <div className="shrink-0">
+            <NewTipPopup onTipCreated={fetchTips} />
+          </div>
         </div>
         <Separator className="sm:my-8 my-6" />
         <div className="flex flex-col gap-6 md:gap-8">
@@ -90,7 +97,9 @@ export default function TipsScreen() {
               </ComboboxList>
             </ComboboxContent>
           </Combobox>
-          {tipsData.length > 0 ? (
+          {isTipsLoading ? (
+            <Skeleton className="h-96 w-full" />
+          ) : tipsData.length > 0 ? (
             tipsData.map((tip) => {
               const matchingGame = currentSeason?.game.find(
                 (g) => g.id === tip.gameId,

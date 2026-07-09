@@ -9,11 +9,10 @@ export const season = new Elysia({ prefix: "/rank" })
   // --------------------------------------------------------------------------> GET api/rank
   //                                                                             - get user rank from the database
   .get("/", async ({ set, user }) => {
-    const userId = user.id;
     set.status = 200;
     return {
       success: true,
-      season: await RankService.getRankById({ userId }),
+      season: await RankService.getRankById({ user }),
     };
   })
 
@@ -22,11 +21,10 @@ export const season = new Elysia({ prefix: "/rank" })
   .patch(
     "/",
     async ({ set, user, body }) => {
-      const userId = user.id;
       set.status = 200;
       return {
         success: true,
-        rank: await RankService.evaluatePoints({ userId, body }),
+        rank: await RankService.evaluatePoints({ user, body }),
       };
     },
     {

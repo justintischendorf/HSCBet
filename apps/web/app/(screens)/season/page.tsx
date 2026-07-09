@@ -35,7 +35,7 @@ export default function SeasonScreen() {
         <div className="flex flex-col gap-1">
           <span className="text-lg">
             {isSeasonsPending ? (
-              <Skeleton className="h-6 w-46" />
+              <Skeleton className="h-7 w-46" />
             ) : (
               currentSeason?.league
             )}
@@ -43,14 +43,14 @@ export default function SeasonScreen() {
           <div className="flex sm:flex-row flex-col sm:gap-2 gap-0 items-baseline">
             <h1 className="text-3xl font-bold tracking-tight">
               {isSeasonsPending ? (
-                <Skeleton className="h-10 w-58 mb-1 sm:mb-0" />
+                <Skeleton className="h-9 w-58" />
               ) : (
                 currentSeason?.title
               )}
             </h1>
             <span className="text-muted-foreground sm:text-sm text-xs">
               {isSeasonsPending ? (
-                <Skeleton className="sm:h-4 sm:w-42 h-3 w-34" />
+                <Skeleton className="sm:h-5 sm:w-42 h-4 w-34" />
               ) : currentSeason ? (
                 `${new Date(currentSeason.from).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })} - ${new Date(currentSeason.to).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
               ) : (

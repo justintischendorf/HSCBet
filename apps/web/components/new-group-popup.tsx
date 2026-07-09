@@ -24,7 +24,12 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { InputGroupPicture } from './input-group-picture';
-import { GroupDescriptionTextarea } from './group-description-textarea';
+import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
+import { Textarea } from '@/components/ui/textarea';
+import { apiClient } from '@/lib/api-client';
+import { useSession } from '@/lib/auth-client';
+import { toast } from 'sonner';
+import { queryClient } from '@/lib/queryClient';
 
 export function NewGroupPopup() {
   const [open, setOpen] = React.useState(false);
@@ -43,7 +48,7 @@ export function NewGroupPopup() {
               Füge Informationen über deine neue Gruppe hinzu.
             </DialogDescription>
           </DialogHeader>
-          <GroupForm />
+          <GroupForm setOpen={setOpen} />
         </DialogContent>
       </Dialog>
     );
@@ -63,13 +68,48 @@ export function NewGroupPopup() {
             Füge Informationen über deine neue Gruppe hinzu.
           </DrawerDescription>
         </DrawerHeader>
-        <GroupForm className="p-4" />
+        <GroupForm className="p-4" setOpen={setOpen} />
       </DrawerContent>
     </Drawer>
   );
 }
 
-function GroupForm({ className }: React.ComponentProps<'form'>) {
+function GroupForm({
+  className,
+  setOpen,
+}: React.ComponentProps<'form'> & {
+  setOpen: (open: boolean) => void;
+}) {
+  const session = useSession();
+  const user = session?.data?.user;
+  const [name, setName] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [length, setLength] = React.useState(0);
+  const [available, setAvailable] = React.useState(64);
+  const [fileId, setFileId] = React.useState<string | undefined>();
+
+  async function handleGroupCreation() {
+    const { data: group, error: groupError } = await apiClient.api.group.post({
+      name,
+      description,
+      fileId,
+      user: {
+        id: user?.id ?? '',
+        name: user?.name ?? '',
+        email: user?.email ?? '',
+      },
+    });
+
+    if (groupError) {
+      toast.error(groupError.status + ': ' + groupError.value.message);
+      return;
+    }
+
+    toast.success('Gruppe erfolgreich erstellt!');
+    setOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['groups'] });
+  }
+
   return (
     <form
       className={cn('grid items-start gap-6', className)}
@@ -79,20 +119,51 @@ function GroupForm({ className }: React.ComponentProps<'form'>) {
       }}
     >
       <div className="grid place-content-center">
-        <InputGroupPicture />
+        <InputGroupPicture
+          fileId={fileId}
+          onFileIdChange={setFileId}
+          fallbackChar={name.charAt(0).toUpperCase()}
+        />
       </div>
       <div className="grid gap-3">
         <Label htmlFor="name">Name</Label>
-        <Input required type="text" id="name" />
+        <Input
+          required
+          type="text"
+          maxLength={20}
+          id="name"
+          value={name}
+          onChange={(e) => {
+            e.preventDefault();
+            setName(e.target.value);
+          }}
+        />
       </div>
       <div className="grid gap-3">
-        <GroupDescriptionTextarea />
+        <Field>
+          <FieldLabel htmlFor="group-description">Beschreibung</FieldLabel>
+          <div className="flex items-baseline justify-between">
+            <FieldDescription>
+              Ein kleiner Infotext zu deiner Gruppe
+            </FieldDescription>
+            <p className="text-sm">{available}</p>
+          </div>
+          <Textarea
+            required
+            id="group-description"
+            placeholder="..."
+            maxLength={64}
+            value={description}
+            onChange={(e) => {
+              e.preventDefault();
+              setDescription(e.target.value);
+              setLength(e.target.value.length);
+              setAvailable(64 - e.target.value.length);
+            }}
+          />
+        </Field>
       </div>
       <Button type="submit">Gruppe erstellen</Button>
     </form>
   );
-}
-
-async function handleGroupCreation() {
-  console.log('Group creation logic goes here');
 }

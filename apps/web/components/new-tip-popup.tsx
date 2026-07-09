@@ -71,7 +71,7 @@ export function NewTipPopup({ onTipCreated }: NewTipPopupProps) {
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button className="w-full" variant="default">
+        <Button className="w-full md:w-auto" variant="default">
           Tipp abgeben
         </Button>
       </DrawerTrigger>

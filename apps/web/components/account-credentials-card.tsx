@@ -16,11 +16,11 @@ import React, { useEffect } from 'react';
 import { toast } from 'sonner';
 import { ConfirmAlert } from './confirm-alert';
 import { InputProfilePicture } from './input-profile-picture';
-
-export function AccountCredentialsCard() {
-  const session = useSession();
-  const user = session?.data?.user;
-
+export function AccountCredentialsCard({
+  user,
+}: {
+  user: { name: string; email: string } | undefined;
+}) {
   const [showChangeCredentialsConfirm, setShowChangeCredentialsConfirm] =
     React.useState(false);
   const [username, setUsername] = React.useState(user?.name || '');
