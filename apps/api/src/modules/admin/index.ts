@@ -33,9 +33,12 @@ export const admin = new Elysia({ prefix: "/admin" })
       }
 
       set.status = 200;
+
+      const season = await AdminService.addNewSeason({ body });
+
       return {
         success: true,
-        season: await AdminService.addNewSeason({ body }),
+        season: season,
       };
     },
     {
