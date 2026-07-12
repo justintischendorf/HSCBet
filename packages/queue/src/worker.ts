@@ -10,6 +10,13 @@ async function startGamesLoop() {
   while (true) {
     await qm.consume("games", async (payload) => {
       console.log("Verarbeite Spiel:", payload.gameId);
+      await qm.publish("live_updates:games", {
+        event:
+          payload.eventType === "game_updated"
+            ? "GAME_UPDATED"
+            : "GAME_DELETED",
+        gameId: payload.gameId,
+      });
     });
   }
 }
@@ -18,6 +25,10 @@ async function startGroupsLoop() {
   while (true) {
     await qm.consume("groups", async (payload) => {
       console.log("Verarbeite Gruppe:", payload.groupId);
+      await qm.publish("live_updates:groups", {
+        event: "GROUP_INVITED",
+        groupId: payload.groupId,
+      });
     });
   }
 }
