@@ -14,6 +14,14 @@ type ProducerParams = {
 
 //type Topic = keyof TopicPayloadMap;
 
+type ChannelPayloadMap = {
+  "live_updates:games": {
+    event: "GAME_UPDATED" | "GAME_DELETED";
+    gameId: string;
+  };
+  "live_updates:groups": { event: "GROUP_INVITED"; groupId: string };
+};
+
 type TopicPayloadMap = {
   games: GameUpdatedPayload | GameDeletedPayload;
   groups: GroupeInvitedPayload;
@@ -78,13 +86,22 @@ export class QueueManager {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   }
-  //consume methode für worker mit callback function damit man nicht durch return den workflow beendet.
-  // callback function ist lamda expression als parameter mitgeben und dann wieder aufrufen, ist wie bei def() in PL/1 um wieder an den wert zu kommen
-  // im worker: qm.conume(cbf=>code) im QM consume(cbf=>)
+  // --------------------------------------------------------------------------> publish
+  async publish<C extends keyof ChannelPayloadMap>(
+    channel: C,
+    payload: ChannelPayloadMap[C],
+  ): Promise<void> {
+    // Redis erwartet beim PUBLISH-Befehl immer einen String,
+    // daher wandeln wir das Objekt mit JSON.stringify um.
+    await this.redis.publish(channel, JSON.stringify(payload));
+  }
+}
+//consume methode für worker mit callback function damit man nicht durch return den workflow beendet.
+// callback function ist lamda expression als parameter mitgeben und dann wieder aufrufen, ist wie bei def() in PL/1 um wieder an den wert zu kommen
+// im worker: qm.conume(cbf=>code) im QM consume(cbf=>)
 
-  /* Erklärung für Callback Function: https://dev.to/sureshkrishnannair/understanding-callback-functions-in-typescript-a-beginners-guide-1579
+/* Erklärung für Callback Function: https://dev.to/sureshkrishnannair/understanding-callback-functions-in-typescript-a-beginners-guide-1579
 
   //wie man einen worker schreibt -> dauerschleife die durchgehend consumend
   //wie man PUB/SUB mit worker verbindet
   */
-}
