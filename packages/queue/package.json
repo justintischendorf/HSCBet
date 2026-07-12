@@ -1,8 +1,8 @@
 {
   "name": "@repo/queue",
-  "module": "index.ts",
+  "module": "./src/client.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/client.ts"
   },
   "type": "module",
   "private": true,

@@ -35,7 +35,6 @@ type GameUpdatedPayload = {
 
 type GameDeletedPayload = {
   gameId: string;
-  reasons: string;
   eventType: "game_deleted";
 };
 
