@@ -1,0 +1,34 @@
+import { QueueManager } from "./client";
+
+const qm = new QueueManager({
+  port: Number(process.env.REDIS_PORT),
+  hostname: String(process.env.REDIS_HOST),
+});
+
+// Wir bauen zwei separate, unendliche Schleifen als Funktionen
+async function startGamesLoop() {
+  while (true) {
+    await qm.consume("games", async (payload) => {
+      console.log("Verarbeite Spiel:", payload.gameId);
+    });
+  }
+}
+
+async function startGroupsLoop() {
+  while (true) {
+    await qm.consume("groups", async (payload) => {
+      console.log("Verarbeite Gruppe:", payload.groupId);
+    });
+  }
+}
+
+// Hauptfunktion, die BEIDE Schleifen gleichzeitig startet
+async function main() {
+  console.log("[Worker] Starte alle Queue-Loops parallel...");
+
+  // Promise.all startet beide Funktionen zeitgleich.
+  // Da beide eine unendliche while-Schleife haben, läuft das endlos parallel.
+  await Promise.all([startGamesLoop(), startGroupsLoop()]);
+}
+
+main();
