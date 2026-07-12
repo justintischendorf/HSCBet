@@ -44,36 +44,47 @@ export class QueueManager {
     this.redis = new Redis(port, hostname);
   }
 
+  // --------------------------------------------------------------------------> produce
   async produce({ topic, payload }: ProducerParams) {
     await this.redis.lpush(topic, JSON.stringify(payload));
   }
 
+  // --------------------------------------------------------------------------> consume
+  async consume<K extends keyof TopicPayloadMap>(
+    topic: K,
+    callback: (payload: TopicPayloadMap[K]) => void | Promise<void>,
+  ) {
+    console.log(`[QueueManager] Worker gestartet für Topic: ${String(topic)}`);
+    try {
+      // Wir nutzen BRPOP (Blocking Pop) mit einem Timeout von 30 Sekunden
+      const result = await this.redis.brpop(String(topic), 30);
+
+      if (result) {
+        const [_queueName, rawPayload] = result;
+        const payload = JSON.parse(rawPayload) as TopicPayloadMap[K];
+
+        // Hier rufen wir deine Callback-Funktion auf und übergeben die Daten.
+        // Das 'await' sorgt dafür, dass das nächste Event erst geholt wird,
+        // wenn die Verarbeitung des aktuellen Events fertig ist (wichtig für Reihenfolge).
+        await callback(payload);
+      }
+    } catch (error) {
+      console.error(
+        `[QueueManager] Fehler im Worker bei Topic ${String(topic)}:`,
+        error,
+      );
+      // Falls Redis mal kurz weg ist, warten wir 1 Sekunde,
+      // um die CPU nicht mit einer rasanten Fehlerschleife zu grillen.
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
   //consume methode für worker mit callback function damit man nicht durch return den workflow beendet.
   // callback function ist lamda expression als parameter mitgeben und dann wieder aufrufen, ist wie bei def() in PL/1 um wieder an den wert zu kommen
   // im worker: qm.conume(cbf=>code) im QM consume(cbf=>)
 
   /* Erklärung für Callback Function: https://dev.to/sureshkrishnannair/understanding-callback-functions-in-typescript-a-beginners-guide-1579
-  
-  function fetchData(callback: (data: any) => void) {
-  // Simulate fetching data asynchronously
-  setTimeout(() => {
-    const data = 'Sample data 1';
-    callback(data);
-  }, 5000);
 
-  console.log("Initiated "); // Added log message to see when fetchData is initiated
-
-  // Simulate fetching more data asynchronously after a delay
-  setTimeout(() => {
-    const data = 'Sample data 2';
-    callback(data);
-  }, 6000);
-}
-
-// Usage of the callback function
-fetchData((data) => {
-  console.log('Data received:', data);
-});
-  
+  //wie man einen worker schreibt -> dauerschleife die durchgehend consumend
+  //wie man PUB/SUB mit worker verbindet
   */
 }
