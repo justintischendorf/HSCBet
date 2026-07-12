@@ -1,49 +1,10 @@
 import Redis from "ioredis";
-
-type Options = {
-  port: number;
-  hostname: string;
-};
-
-type ProducerParams = {
-  [K in keyof TopicPayloadMap]: {
-    topic: K;
-    payload: TopicPayloadMap[K];
-  };
-}[keyof TopicPayloadMap];
-
-//type Topic = keyof TopicPayloadMap;
-
-type ChannelPayloadMap = {
-  "live_updates:games": {
-    event: "GAME_UPDATED" | "GAME_DELETED";
-    gameId: string;
-  };
-  "live_updates:groups": { event: "GROUP_INVITED"; groupId: string };
-};
-
-type TopicPayloadMap = {
-  games: GameUpdatedPayload | GameDeletedPayload;
-  groups: GroupeInvitedPayload;
-  tips: never;
-};
-
-type GameUpdatedPayload = {
-  gameId: string;
-  eventType: "game_updated";
-};
-
-type GameDeletedPayload = {
-  gameId: string;
-  eventType: "game_deleted";
-};
-
-type GroupeInvitedPayload = {
-  groupId: string;
-  targetId: string;
-  executorId: string;
-  eventType: "group_invited";
-};
+import type {
+  ChannelPayloadMap,
+  Options,
+  ProducerParams,
+  TopicPayloadMap,
+} from "./queuemanager_types";
 
 export class QueueManager {
   private redis: Redis;
@@ -52,7 +13,7 @@ export class QueueManager {
   }
 
   // --------------------------------------------------------------------------> produce
-  async produce({ topic, payload }: ProducerParams) {
+  async produce({ topic, payload }: ProducerParams): Promise<void> {
     await this.redis.lpush(topic, JSON.stringify(payload));
   }
 
@@ -60,10 +21,10 @@ export class QueueManager {
   async consume<K extends keyof TopicPayloadMap>(
     topic: K,
     callback: (payload: TopicPayloadMap[K]) => void | Promise<void>,
-  ) {
+  ): Promise<void> {
     console.log(`[QueueManager] Worker gestartet für Topic: ${String(topic)}`);
     try {
-      // Wir nutzen BRPOP (Blocking Pop) mit einem Timeout von 30 Sekunden
+      // Wir nutzen BRPOP (Blocking Pop) mit einem Timeout von 30 Sekunden -> timeout zu hoch?
       const result = await this.redis.brpop(String(topic), 30);
 
       if (result) {
@@ -90,17 +51,6 @@ export class QueueManager {
     channel: C,
     payload: ChannelPayloadMap[C],
   ): Promise<void> {
-    // Redis erwartet beim PUBLISH-Befehl immer einen String,
-    // daher wandeln wir das Objekt mit JSON.stringify um.
     await this.redis.publish(channel, JSON.stringify(payload));
   }
 }
-//consume methode für worker mit callback function damit man nicht durch return den workflow beendet.
-// callback function ist lamda expression als parameter mitgeben und dann wieder aufrufen, ist wie bei def() in PL/1 um wieder an den wert zu kommen
-// im worker: qm.conume(cbf=>code) im QM consume(cbf=>)
-
-/* Erklärung für Callback Function: https://dev.to/sureshkrishnannair/understanding-callback-functions-in-typescript-a-beginners-guide-1579
-
-  //wie man einen worker schreibt -> dauerschleife die durchgehend consumend
-  //wie man PUB/SUB mit worker verbindet
-  */
