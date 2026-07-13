@@ -3,26 +3,13 @@ export type Options = {
   hostname: string;
 };
 
-export type ProducerParams = {
-  [K in keyof TopicPayloadMap]: {
-    topic: K;
-    payload: TopicPayloadMap[K];
-  };
-}[keyof TopicPayloadMap];
-
-export type ChannelPayloadMap = {
-  "live_updates:games": {
-    event: "GAME_UPDATED" | "GAME_DELETED";
-    gameId: string;
-  };
-  "live_updates:groups": { event: "GROUP_INVITED"; groupId: string };
-};
-
 export type TopicPayloadMap = {
   games: GameUpdatedPayload | GameDeletedPayload;
   groups: GroupeInvitedPayload;
   tips: never;
 };
+
+export type Topic = keyof TopicPayloadMap;
 
 type GameUpdatedPayload = {
   gameId: string;

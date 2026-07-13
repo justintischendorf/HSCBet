@@ -1,56 +1,48 @@
-import Redis from "ioredis";
-import type {
-  ChannelPayloadMap,
-  Options,
-  ProducerParams,
-  TopicPayloadMap,
-} from "./queuemanager_types";
+import IORedis from "ioredis";
+import type { Options, TopicPayloadMap, Topic } from "./types";
+import { Job, Queue, Worker } from "bullmq";
 
 export class QueueManager {
-  private redis: Redis;
+  private queues: Record<Topic, Queue>;
+  private redis: IORedis;
   constructor({ port, hostname }: Options) {
-    this.redis = new Redis(port, hostname);
+    this.redis = new IORedis(port, hostname);
+    this.queues = {
+      games: new Queue("games", { connection: this.redis as any }),
+      groups: new Queue("groups", { connection: this.redis as any }),
+      tips: new Queue("tips", { connection: this.redis as any }),
+    };
   }
 
   // --------------------------------------------------------------------------> produce
-  async produce({ topic, payload }: ProducerParams): Promise<void> {
-    await this.redis.lpush(topic, JSON.stringify(payload));
+  async produce({
+    topic,
+    payload,
+  }: {
+    [K in keyof TopicPayloadMap]: {
+      topic: K;
+      payload: TopicPayloadMap[K];
+    };
+  }[keyof TopicPayloadMap]): Promise<void> {
+    await this.queues[topic].add(payload.eventType, JSON.stringify(payload));
   }
 
   // --------------------------------------------------------------------------> consume
-  async consume<K extends keyof TopicPayloadMap>(
-    topic: K,
-    callback: (payload: TopicPayloadMap[K]) => void | Promise<void>,
-  ): Promise<void> {
-    console.log(`[QueueManager] Worker gestartet für Topic: ${String(topic)}`);
-    try {
-      // Wir nutzen BRPOP (Blocking Pop) mit einem Timeout von 30 Sekunden -> timeout zu hoch?
-      const result = await this.redis.brpop(String(topic), 30);
-
-      if (result) {
-        const [_queueName, rawPayload] = result;
-        const payload = JSON.parse(rawPayload) as TopicPayloadMap[K];
-
-        // Hier rufen wir deine Callback-Funktion auf und übergeben die Daten.
-        // Das 'await' sorgt dafür, dass das nächste Event erst geholt wird,
-        // wenn die Verarbeitung des aktuellen Events fertig ist (wichtig für Reihenfolge).
-        await callback(payload);
-      }
-    } catch (error) {
-      console.error(
-        `[QueueManager] Fehler im Worker bei Topic ${String(topic)}:`,
-        error,
-      );
-      // Falls Redis mal kurz weg ist, warten wir 1 Sekunde,
-      // um die CPU nicht mit einer rasanten Fehlerschleife zu grillen.
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-  }
-  // --------------------------------------------------------------------------> publish
-  async publish<C extends keyof ChannelPayloadMap>(
-    channel: C,
-    payload: ChannelPayloadMap[C],
-  ): Promise<void> {
-    await this.redis.publish(channel, JSON.stringify(payload));
+  consume<K extends keyof TopicPayloadMap>({
+    topic,
+    callback,
+  }: {
+    topic: K;
+    callback: ({
+      payload,
+      job,
+    }: {
+      payload: TopicPayloadMap[K];
+      job: Job;
+    }) => void | Promise<void>;
+  }): Worker {
+    return new Worker(topic, async (job: Job) => {
+      return callback({ job: job, payload: job.data });
+    });
   }
 }

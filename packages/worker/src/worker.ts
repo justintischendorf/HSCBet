@@ -1,36 +1,41 @@
 import { QueueManager } from "../../queue/src/client";
+import { PubSubManager } from "../../pub-sub/src/client";
 
 const qm = new QueueManager({
   port: Number(process.env.REDIS_PORT),
   hostname: String(process.env.REDIS_HOST),
 });
 
+const pm = new PubSubManager({
+  port: Number(process.env.REDIS_PORT),
+  hostname: String(process.env.REDIS_HOST),
+});
+
 // Wir bauen zwei separate, unendliche Schleifen als Funktionen
-async function startGamesLoop() {
-  while (true) {
-    await qm.consume("games", async (payload) => {
+function startGamesLoop() {
+  qm.consume({
+    topic: "games",
+    callback: async ({ job, payload }) => {
       console.log("Verarbeite Spiel:", payload.gameId);
-      await qm.publish("live_updates:games", {
-        event:
-          payload.eventType === "game_updated"
-            ? "GAME_UPDATED"
-            : "GAME_DELETED",
-        gameId: payload.gameId,
+      pm.publish({
+        chanelName: `user:${job.data.userId}`,
+        payload,
       });
-    });
-  }
+    },
+  });
 }
 
-async function startGroupsLoop() {
-  while (true) {
-    await qm.consume("groups", async (payload) => {
+function startGroupsLoop() {
+  qm.consume({
+    topic: "groups",
+    callback: async ({ job, payload }) => {
       console.log("Verarbeite Gruppe:", payload.groupId);
-      await qm.publish("live_updates:groups", {
-        event: "GROUP_INVITED",
-        groupId: payload.groupId,
+      pm.publish({
+        chanelName: `user:${job.data.userId}`,
+        payload,
       });
-    });
-  }
+    },
+  });
 }
 
 // Hauptfunktion, die BEIDE Schleifen gleichzeitig startet
