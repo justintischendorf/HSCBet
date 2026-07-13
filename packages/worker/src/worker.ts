@@ -1,4 +1,4 @@
-import { QueueManager } from "./client";
+import { QueueManager } from "../../queue/src/client";
 
 const qm = new QueueManager({
   port: Number(process.env.REDIS_PORT),
