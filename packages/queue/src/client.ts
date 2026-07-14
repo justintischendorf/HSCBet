@@ -8,9 +8,9 @@ export class QueueManager {
   constructor({ port, hostname }: Options) {
     this.redis = new IORedis(port, hostname);
     this.queues = {
-      games: new Queue("games", { connection: this.redis as any }),
-      groups: new Queue("groups", { connection: this.redis as any }),
-      tips: new Queue("tips", { connection: this.redis as any }),
+      games: new Queue("games", { connection: this.redis }),
+      groups: new Queue("groups", { connection: this.redis }),
+      tips: new Queue("tips", { connection: this.redis }),
     };
   }
 
