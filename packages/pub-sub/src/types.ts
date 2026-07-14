@@ -1,3 +1,5 @@
+import { unknown } from "zod";
+
 export type Options = {
   port: number;
   hostname: string;
@@ -6,9 +8,7 @@ export type Options = {
 export type ChanelName<userId extends string = string> = `user:${userId}`;
 
 export type Payload =
-  | GameDeletedPayload
-  | GameUpdatedPayload
-  | GroupeInvitedPayload;
+  GameDeletedPayload | GameUpdatedPayload | GroupeInvitedPayload;
 
 type GameUpdatedPayload = {
   gameId: string;

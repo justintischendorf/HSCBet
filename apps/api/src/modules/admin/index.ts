@@ -4,6 +4,7 @@ import { AdminService } from "./service";
 import { IdParams } from "src/global/models";
 import { QueueManager } from "@repo/queue";
 
+// bitte qm in Kontext injecten
 const qm = new QueueManager({
   port: Number(process.env.REDIS_PORT),
   hostname: String(process.env.REDIS_HOST),

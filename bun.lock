@@ -23,6 +23,7 @@
         "@repo/bucket": "workspace:*",
         "@repo/database": "workspace:*",
         "@repo/logger": "workspace:*",
+        "@repo/pubsub": "workspace:*",
         "@repo/queue": "workspace:*",
         "cors": "^2.8.6",
         "elysia": "latest",
