@@ -1,16 +1,16 @@
-import { GroupModel } from '@repo/database';
+import { GroupModel } from "@repo/database";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from './ui/accordion';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
-import { Separator } from './ui/separator';
-import { apiClient } from '@/lib/api-client';
-import { queryClient } from '@/lib/queryClient';
-import { toast } from 'sonner';
+} from "./ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
+import { apiClient } from "@/lib/api-client";
+import { queryClient } from "@/lib/queryClient";
+import { toast } from "sonner";
 
 type GroupWithUsers = GroupModel & {
   user: { id: string; name: string; image: string | null }[];
@@ -30,13 +30,13 @@ export default function Group({ group }: { group: GroupWithUsers }) {
 
     if (leaveGroupError) {
       toast.error(
-        leaveGroupError.status + ': ' + leaveGroupError.value.message,
+        leaveGroupError.status + ": " + leaveGroupError.value.message,
       );
       return;
     }
 
-    toast.success('Gruppe erfolgreich verlassen!');
-    queryClient.invalidateQueries({ queryKey: ['groups'] });
+    toast.success("Gruppe erfolgreich verlassen!");
+    queryClient.invalidateQueries({ queryKey: ["groups"] });
   }
 
   return (
@@ -68,7 +68,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
             <section>
               <p className="text-sm font-medium mb-1.5">Beschreibung</p>
               <p className="sm:text-sm text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap wrap-break-word">
-                {group.description || 'Keine Beschreibung vorhanden.'}
+                {group.description || "Keine Beschreibung vorhanden."}
               </p>
             </section>
 
@@ -105,15 +105,18 @@ export default function Group({ group }: { group: GroupWithUsers }) {
             </section>
           </div>
           <Separator className="my-4" />
-          <div className="flex">
+          <div className="flex sm:flex-row flex-col justify-end items-center gap-2">
+            <Button size={"lg"} variant="default" className="sm:w-auto w-full">
+              Statistiken anzeigen
+            </Button>
             <Button
-              size={'lg'}
+              size={"lg"}
               variant="destructive"
-              className="w-full sm:w-auto sm:ml-auto"
               onClick={(e) => {
                 e.preventDefault();
                 handleLeaveGroup(group.id);
               }}
+              className="sm:w-auto w-full"
             >
               Gruppe verlassen
             </Button>

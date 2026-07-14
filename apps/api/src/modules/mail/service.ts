@@ -2,7 +2,7 @@ import { createLogger } from "@repo/logger";
 import { Resend } from "resend";
 import { MailModel } from "./model";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// const resend = new Resend(process.env.RESEND_API_KEY);
 const logger = createLogger("api:mail");
 
 export abstract class MailService {
