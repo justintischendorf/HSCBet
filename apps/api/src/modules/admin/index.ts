@@ -2,6 +2,13 @@ import Elysia, { t } from "elysia";
 import { AdminModel } from "./model";
 import { AdminService } from "./service";
 import { IdParams } from "src/global/models";
+import { QueueManager } from "@repo/queue";
+
+// bitte qm in Kontext injecten
+const qm = new QueueManager({
+  port: Number(process.env.REDIS_PORT),
+  hostname: String(process.env.REDIS_HOST),
+});
 
 export const admin = new Elysia({ prefix: "/admin" })
 
@@ -33,9 +40,12 @@ export const admin = new Elysia({ prefix: "/admin" })
       }
 
       set.status = 200;
+
+      const season = await AdminService.addNewSeason({ body });
+
       return {
         success: true,
-        season: await AdminService.addNewSeason({ body }),
+        season: season,
       };
     },
     {
@@ -54,10 +64,16 @@ export const admin = new Elysia({ prefix: "/admin" })
         return { success: false, error: "UNAUTHORIZED" };
       }
 
+      const deltedGame = await AdminService.deleteSeason({ params });
+      qm.produce({
+        topic: "games",
+        payload: { eventType: "game_deleted", gameId: params.id },
+      });
+
       set.status = 200;
       return {
         success: true,
-        season: await AdminService.deleteSeason({ params }),
+        season: deltedGame,
       };
     },
     {
@@ -98,10 +114,16 @@ export const admin = new Elysia({ prefix: "/admin" })
         return { success: false, error: "UNAUTHORIZED" };
       }
 
+      const updatedGame = await AdminService.updateGameById({ params, body });
+      qm.produce({
+        topic: "games",
+        payload: { eventType: "game_updated", gameId: params.id },
+      });
+
       set.status = 200;
       return {
         success: true,
-        season: await AdminService.updateGameById({ params, body }),
+        season: updatedGame,
       };
     },
     {
