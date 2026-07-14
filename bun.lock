@@ -26,6 +26,7 @@
         "cors": "^2.8.6",
         "elysia": "latest",
         "elysia-rate-limit": "^4.6.2",
+        "resend": "^6.17.2",
       },
       "devDependencies": {
         "bun-types": "latest",
@@ -71,10 +72,9 @@
     "packages/auth": {
       "name": "@repo/auth",
       "dependencies": {
+        "@repo/api": "workspace:*",
         "@repo/database": "workspace:*",
-        "@repo/logger": "workspace:*",
         "better-auth": "^1.6.20",
-        "resend": "^6.17.2",
       },
       "devDependencies": {
         "@types/bun": "latest",

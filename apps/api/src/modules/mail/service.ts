@@ -1,7 +1,8 @@
 import { createLogger } from "@repo/logger";
-import { sendMail } from "@repo/auth/mail";
+import { Resend } from "resend";
 import { MailModel } from "./model";
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 const logger = createLogger("api:mail");
 
 export abstract class MailService {
@@ -12,7 +13,8 @@ export abstract class MailService {
   }: {
     body: (typeof MailModel.SendForgotPasswordMail)["static"];
   }) {
-    const { error, data } = await sendMail({
+    const { error, data } = await resend.emails.send({
+      from: process.env.RESEND_MAIL_ADDRESS as string,
       to: body.email,
       subject: body.subject,
       html: body.html,

@@ -2,7 +2,8 @@
   "name": "@repo/api",
   "version": "1.0.50",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./mail": "./src/modules/mail/service.ts"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,7 +19,8 @@
     "@repo/logger": "workspace:*",
     "cors": "^2.8.6",
     "elysia": "latest",
-    "elysia-rate-limit": "^4.6.2"
+    "elysia-rate-limit": "^4.6.2",
+    "resend": "^6.17.2"
   },
   "devDependencies": {
     "bun-types": "latest"

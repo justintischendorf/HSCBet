@@ -3,9 +3,13 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "@repo/database";
 import { twoFactor } from "better-auth/plugins/two-factor";
 import { emailOTP } from "better-auth/plugins/email-otp";
-import { sendMail } from "./mail";
+import { MailService } from "@repo/api/mail";
 
-type OTPType = "sign-in" | "email-verification" | "forget-password" | "change-email";
+type OTPType =
+  | "sign-in"
+  | "email-verification"
+  | "forget-password"
+  | "change-email";
 
 const otpEmailSubjects: Record<OTPType, string> = {
   "sign-in": "Dein Anmeldecode",
@@ -20,10 +24,12 @@ export const auth = betterAuth({
     twoFactor(),
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
-        await sendMail({
-          to: email,
-          subject: otpEmailSubjects[type],
-          html: `<p>Dein Bestätigungscode lautet: <strong>${otp}</strong></p><p>Der Code ist 5 Minuten gültig.</p>`,
+        await MailService.sendForgotPasswordMail({
+          body: {
+            email,
+            subject: otpEmailSubjects[type],
+            html: `<p>Dein Bestätigungscode lautet: <strong>${otp}</strong></p><p>Der Code ist 5 Minuten gültig.</p>`,
+          },
         });
       },
     }),

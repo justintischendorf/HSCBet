@@ -1,37 +1,37 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
-import { toast } from 'sonner';
+import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { toast } from "sonner";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@/components/ui/input-otp';
-import { authClient } from '@/lib/auth-client';
+} from "@/components/ui/input-otp";
+import { authClient } from "@/lib/auth-client";
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
 
-  const [otp, setOtp] = useState('');
+  const [otp, setOtp] = useState("");
   const [codeVerified, setCodeVerified] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isResetting, setIsResetting] = useState(false);
 
   async function handleSendCode() {
@@ -44,39 +44,39 @@ export default function ForgotPasswordScreen() {
     setIsSending(false);
 
     if (error) {
-      toast.error(error.message ?? 'E-Mail konnte nicht gesendet werden.');
+      toast.error(error.message ?? "E-Mail konnte nicht gesendet werden.");
       return;
     }
 
     setCodeSent(true);
     setCodeVerified(false);
-    setOtp('');
-    toast.success('E-Mail gesendet! Bitte checke deinen Posteingang.');
+    setOtp("");
+    toast.success("E-Mail gesendet! Bitte checke deinen Posteingang.");
   }
 
   async function handleVerifyOtp(value: string) {
     const { error } = await authClient.emailOtp.checkVerificationOtp({
       email,
       otp: value,
-      type: 'forget-password',
+      type: "forget-password",
     });
 
     if (error) {
-      toast.error('Ungültiger Code. Bitte versuche es erneut.');
+      toast.error("Ungültiger Code. Bitte versuche es erneut.");
       return;
     }
 
     setCodeVerified(true);
-    toast.success('Code bestätigt. Bitte vergib ein neues Passwort.');
+    toast.success("Code bestätigt. Bitte vergib ein neues Passwort.");
   }
 
   async function handleResetPassword() {
     if (newPassword.length < 8) {
-      toast.error('Das Passwort muss mindestens 8 Zeichen lang sein.');
+      toast.error("Das Passwort muss mindestens 8 Zeichen lang sein.");
       return;
     }
     if (newPassword !== confirmPassword) {
-      toast.error('Die Passwörter stimmen nicht überein.');
+      toast.error("Die Passwörter stimmen nicht überein.");
       return;
     }
 
@@ -89,12 +89,12 @@ export default function ForgotPasswordScreen() {
     setIsResetting(false);
 
     if (error) {
-      toast.error(error.message ?? 'Passwort konnte nicht geändert werden.');
+      toast.error(error.message ?? "Passwort konnte nicht geändert werden.");
       return;
     }
 
-    toast.success('Passwort erfolgreich geändert.');
-    router.replace('/signin');
+    toast.success("Passwort erfolgreich geändert.");
+    router.replace("/signin");
   }
 
   return (
@@ -131,15 +131,12 @@ export default function ForgotPasswordScreen() {
             />
           </Field>
           <Field>
-            <Button
-              disabled={!email || isSending}
-              onClick={handleSendCode}
-            >
+            <Button disabled={!email || isSending} onClick={handleSendCode}>
               {isSending
-                ? 'Wird gesendet...'
+                ? "Wird gesendet..."
                 : codeSent
-                  ? 'Code erneut senden'
-                  : 'Bestätigungsmail senden'}
+                  ? "Code erneut senden"
+                  : "Bestätigungsmail senden"}
             </Button>
           </Field>
 
@@ -181,7 +178,7 @@ export default function ForgotPasswordScreen() {
                 <div className="relative">
                   <Input
                     id="new-password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     required
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
@@ -202,7 +199,7 @@ export default function ForgotPasswordScreen() {
                 </FieldLabel>
                 <Input
                   id="confirm-password"
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
@@ -210,7 +207,7 @@ export default function ForgotPasswordScreen() {
               </Field>
               <Field>
                 <Button disabled={isResetting} onClick={handleResetPassword}>
-                  {isResetting ? 'Wird gespeichert...' : 'Passwort ändern'}
+                  {isResetting ? "Wird gespeichert..." : "Passwort ändern"}
                 </Button>
               </Field>
             </>

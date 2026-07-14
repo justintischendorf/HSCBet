@@ -2,8 +2,7 @@
   "name": "@repo/auth",
   "module": "index.ts",
   "exports": {
-    ".": "./src/auth.ts",
-    "./mail": "./src/mail.ts"
+    ".": "./src/auth.ts"
   },
   "type": "module",
   "private": true,
@@ -15,8 +14,7 @@
   },
   "dependencies": {
     "better-auth": "^1.6.20",
-    "@repo/database": "workspace:*",
-    "@repo/logger": "workspace:*",
-    "resend": "^6.17.2"
+    "@repo/api": "workspace:*",
+    "@repo/database": "workspace:*"
   }
 }
