@@ -19,7 +19,12 @@ export abstract class GroupService {
       },
       include: {
         user: {
-          select: { id: true, name: true, image: true },
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            rank: { select: { points: true, position: true } },
+          },
         },
         files: {
           select: { id: true },

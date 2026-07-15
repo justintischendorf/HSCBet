@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "better-auth": "^1.6.20",
+    "@repo/api": "workspace:*",
     "@repo/database": "workspace:*"
   }
 }
