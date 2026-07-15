@@ -1,0 +1,20 @@
+{
+  "name": "@repo/queue",
+  "module": "./src/client.ts",
+  "exports": {
+    ".": "./src/client.ts"
+  },
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "bullmq": "^5.80.2",
+    "ioredis": "5.10.1",
+    "zod": "^4.4.3"
+  }
+}
