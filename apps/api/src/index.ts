@@ -13,6 +13,7 @@ import { season } from "./modules/season";
 import { admin } from "./modules/admin";
 import { tip } from "./modules/tip";
 import { group } from "./modules/group";
+import { mail } from "./modules/mail";
 
 const logger = createLogger("api");
 const s3Manager = new S3Manager();
@@ -69,6 +70,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(socket)
   .use(media)
   .use(tip)
+  .use(mail)
   .use(group)
   .use(season)
   .onError(({ error, set }) => {

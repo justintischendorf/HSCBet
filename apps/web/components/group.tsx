@@ -1,20 +1,45 @@
-import { GroupModel } from '@repo/database';
+import type { GroupModel, Position } from "@repo/database";
+import { BarChart3, LogOut } from "lucide-react";
+import Image from "next/image";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from './ui/accordion';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
-import { Separator } from './ui/separator';
-import { apiClient } from '@/lib/api-client';
-import { queryClient } from '@/lib/queryClient';
-import { toast } from 'sonner';
+} from "./ui/accordion";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import { Separator } from "./ui/separator";
+import { apiClient } from "@/lib/api-client";
+import { queryClient } from "@/lib/queryClient";
+import { toast } from "sonner";
 
 type GroupWithUsers = GroupModel & {
-  user: { id: string; name: string; image: string | null }[];
+  user: {
+    id: string;
+    name: string;
+    image: string | null;
+    rank: { points: number; position: Position } | null;
+  }[];
   files: { id: string }[];
+};
+
+const POSITION_LABELS: Record<Position, string> = {
+  BRONZE: "Bronze",
+  SILVER: "Silber",
+  GOLD: "Gold",
+  PLATINUM: "Platin",
+  DIAMOND: "Diamant",
+  DEFAULT: "Kein Rang",
+};
+
+const POSITION_ICONS: Record<Position, string> = {
+  BRONZE: "/assets/images/rank-bronze.svg",
+  SILVER: "/assets/images/rank-silver.svg",
+  GOLD: "/assets/images/rank-gold.svg",
+  PLATINUM: "/assets/images/rank-platinum.svg",
+  DIAMOND: "/assets/images/rank-diamond.svg",
+  DEFAULT: "/assets/images/rank-none.svg",
 };
 
 export default function Group({ group }: { group: GroupWithUsers }) {
@@ -30,93 +55,128 @@ export default function Group({ group }: { group: GroupWithUsers }) {
 
     if (leaveGroupError) {
       toast.error(
-        leaveGroupError.status + ': ' + leaveGroupError.value.message,
+        leaveGroupError.status + ": " + leaveGroupError.value.message,
       );
       return;
     }
 
-    toast.success('Gruppe erfolgreich verlassen!');
-    queryClient.invalidateQueries({ queryKey: ['groups'] });
+    toast.success("Gruppe verlassen!");
+    queryClient.invalidateQueries({ queryKey: ["groups"] });
   }
+
+  const memberCount = group.user.length;
+  const rankedMembers = [...group.user].sort(
+    (a, b) => (b.rank?.points ?? 0) - (a.rank?.points ?? 0),
+  );
 
   return (
     <Accordion
       type="single"
       collapsible
-      className="w-full border border-border rounded-xl bg-card px-4 h-full shadow-sm"
+      className="w-full rounded-xl border border-border bg-card shadow-sm overflow-hidden"
     >
-      <AccordionItem value="backup" className="border-none">
-        <AccordionTrigger className="hover:no-underline">
-          <div className="flex flex-row gap-5 items-center w-full">
-            <Avatar className="transition-all duration-300 ease-out group-aria-expanded/accordion-trigger:size-16 sm:group-aria-expanded/accordion-trigger:size-20">
+      <AccordionItem value="group" className="border-none">
+        <AccordionTrigger className="rounded-none px-4 py-3.5 hover:bg-muted/40 hover:no-underline transition-colors">
+          <div className="flex flex-row items-center gap-3.5 w-full min-w-0">
+            <Avatar className="size-11 shrink-0">
               <AvatarImage
                 id="profile-picture"
                 src={imageUrl}
                 alt="Profilbild"
               />
-              <AvatarFallback className="text-md font-medium transition-all duration-300 ease-out group-aria-expanded/accordion-trigger:text-3xl sm:group-aria-expanded/accordion-trigger:text-4xl">
+              <AvatarFallback className="text-xl">
                 {group.name.charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
-            <span className="sm:text-base text-sm font-semibold">
-              {group.name}
-            </span>
+            <div className="flex flex-col min-w-0 gap-1">
+              <span className="text-base font-semibold truncate">
+                {group.name}
+              </span>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground">
+                  {memberCount} {memberCount === 1 ? "Mitglied" : "Mitglieder"}
+                </span>
+              </div>
+            </div>
           </div>
         </AccordionTrigger>
-        <AccordionContent>
-          <div className="flex flex-col gap-6">
-            <section>
-              <p className="text-sm font-medium mb-1.5">Beschreibung</p>
-              <p className="sm:text-sm text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap wrap-break-word">
-                {group.description || 'Keine Beschreibung vorhanden.'}
-              </p>
-            </section>
+        <AccordionContent className="pb-0">
+          <div className="flex flex-col gap-5 border-t border-border bg-muted/20 px-4 py-5">
+            {group.description && (
+              <div className="flex flex-col gap-1.5">
+                <h3 className="text-sm font-semibold">Beschreibung</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap wrap-break-word">
+                  {group.description}
+                </p>
+              </div>
+            )}
+
+            <div className="flex flex-col gap-2.5">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Mitglieder</h3>
+                <span className="text-xs font-medium text-muted-foreground bg-muted rounded-full px-2 py-0.5">
+                  {memberCount}/16
+                </span>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 max-h-80 overflow-y-auto -mx-1 px-1">
+                {rankedMembers.map((user) => {
+                  const points: number = user.rank?.points ?? 0;
+                  const position: Position = user.rank?.position ?? "DEFAULT";
+
+                  return (
+                    <div
+                      key={user.id}
+                      className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 bg-muted/60 transition-colors min-w-0"
+                    >
+                      <Avatar size="sm" className="shrink-0">
+                        <AvatarImage
+                          src={user.image ?? undefined}
+                          alt={user.name}
+                        />
+                        <AvatarFallback className="text-xs">
+                          {user.name.charAt(0).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex flex-col min-w-0 flex-1">
+                        <span className="truncate text-xs font-medium">
+                          {user.name}
+                        </span>
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <span className="tabular-nums">{points} P.</span>
+                        </div>
+                      </div>
+                      <Image
+                        src={POSITION_ICONS[position]}
+                        alt={POSITION_LABELS[position]}
+                        title={POSITION_LABELS[position]}
+                        width={24}
+                        height={25}
+                        className="h-10 w-auto shrink-0"
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
 
             <Separator />
 
-            <section>
-              <div className="flex flex-row items-center justify-between mb-2">
-                <p className="text-sm font-medium">Mitglieder</p>
-                <span className="sm:text-sm text-xs text-muted-foreground">
-                  {group.user.length}/16
-                </span>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-48 overflow-y-auto pr-1">
-                {group.user.map((user) => (
-                  <div
-                    key={user.id}
-                    className="flex items-center gap-2 rounded-lg bg-muted/50 px-2 py-1.5 min-w-0"
-                  >
-                    <Avatar size="sm">
-                      <AvatarImage
-                        src={user.image ?? undefined}
-                        alt={user.name}
-                      />
-                      <AvatarFallback>
-                        {user.name.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="truncate text-xs sm:text-sm">
-                      {user.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-          <Separator className="my-4" />
-          <div className="flex">
-            <Button
-              size={'lg'}
-              variant="destructive"
-              className="w-full sm:w-auto sm:ml-auto"
-              onClick={(e) => {
-                e.preventDefault();
-                handleLeaveGroup(group.id);
-              }}
-            >
-              Gruppe verlassen
-            </Button>
+            <div className="flex items-center gap-2 sm:justify-end">
+              <Button size="lg" className="flex-1 sm:flex-none">
+                Statistiken anzeigen
+              </Button>
+              <Button
+                variant="destructive"
+                size="lg"
+                className="flex-1 sm:flex-none"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLeaveGroup(group.id);
+                }}
+              >
+                Gruppe verlassen
+              </Button>
+            </div>
           </div>
         </AccordionContent>
       </AccordionItem>
