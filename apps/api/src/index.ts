@@ -91,6 +91,17 @@ const app = new Elysia({ prefix: "/api" })
       };
     }
 
+    if (error instanceof Error && error.message === "GAME_ALREADY_STARTED") {
+      set.status = 409;
+      logger.warn("Spiel hat bereits begonnen, Tipp nicht mehr änderbar");
+      return {
+        success: false,
+        message:
+          "Das Spiel hat bereits begonnen, dein Tipp kann nicht mehr geändert werden.",
+        error: "GAME_ALREADY_STARTED",
+      };
+    }
+
     if (error instanceof Error && error.message === "Unauthorized") {
       set.status = 401;
       logger.warn("Nicht autorisiert");

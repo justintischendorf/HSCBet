@@ -1,6 +1,6 @@
 import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
-import { IdParams } from "src/global/models";
+import { IdParams } from "../../global/models";
 import { TipModel } from "./model";
 
 const logger = createLogger("api:tip");
@@ -25,35 +25,40 @@ export abstract class TipService {
     return tips;
   }
 
-  // --------------------------------------------------------------------------> POST api/tip
-  //                                                                             - add a new tip to the database
-  static async createNewTip({
+  // --------------------------------------------------------------------------> PUT api/tip
+  //                                                                             - create or update a tip for a game, as long as it hasn't started yet
+  static async upsertTip({
     body,
     user,
   }: {
-    body: (typeof TipModel.CreateNewTip)["static"];
+    body: (typeof TipModel.UpsertTip)["static"];
     user: { id: string };
   }) {
-    const existingTip = await prisma.tip.findFirst({
-      where: {
-        userId: user.id,
-        gameId: body.gameId,
-      },
+    const game = await prisma.game.findUniqueOrThrow({
+      where: { id: body.gameId },
+      select: { date: true },
     });
 
-    if (existingTip) {
-      return { success: false, message: "Tip already exists for this game." };
+    if (game.date <= new Date()) {
+      logger.warn("tip rejected, game already started: " + body.gameId);
+      throw new Error("GAME_ALREADY_STARTED");
     }
 
-    const createdTip = await prisma.tip.create({
-      data: {
+    return prisma.tip.upsert({
+      where: {
+        userId_gameId: { userId: user.id, gameId: body.gameId },
+      },
+      create: {
         seasonId: body.seasonId,
         gameId: body.gameId,
         userId: user.id,
         tipHost: body.tipHost,
         tipGuest: body.tipGuest,
       },
+      update: {
+        tipHost: body.tipHost,
+        tipGuest: body.tipGuest,
+      },
     });
-    return createdTip;
   }
 }

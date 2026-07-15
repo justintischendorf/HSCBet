@@ -10,11 +10,20 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./ui/table";
 import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "sonner";
 import { ConfirmAlert } from "./confirm-alert";
 import React from "react";
+import { useRouter } from "next/navigation";
 
 type GroupWithUsers = GroupModel & {
   user: {
@@ -45,6 +54,7 @@ const POSITION_ICONS: Record<Position, string> = {
 };
 
 export default function Group({ group }: { group: GroupWithUsers }) {
+  const router = useRouter();
   const [showLeaveGroupConfirm, setShowLeaveGroupConfirm] =
     React.useState(false);
   const imageUrl = group.files?.[0]
@@ -122,44 +132,61 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                   {memberCount}/16
                 </span>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1 max-h-80 overflow-y-auto -mx-1 px-1">
-                {rankedMembers.map((user) => {
-                  const points: number = user.rank?.points ?? 0;
-                  const position: Position = user.rank?.position ?? "DEFAULT";
+              <div className="max-h-80 overflow-y-auto">
+                <Table className="table-fixed">
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead>Mitglied</TableHead>
+                      <TableHead className="w-14 sm:w-18 text-center">
+                        Punkte
+                      </TableHead>
+                      <TableHead className="w-12 sm:w-16 text-right">
+                        Rang
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {rankedMembers.map((user) => {
+                      const points: number = user.rank?.points ?? 0;
+                      const position: Position =
+                        user.rank?.position ?? "DEFAULT";
 
-                  return (
-                    <div
-                      key={user.id}
-                      className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 bg-muted/60 transition-colors min-w-0"
-                    >
-                      <Avatar size="md" className="shrink-0">
-                        <AvatarImage
-                          src={user.image ?? undefined}
-                          alt={user.name}
-                        />
-                        <AvatarFallback className="text-xs">
-                          {user.name.charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col min-w-0 flex-1">
-                        <span className="truncate text-xs font-medium">
-                          {user.name}
-                        </span>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                          <span className="tabular-nums">{points} P.</span>
-                        </div>
-                      </div>
-                      <Image
-                        src={POSITION_ICONS[position]}
-                        alt={POSITION_LABELS[position]}
-                        title={POSITION_LABELS[position]}
-                        width={24}
-                        height={25}
-                        className="h-10 w-auto shrink-0"
-                      />
-                    </div>
-                  );
-                })}
+                      return (
+                        <TableRow key={user.id}>
+                          <TableCell className="py-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <Avatar size="sm" className="shrink-0">
+                                <AvatarImage
+                                  src={user.image ?? undefined}
+                                  alt={user.name}
+                                />
+                                <AvatarFallback className="text-xs">
+                                  {user.name.charAt(0).toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="truncate text-xs sm:text-sm font-medium">
+                                {user.name}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-center text-xs sm:text-sm tabular-nums py-2">
+                            {points}
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Image
+                              src={POSITION_ICONS[position]}
+                              alt={POSITION_LABELS[position]}
+                              title={POSITION_LABELS[position]}
+                              width={24}
+                              height={25}
+                              className="h-6 w-auto shrink-0 ml-auto"
+                            />
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
               </div>
             </div>
 
@@ -177,7 +204,13 @@ export default function Group({ group }: { group: GroupWithUsers }) {
               >
                 Gruppe verlassen
               </Button>
-              <Button size="lg" className="flex-1 sm:flex-none">
+              <Button
+                size="lg"
+                className="flex-1 sm:flex-none"
+                onClick={() => {
+                  router.replace(`/groups/${group.id}`);
+                }}
+              >
                 Statistiken anzeigen
                 <MoveRight />
               </Button>

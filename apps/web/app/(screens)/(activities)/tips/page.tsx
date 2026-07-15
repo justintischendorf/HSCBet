@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import Tip from "@/components/tip";
 import {
   Combobox,
@@ -12,7 +12,15 @@ import {
 } from "@/components/ui/combobox";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSeasons } from "@/hooks/use-seasons";
 import { useTips, tipsQueryKey } from "@/hooks/use-tips";
@@ -20,12 +28,14 @@ import { useSession } from "@/lib/auth-client";
 import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "sonner";
-import { PenLine } from "lucide-react";
+import type { GameModel } from "@repo/database";
 
 interface TipDraft {
   host: string;
   guest: string;
 }
+
+const AUTO_SAVE_DELAY_MS = 700;
 
 export default function TipsScreen() {
   const { data: session } = useSession();
@@ -68,33 +78,38 @@ export default function TipsScreen() {
   const gamesList = currentSeason?.game ?? [];
 
   const [drafts, setDrafts] = useState<Record<string, TipDraft>>({});
-  const [submittingGameId, setSubmittingGameId] = useState<string | null>(null);
+  const autoSaveTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>(
+    {},
+  );
 
-  const updateDraft = (
-    gameId: string,
-    field: keyof TipDraft,
-    value: string,
-  ) => {
-    setDrafts((prev) => {
-      const existing = prev[gameId] ?? { host: "", guest: "" };
-      return { ...prev, [gameId]: { ...existing, [field]: value } };
-    });
+  useEffect(() => {
+    const timers = autoSaveTimers.current;
+    return () => {
+      Object.values(timers).forEach(clearTimeout);
+    };
+  }, []);
+
+  const getDraft = (gameId: string): TipDraft => {
+    const draft = drafts[gameId];
+    if (draft) return draft;
+
+    const existingTip = myTips.get(gameId);
+    return {
+      host: existingTip ? String(existingTip.tipHost) : "",
+      guest: existingTip ? String(existingTip.tipGuest) : "",
+    };
   };
 
-  const submitTip = async (gameId: string) => {
-    const draft = drafts[gameId];
-    if (!userId || !selectedSeasonId || myTips.has(gameId)) return;
-    if (!draft?.host || !draft?.guest) return;
+  const saveTip = async (gameId: string, draft: TipDraft) => {
+    if (!userId || !selectedSeasonId) return;
 
-    setSubmittingGameId(gameId);
-    const { error } = await apiClient.api.tip.post({
+    const { error } = await apiClient.api.tip.put({
       seasonId: selectedSeasonId,
       gameId,
       userId,
       tipHost: Number(draft.host),
       tipGuest: Number(draft.guest),
     });
-    setSubmittingGameId(null);
 
     if (error) {
       const message =
@@ -107,13 +122,27 @@ export default function TipsScreen() {
       return;
     }
 
-    toast.success("Tipp erfolgreich abgegeben");
-    setDrafts((prev) => {
-      const next = { ...prev };
-      delete next[gameId];
-      return next;
-    });
     queryClient.invalidateQueries({ queryKey: tipsQueryKey(selectedSeasonId) });
+  };
+
+  const handleFieldChange = (
+    game: GameModel,
+    field: keyof TipDraft,
+    value: string,
+  ) => {
+    const nextDraft = { ...getDraft(game.id), [field]: value };
+    setDrafts((prev) => ({ ...prev, [game.id]: nextDraft }));
+
+    const timers = autoSaveTimers.current;
+    if (timers[game.id]) {
+      clearTimeout(timers[game.id]);
+    }
+
+    if (nextDraft.host === "" || nextDraft.guest === "") return;
+
+    timers[game.id] = setTimeout(() => {
+      void saveTip(game.id, nextDraft);
+    }, AUTO_SAVE_DELAY_MS);
   };
 
   return (
@@ -121,8 +150,9 @@ export default function TipsScreen() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold tracking-tight">Meine Tipps</h1>
         <p className="text-base mt-2">
-          Hier findest du alle Spiele der Saison. Gib direkt einen Tipp ab – pro
-          Spiel kannst du nur einmal tippen.
+          Hier findest du alle Spiele der Saison. Tippe direkt auf ein Spiel –
+          dein Tipp wird automatisch gespeichert und ist bis zum Spielbeginn
+          änderbar. Danach wird er gesperrt.
         </p>
         <Separator className="sm:my-8 my-6" />
         <div className="flex flex-col gap-6 md:gap-8">
@@ -151,88 +181,104 @@ export default function TipsScreen() {
           {isSeasonsPending || isTipsPending ? (
             <Skeleton className="h-96 w-full" />
           ) : gamesList.length > 0 ? (
-            <div className="flex flex-col gap-3">
-              {gamesList.map((game) => {
-                const myTip = myTips.get(game.id);
-                if (myTip) {
-                  return <Tip key={game.id} tipData={myTip} gameData={game} />;
-                }
+            <Table className="table-fixed">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="hidden md:table-cell md:w-24 lg:w-30">
+                    Spielzeit
+                  </TableHead>
+                  <TableHead className="text-right">Heimteam</TableHead>
+                  <TableHead className="w-20 sm:w-24 text-center">
+                    Tipp
+                  </TableHead>
+                  <TableHead className="text-left">Gastteam</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {gamesList.map((game) => {
+                  const myTip = myTips.get(game.id) ?? null;
+                  const hasStarted =
+                    new Date(game.date).getTime() <= Date.now();
 
-                const draft = drafts[game.id];
-                const isSubmitting = submittingGameId === game.id;
+                  if (hasStarted) {
+                    return (
+                      <Tip key={game.id} tipData={myTip} gameData={game} />
+                    );
+                  }
 
-                return (
-                  <div
-                    key={game.id}
-                    className="flex flex-col gap-3 border border-border rounded-xl bg-card p-4 shadow-sm"
-                  >
-                    <div className="flex sm:flex-row flex-col sm:items-center justify-between">
-                      <div className="flex flex-row items-baseline sm:gap-3 gap-2 text-lg font-bold">
-                        <span className="text-sm sm:text-base font-bold">
+                  const draft = getDraft(game.id);
+                  const dateObj = new Date(game.date);
+                  const dateStr = dateObj.toLocaleDateString("de-DE", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  });
+                  const timeOnly =
+                    dateObj.toLocaleTimeString("de-DE", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    }) + " Uhr";
+
+                  return (
+                    <Fragment key={game.id}>
+                      <TableRow className="border-none hover:bg-transparent md:hidden">
+                        <TableCell
+                          colSpan={3}
+                          className="pt-3 pb-0 text-center text-xs text-muted-foreground"
+                        >
+                          {dateStr} · {timeOnly}
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
+                        <TableCell className="hidden md:table-cell py-3">
+                          <div className="text-sm font-medium">{dateStr}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {timeOnly}
+                          </div>
+                        </TableCell>
+                        <TableCell className="truncate text-right py-3 text-xs sm:text-sm font-semibold">
                           {game.host}
-                        </span>
-                        <span className="text-sm sm:text-base font-bold text-muted-foreground">
-                          vs
-                        </span>
-                        <span className="text-sm sm:text-base font-bold">
+                        </TableCell>
+                        <TableCell className="py-3 px-1 sm:px-2">
+                          <div className="flex items-center justify-center gap-1">
+                            <Input
+                              type="number"
+                              min={0}
+                              max={99}
+                              placeholder="0"
+                              className="w-8 px-1 text-center shrink-0"
+                              disabled={!userId}
+                              value={draft.host}
+                              onChange={(e) =>
+                                handleFieldChange(game, "host", e.target.value)
+                              }
+                            />
+                            <span className="text-sm text-muted-foreground shrink-0">
+                              :
+                            </span>
+                            <Input
+                              type="number"
+                              min={0}
+                              max={99}
+                              placeholder="0"
+                              className="w-8 px-1 text-center shrink-0"
+                              disabled={!userId}
+                              value={draft.guest}
+                              onChange={(e) =>
+                                handleFieldChange(game, "guest", e.target.value)
+                              }
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell className="truncate text-left py-3 text-xs sm:text-sm font-semibold">
                           {game.guest}
-                        </span>
-                      </div>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(game.date).toLocaleString("de-DE", {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}{" "}
-                        Uhr
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        type="number"
-                        min={0}
-                        max={99}
-                        placeholder="0"
-                        className="w-16 text-center"
-                        disabled={!userId || isSubmitting}
-                        value={draft?.host ?? ""}
-                        onChange={(e) =>
-                          updateDraft(game.id, "host", e.target.value)
-                        }
-                      />
-                      <span className="text-sm text-muted-foreground">:</span>
-                      <Input
-                        type="number"
-                        min={0}
-                        max={99}
-                        placeholder="0"
-                        className="w-16 text-center"
-                        disabled={!userId || isSubmitting}
-                        value={draft?.guest ?? ""}
-                        onChange={(e) =>
-                          updateDraft(game.id, "guest", e.target.value)
-                        }
-                      />
-                      <Button
-                        size="sm"
-                        className="ml-auto"
-                        disabled={
-                          !userId ||
-                          isSubmitting ||
-                          !draft?.host ||
-                          !draft?.guest
-                        }
-                        onClick={() => submitTip(game.id)}
-                      >
-                        {isSubmitting ? "Tippt..." : "Tippen"}
-                      </Button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                        </TableCell>
+                      </TableRow>
+                    </Fragment>
+                  );
+                })}
+              </TableBody>
+            </Table>
           ) : (
             <div className="mt-20 text-center text-sm text-muted-foreground">
               Für diese Saison sind noch keine Spiele vorhanden.
