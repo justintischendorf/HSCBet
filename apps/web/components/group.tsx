@@ -1,5 +1,5 @@
 import type { GroupModel, Position } from "@repo/database";
-import { BarChart3, LogOut } from "lucide-react";
+import { BarChart3, LogOut, MoveRight } from "lucide-react";
 import Image from "next/image";
 import {
   Accordion,
@@ -13,6 +13,8 @@ import { Separator } from "./ui/separator";
 import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "sonner";
+import { ConfirmAlert } from "./confirm-alert";
+import React from "react";
 
 type GroupWithUsers = GroupModel & {
   user: {
@@ -43,6 +45,8 @@ const POSITION_ICONS: Record<Position, string> = {
 };
 
 export default function Group({ group }: { group: GroupWithUsers }) {
+  const [showLeaveGroupConfirm, setShowLeaveGroupConfirm] =
+    React.useState(false);
   const imageUrl = group.files?.[0]
     ? `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/media/${group.files[0].id}/image`
     : undefined;
@@ -78,7 +82,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
       <AccordionItem value="group" className="border-none">
         <AccordionTrigger className="rounded-none px-4 py-3.5 hover:bg-muted/40 hover:no-underline transition-colors">
           <div className="flex flex-row items-center gap-3.5 w-full min-w-0">
-            <Avatar className="size-11 shrink-0">
+            <Avatar className="size-13 shrink-0">
               <AvatarImage
                 id="profile-picture"
                 src={imageUrl}
@@ -128,7 +132,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                       key={user.id}
                       className="flex items-center gap-2.5 rounded-lg px-2 py-1.5 bg-muted/60 transition-colors min-w-0"
                     >
-                      <Avatar size="sm" className="shrink-0">
+                      <Avatar size="md" className="shrink-0">
                         <AvatarImage
                           src={user.image ?? undefined}
                           alt={user.name}
@@ -162,20 +166,29 @@ export default function Group({ group }: { group: GroupWithUsers }) {
             <Separator />
 
             <div className="flex items-center gap-2 sm:justify-end">
-              <Button size="lg" className="flex-1 sm:flex-none">
-                Statistiken anzeigen
-              </Button>
               <Button
                 variant="destructive"
                 size="lg"
                 className="flex-1 sm:flex-none"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleLeaveGroup(group.id);
+                  setShowLeaveGroupConfirm(true);
                 }}
               >
                 Gruppe verlassen
               </Button>
+              <Button size="lg" className="flex-1 sm:flex-none">
+                Statistiken anzeigen
+                <MoveRight />
+              </Button>
+              <ConfirmAlert
+                message="Du bist dabei, die Gruppe zu verlassen und musst erneut eingeladen werden, um wieder beitreten zu können."
+                open={showLeaveGroupConfirm}
+                onOpenChange={setShowLeaveGroupConfirm}
+                onConfirm={async () => {
+                  await handleLeaveGroup(group.id);
+                }}
+              />
             </div>
           </div>
         </AccordionContent>
