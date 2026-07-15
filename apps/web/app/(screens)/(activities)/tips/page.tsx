@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useMemo } from 'react';
-import Tip from '@/components/tip';
+import { useState, useEffect, useMemo } from "react";
+import Tip from "@/components/tip";
 import {
   Combobox,
   ComboboxContent,
@@ -9,17 +9,18 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from '@/components/ui/combobox';
-import { Separator } from '@/components/ui/separator';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useSeasons } from '@/hooks/use-seasons';
-import { useTips, tipsQueryKey } from '@/hooks/use-tips';
-import { useSession } from '@/lib/auth-client';
-import { apiClient } from '@/lib/api-client';
-import { queryClient } from '@/lib/queryClient';
-import { toast } from 'sonner';
+} from "@/components/ui/combobox";
+import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useSeasons } from "@/hooks/use-seasons";
+import { useTips, tipsQueryKey } from "@/hooks/use-tips";
+import { useSession } from "@/lib/auth-client";
+import { apiClient } from "@/lib/api-client";
+import { queryClient } from "@/lib/queryClient";
+import { toast } from "sonner";
+import { PenLine } from "lucide-react";
 
 interface TipDraft {
   host: string;
@@ -36,7 +37,7 @@ export default function TipsScreen() {
     return seasonsResponse?.data?.season ?? [];
   }, [seasonsResponse?.data?.season]);
 
-  const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
+  const [selectedSeasonId, setSelectedSeasonId] = useState<string>("");
 
   useEffect(() => {
     if (seasonsList.length > 0 && !selectedSeasonId) {
@@ -49,9 +50,7 @@ export default function TipsScreen() {
 
   useEffect(() => {
     if (tipsResponse?.error) {
-      toast.error(
-        `${tipsResponse.error.status}: ${tipsResponse.error.value}`,
-      );
+      toast.error(`${tipsResponse.error.status}: ${tipsResponse.error.value}`);
     }
   }, [tipsResponse?.error]);
 
@@ -65,13 +64,11 @@ export default function TipsScreen() {
   }, [tipsResponse, userId]);
 
   const currentSeason = seasonsList.find((s) => s.id === selectedSeasonId);
-  const selectedSeasonTitle = currentSeason?.title ?? '';
+  const selectedSeasonTitle = currentSeason?.title ?? "";
   const gamesList = currentSeason?.game ?? [];
 
   const [drafts, setDrafts] = useState<Record<string, TipDraft>>({});
-  const [submittingGameId, setSubmittingGameId] = useState<string | null>(
-    null,
-  );
+  const [submittingGameId, setSubmittingGameId] = useState<string | null>(null);
 
   const updateDraft = (
     gameId: string,
@@ -79,7 +76,7 @@ export default function TipsScreen() {
     value: string,
   ) => {
     setDrafts((prev) => {
-      const existing = prev[gameId] ?? { host: '', guest: '' };
+      const existing = prev[gameId] ?? { host: "", guest: "" };
       return { ...prev, [gameId]: { ...existing, [field]: value } };
     });
   };
@@ -102,15 +99,15 @@ export default function TipsScreen() {
     if (error) {
       const message =
         error.value &&
-        typeof error.value === 'object' &&
-        'message' in error.value
+        typeof error.value === "object" &&
+        "message" in error.value
           ? String(error.value.message)
           : `${error.status}: ${error.value}`;
       toast.error(message);
       return;
     }
 
-    toast.success('Tipp erfolgreich abgegeben');
+    toast.success("Tipp erfolgreich abgegeben");
     setDrafts((prev) => {
       const next = { ...prev };
       delete next[gameId];
@@ -124,8 +121,8 @@ export default function TipsScreen() {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold tracking-tight">Meine Tipps</h1>
         <p className="text-base mt-2">
-          Hier findest du alle Spiele der Saison. Gib direkt einen Tipp ab –
-          pro Spiel kannst du nur einmal tippen.
+          Hier findest du alle Spiele der Saison. Gib direkt einen Tipp ab – pro
+          Spiel kannst du nur einmal tippen.
         </p>
         <Separator className="sm:my-8 my-6" />
         <div className="flex flex-col gap-6 md:gap-8">
@@ -133,11 +130,11 @@ export default function TipsScreen() {
             items={seasonsList}
             disabled={isSeasonsPending}
             value={selectedSeasonId}
-            onValueChange={(val) => setSelectedSeasonId(val ?? '')}
+            onValueChange={(val) => setSelectedSeasonId(val ?? "")}
           >
             <ComboboxInput
               placeholder="Wähle eine Saison"
-              value={isSeasonsPending ? 'Laden...' : selectedSeasonTitle}
+              value={isSeasonsPending ? "Laden..." : selectedSeasonTitle}
             />
             <ComboboxContent>
               <ComboboxEmpty>Keine Saison gefunden.</ComboboxEmpty>
@@ -182,13 +179,13 @@ export default function TipsScreen() {
                         </span>
                       </div>
                       <span className="text-sm text-muted-foreground">
-                        {new Date(game.date).toLocaleString('de-DE', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}{' '}
+                        {new Date(game.date).toLocaleString("de-DE", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
                         Uhr
                       </span>
                     </div>
@@ -200,9 +197,9 @@ export default function TipsScreen() {
                         placeholder="0"
                         className="w-16 text-center"
                         disabled={!userId || isSubmitting}
-                        value={draft?.host ?? ''}
+                        value={draft?.host ?? ""}
                         onChange={(e) =>
-                          updateDraft(game.id, 'host', e.target.value)
+                          updateDraft(game.id, "host", e.target.value)
                         }
                       />
                       <span className="text-sm text-muted-foreground">:</span>
@@ -213,9 +210,9 @@ export default function TipsScreen() {
                         placeholder="0"
                         className="w-16 text-center"
                         disabled={!userId || isSubmitting}
-                        value={draft?.guest ?? ''}
+                        value={draft?.guest ?? ""}
                         onChange={(e) =>
-                          updateDraft(game.id, 'guest', e.target.value)
+                          updateDraft(game.id, "guest", e.target.value)
                         }
                       />
                       <Button
@@ -229,7 +226,7 @@ export default function TipsScreen() {
                         }
                         onClick={() => submitTip(game.id)}
                       >
-                        {isSubmitting ? 'Tippt...' : 'Tippen'}
+                        {isSubmitting ? "Tippt..." : "Tippen"}
                       </Button>
                     </div>
                   </div>
