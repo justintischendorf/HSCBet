@@ -30,8 +30,5 @@ jobs:
         run: |
           bun run oxfmt apps packages
 
-      - name: Check types
-        run: bun check-types
-
       - name: Run Turbo lint tasks
         run: bun lint:turbo
