@@ -28,4 +28,31 @@ export abstract class MailService {
     logger.info("forgot password email sent", data);
     return data;
   }
+
+  // --------------------------------------------------------------------------> POST api/mail/verify-mail
+  //                                                                             - send email verification mail
+  static async sendVerifyMail({
+    body,
+    user,
+  }: {
+    body: (typeof MailModel.SendVerifyMail)["static"];
+    user: { id: string };
+  }) {
+    logger.info("sending verification email for user: " + user.id);
+
+    const { error, data } = await resend.emails.send({
+      from: process.env.RESEND_MAIL_ADDRESS as string,
+      to: body.email,
+      subject: body.subject,
+      html: body.html,
+    });
+
+    if (error) {
+      logger.error("error sending verify email", error);
+      return error;
+    }
+
+    logger.info("verify email sent", data);
+    return data;
+  }
 }
