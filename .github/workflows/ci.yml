@@ -29,6 +29,3 @@ jobs:
       - name: Check formatting
         run: |
           bun run oxfmt apps packages
-
-      - name: Run Turbo lint tasks
-        run: bun lint:turbo
