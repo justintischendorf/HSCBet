@@ -1,49 +1,52 @@
 'use client';
 
+import { Fragment } from 'react';
 import { GameModel, TipModel } from '@repo/database';
-import { CircleX } from 'lucide-react';
+import { TableCell, TableRow } from './ui/table';
 
 interface TipProps {
-  tipData: TipModel;
+  tipData: TipModel | null;
   gameData: GameModel;
 }
 
 export default function Tip({ tipData, gameData }: TipProps) {
+  const dateObj = new Date(gameData.date);
+  const dateStr = dateObj.toLocaleDateString('de-DE', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+  const timeOnly =
+    dateObj.toLocaleTimeString('de-DE', {
+      hour: '2-digit',
+      minute: '2-digit',
+    }) + ' Uhr';
+
   return (
-    <div className="flex flex-col gap-2 border border-border rounded-xl bg-card p-4 shadow-sm relative">
-      <div className="flex sm:flex-row flex-col sm:items-center justify-between">
-        <div className="flex flex-row items-baseline sm:gap-3 gap-2 text-lg font-bold">
-          <span className="text-sm sm:text-base font-bold">
-            {gameData.host}
-          </span>
-          <span className="text-sm sm:text-base font-bold text-muted-foreground">
-            {gameData.hostPoints}
-          </span>
-          <span className="text-sm sm:text-base font-bold">:</span>
-          <span className="text-sm sm:text-base font-bold text-muted-foreground">
-            {gameData.guestPoints}
-          </span>
-          <span className="text-sm sm:text-base font-bold">
-            {gameData.guest}
-          </span>
-        </div>
-        <span className="text-sm text-muted-foreground">
-          {new Date(gameData.date).toLocaleString('de-DE', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
-          })}{' '}
-          Uhr
-        </span>
-      </div>
-      <div className="flex flex-row gap-2 items-center">
-        <CircleX size={18} className="text-destructive shrink-0" />
-        <p className="text-sm">
-          Dein Tipp: {tipData.tipHost} : {tipData.tipGuest}
-        </p>
-      </div>
-    </div>
+    <Fragment>
+      <TableRow className="border-none hover:bg-transparent md:hidden">
+        <TableCell
+          colSpan={3}
+          className="pt-3 pb-0 text-center text-xs text-muted-foreground"
+        >
+          {dateStr} · {timeOnly}
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell className="hidden md:table-cell py-3">
+          <div className="text-sm font-medium">{dateStr}</div>
+          <div className="text-xs text-muted-foreground">{timeOnly}</div>
+        </TableCell>
+        <TableCell className="truncate text-right py-3 text-xs sm:text-sm font-semibold">
+          {gameData.host}
+        </TableCell>
+        <TableCell className="text-center py-3 px-1 sm:px-2 font-bold tracking-wider text-sm sm:text-base">
+          {tipData ? `${tipData.tipHost} : ${tipData.tipGuest}` : '- : -'}
+        </TableCell>
+        <TableCell className="truncate text-left py-3 text-xs sm:text-sm font-semibold">
+          {gameData.guest}
+        </TableCell>
+      </TableRow>
+    </Fragment>
   );
 }

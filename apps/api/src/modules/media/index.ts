@@ -4,9 +4,10 @@ import { sessionPlugin } from "../auth";
 import { IdParams } from "../../global/models";
 import { MediaModel } from "./model";
 import { MediaService } from "./service";
-import { WebAppStore } from "src/context";
+import { contextPlugin } from "../../context";
 
 export const media = new Elysia({ prefix: "/media" })
+  .use(contextPlugin)
   .use(sessionPlugin)
 
   // --------------------------------------------------------------------------> POST api/media/upload/get-presigned-url
@@ -14,7 +15,7 @@ export const media = new Elysia({ prefix: "/media" })
   .post(
     "/upload/get-presigned-url",
     async ({ body, store, user }) => {
-      const { s3Manager } = store as WebAppStore;
+      const { s3Manager } = store;
 
       const userId = user.id;
       const s3Key = `uploads/${userId}/${Date.now()}-${body.filename.replace(/\s/g, "_")}`;
@@ -59,7 +60,7 @@ export const media = new Elysia({ prefix: "/media" })
   .delete(
     "/:id",
     async ({ params: { id }, store, set }) => {
-      const { s3Manager } = store as WebAppStore;
+      const { s3Manager } = store;
       const { s3Key } = await MediaService.deleteMediaFromDb({ id });
 
       if (s3Key) {
@@ -81,7 +82,7 @@ export const media = new Elysia({ prefix: "/media" })
   .delete(
     "/by-url",
     async ({ body, store, set }) => {
-      const { s3Manager } = store as WebAppStore;
+      const { s3Manager } = store;
       const { s3Key } = await MediaService.deleteMediaByImageUrl({
         imageUrl: body.imageUrl,
       });
@@ -105,7 +106,7 @@ export const media = new Elysia({ prefix: "/media" })
   .get(
     "/:id/download-url",
     async ({ params: { id }, store }) => {
-      const { s3Manager } = store as WebAppStore;
+      const { s3Manager } = store;
       const file = await prisma.file.findUniqueOrThrow({
         where: { id },
         select: { s3Key: true },
@@ -126,7 +127,7 @@ export const media = new Elysia({ prefix: "/media" })
   .get(
     "/:id/image",
     async ({ params: { id }, store, set, redirect }) => {
-      const { s3Manager } = store as WebAppStore;
+      const { s3Manager } = store;
       const file = await prisma.file.findUniqueOrThrow({
         where: { id },
         select: { s3Key: true },

@@ -1,82 +1,44 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { ModeToggle } from '@/components/mode-toggle';
-import { Navbar } from '@/components/navbar';
-import { Button } from '@/components/ui/button';
-import { authClient, useSession } from '@/lib/auth-client';
-import { Inbox, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import Image from 'next/image';
-import React from 'react';
-import Footer from '@/components/footer';
-import { TwoFactorWarning } from '@/components/2fa-warning';
-import { Skeleton } from '@/components/ui/skeleton';
-import NavbarAvatar from '@/components/navbar-avatar';
-import Link from 'next/link';
-import { queryClient } from '@/lib/queryClient';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { ModeToggle } from "@/components/mode-toggle";
+import { Navbar } from "@/components/navbar";
+import { Button } from "@/components/ui/button";
+import { authClient, useSession } from "@/lib/auth-client";
+import { LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import Image from "next/image";
+import React from "react";
+import Footer from "@/components/footer";
+import { TwoFactorWarning } from "@/components/2fa-warning";
+import { Skeleton } from "@/components/ui/skeleton";
+import NavbarAvatar from "@/components/navbar-avatar";
+import Link from "next/link";
+import { queryClient } from "@/lib/queryClient";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { useSocket } from "@/hooks/use-socket";
+import { InboxPopover } from "@/components/inbox-popover";
 
 export default function ScreensLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
   const session = useSession();
   const user = session?.data?.user;
 
-  const router = useRouter();
-  const wsRef = useRef<WebSocket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
-
-  useEffect(() => {
-    const wsUrl =
-      process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001/api/socket';
-
-    const socket = new WebSocket(wsUrl);
-
-    socket.onopen = () => {
-      setIsConnected(true);
-    };
-
-    socket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-      } catch (err) {
-        toast.error('Fehler beim Verarbeiten der WebSocket-Nachricht:' + err);
-      }
-    };
-
-    socket.onerror = (error) => {
-      console.log('WebSocket-Fehler:', error);
-    };
-
-    socket.onclose = (event) => {
-      setIsConnected(false);
-    };
-
-    wsRef.current = socket;
-
-    return () => {
-      if (
-        socket.readyState === WebSocket.OPEN ||
-        socket.readyState === WebSocket.CONNECTING
-      ) {
-        socket.close();
-      }
-    };
-  }, []);
+  const { isConnected } = useSocket();
 
   async function handleLogout() {
     const { error } = await authClient.signOut();
 
     if (error) {
-      toast.error(error.status + ': ' + error.message);
+      toast.error(error.status + ": " + error.message);
       return;
     }
 
-    router.replace('/signin');
+    router.replace("/signin");
   }
 
   return (
@@ -119,9 +81,7 @@ export default function ScreensLayout({
               ) : (
                 <Skeleton className="h-8 w-8 rounded-full" />
               )}
-              <Button variant="outline" size="icon">
-                <Inbox className="h-5 w-5" />
-              </Button>
+              <InboxPopover />
               <ModeToggle />
             </div>
           </div>

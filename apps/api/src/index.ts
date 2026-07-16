@@ -4,9 +4,8 @@ import { createLogger } from "@repo/logger";
 import { socket } from "./modules/socket";
 import { authPlugin } from "./modules/auth";
 import { media } from "./modules/media";
-import { S3Manager } from "@repo/bucket";
 import { S3Service } from "./global/services/s3-service";
-import { WebAppStore } from "./context";
+import { contextPlugin } from "./context";
 import cron, { Patterns } from "@elysia/cron";
 import { rateLimit } from "elysia-rate-limit";
 import { season } from "./modules/season";
@@ -14,12 +13,12 @@ import { admin } from "./modules/admin";
 import { tip } from "./modules/tip";
 import { group } from "./modules/group";
 import { mail } from "./modules/mail";
+import { notification } from "./modules/notification";
 
 const logger = createLogger("api");
-const s3Manager = new S3Manager();
 
 const app = new Elysia({ prefix: "/api" })
-  .state("s3Manager", s3Manager)
+  .use(contextPlugin)
   .use(
     cors({
       origin: process.env.WEB_SERVER_URL,
@@ -59,8 +58,7 @@ const app = new Elysia({ prefix: "/api" })
       name: "s3-cleanup",
       pattern: Patterns.EVERY_10_MINUTES,
       async run() {
-        const store = app.store as WebAppStore;
-        const s3Manager = store.s3Manager;
+        const { s3Manager } = app.store;
         await S3Service.cleanup({ s3Manager });
       },
     }),
@@ -73,6 +71,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(mail)
   .use(group)
   .use(season)
+  .use(notification)
   .onError(({ error, set }) => {
     if (error instanceof Error && error.message === "rate-limit") {
       set.status = 429;
@@ -91,6 +90,17 @@ const app = new Elysia({ prefix: "/api" })
         success: false,
         message: "Du hast für dieses Spiel bereits einen Tipp abgegeben",
         error: "DUPLICATE_TIP",
+      };
+    }
+
+    if (error instanceof Error && error.message === "GAME_ALREADY_STARTED") {
+      set.status = 409;
+      logger.warn("Spiel hat bereits begonnen, Tipp nicht mehr änderbar");
+      return {
+        success: false,
+        message:
+          "Das Spiel hat bereits begonnen, dein Tipp kann nicht mehr geändert werden.",
+        error: "GAME_ALREADY_STARTED",
       };
     }
 

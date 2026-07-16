@@ -2,9 +2,10 @@ import Elysia, { t } from "elysia";
 import { sessionPlugin } from "../auth";
 import { GroupService } from "./service";
 import { GroupModel } from "./model";
-import { WebAppStore } from "src/context";
+import { contextPlugin } from "../../context";
 
 export const group = new Elysia({ prefix: "/group" })
+  .use(contextPlugin)
   .use(sessionPlugin)
 
   // --------------------------------------------------------------------------> GET api/group
@@ -38,7 +39,7 @@ export const group = new Elysia({ prefix: "/group" })
   .patch(
     "/leaveGroup",
     async ({ set, user, body, store }) => {
-      const { s3Manager } = store as WebAppStore;
+      const { s3Manager } = store;
 
       set.status = 200;
       return {
