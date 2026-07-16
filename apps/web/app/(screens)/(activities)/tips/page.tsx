@@ -15,13 +15,13 @@ import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { useSeasons } from "@/hooks/use-seasons";
 import { useTips, tipsQueryKey } from "@/hooks/use-tips";
 import { useSession } from "@/lib/auth-client";
@@ -29,6 +29,7 @@ import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "sonner";
 import type { GameModel } from "@repo/database";
+import { useMutation } from "@tanstack/react-query";
 
 interface TipDraft {
   host: string;
@@ -100,29 +101,38 @@ export default function TipsScreen() {
     };
   };
 
+  const {
+    mutateAsync: updateTip,
+    isPending: isSavingTip,
+    variables: savingTipVariables,
+  } = useMutation({
+    mutationFn: async (input: {
+      seasonId: string;
+      gameId: string;
+      userId: string;
+      draft: TipDraft;
+    }) => {
+      return apiClient.api.tip.put({
+        seasonId: input.seasonId,
+        gameId: input.gameId,
+        userId: input.userId,
+        tipHost: Number(input.draft.host),
+        tipGuest: Number(input.draft.guest),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: tipsQueryKey(selectedSeasonId),
+      });
+    },
+    onError: () => {
+      toast.error("Fehler beim Speichern des Tipps.");
+    },
+  });
+
   const saveTip = async (gameId: string, draft: TipDraft) => {
     if (!userId || !selectedSeasonId) return;
-
-    const { error } = await apiClient.api.tip.put({
-      seasonId: selectedSeasonId,
-      gameId,
-      userId,
-      tipHost: Number(draft.host),
-      tipGuest: Number(draft.guest),
-    });
-
-    if (error) {
-      const message =
-        error.value &&
-        typeof error.value === "object" &&
-        "message" in error.value
-          ? String(error.value.message)
-          : `${error.status}: ${error.value}`;
-      toast.error(message);
-      return;
-    }
-
-    queryClient.invalidateQueries({ queryKey: tipsQueryKey(selectedSeasonId) });
+    await updateTip({ seasonId: selectedSeasonId, gameId, userId, draft });
   };
 
   const handleFieldChange = (
@@ -207,6 +217,8 @@ export default function TipsScreen() {
                   }
 
                   const draft = getDraft(game.id);
+                  const isSavingThisTip =
+                    isSavingTip && savingTipVariables?.gameId === game.id;
                   const dateObj = new Date(game.date);
                   const dateStr = dateObj.toLocaleDateString("de-DE", {
                     day: "2-digit",
@@ -268,6 +280,9 @@ export default function TipsScreen() {
                                 handleFieldChange(game, "guest", e.target.value)
                               }
                             />
+                            {isSavingThisTip && (
+                              <Spinner className="shrink-0" />
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="truncate text-left py-3 text-xs sm:text-sm font-semibold">
