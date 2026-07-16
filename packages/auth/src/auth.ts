@@ -6,10 +6,7 @@ import { emailOTP } from "better-auth/plugins/email-otp";
 import { MailService } from "@repo/api/mail";
 
 type OTPType =
-  | "sign-in"
-  | "email-verification"
-  | "forget-password"
-  | "change-email";
+  "sign-in" | "email-verification" | "forget-password" | "change-email";
 
 const otpEmailSubjects: Record<OTPType, string> = {
   "sign-in": "Dein Anmeldecode",
@@ -28,7 +25,7 @@ export const auth = betterAuth({
           body: {
             email,
             subject: otpEmailSubjects[type],
-            html: `<p>Dein Bestätigungscode lautet: <strong>${otp}</strong></p><p>Der Code ist 5 Minuten gültig.</p>`,
+            html: `<p>Dein Bestätigungscode lautet: <strong>${otp}</strong></p>`,
           },
         });
       },

@@ -6,6 +6,12 @@ export namespace MailModel {
     subject: t.String(),
     html: t.String(),
   });
+
+  export const SendVerifyMail = t.Object({
+    email: t.String(),
+    subject: t.String(),
+    html: t.String(),
+  });
 }
 
 export type MailModel = {
