@@ -9,6 +9,9 @@ import { apiClient } from '@/lib/api-client';
 import { MimeType } from '@repo/database';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
+import { Spinner } from './ui/spinner';
+import { useMutation } from '@tanstack/react-query';
+import { cn } from '@/lib/utils';
 
 export function InputGroupPicture({
   fileId,
@@ -21,11 +24,27 @@ export function InputGroupPicture({
 }) {
   const [imageUrl, setImageUrl] = useState<string | undefined>();
 
-  async function handleFileChange(file: File) {
-    await handleGroupFileChange(file, fileId, (newFileId, newImageUrl) => {
-      onFileIdChange(newFileId);
-      setImageUrl(newImageUrl);
+  const { mutateAsync: getPresignedUrl, isPending: isUploading } =
+    useMutation({
+      mutationFn: async (input: {
+        filename: string;
+        mimetype: MimeType;
+        size: number;
+      }) => {
+        return apiClient.api.media.upload['get-presigned-url'].post(input);
+      },
     });
+
+  async function handleFileChange(file: File) {
+    await handleGroupFileChange(
+      file,
+      fileId,
+      getPresignedUrl,
+      (newFileId, newImageUrl) => {
+        onFileIdChange(newFileId);
+        setImageUrl(newImageUrl);
+      },
+    );
   }
 
   async function handleDelete() {
@@ -53,6 +72,7 @@ export function InputGroupPicture({
               type="file"
               accept="image/*"
               className="sr-only"
+              disabled={isUploading}
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (file) {
@@ -60,9 +80,27 @@ export function InputGroupPicture({
                 }
               }}
             />
-            <span className="pointer-events-none absolute inset-0 rounded-full bg-black/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100" />
-            <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100">
-              <Camera className="size-9" />
+            <span
+              className={cn(
+                'pointer-events-none absolute inset-0 rounded-full bg-black/45 transition-opacity duration-200',
+                isUploading
+                  ? 'opacity-100'
+                  : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
+              )}
+            />
+            <span
+              className={cn(
+                'pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white transition-opacity duration-200',
+                isUploading
+                  ? 'opacity-100'
+                  : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
+              )}
+            >
+              {isUploading ? (
+                <Spinner className="size-9" />
+              ) : (
+                <Camera className="size-9" />
+              )}
             </span>
           </Avatar>
         </label>
@@ -72,6 +110,7 @@ export function InputGroupPicture({
           variant="ghost"
           size="icon"
           className="absolute -bottom-1 -right-5 hover:-translate-y-0.5 transition-transform duration-200"
+          disabled={isUploading}
           onClick={async (e) => {
             e.preventDefault();
             await handleDelete();
@@ -87,6 +126,13 @@ export function InputGroupPicture({
 async function handleGroupFileChange(
   file: File,
   previousFileId: string | undefined,
+  getPresignedUrl: (input: {
+    filename: string;
+    mimetype: MimeType;
+    size: number;
+  }) => ReturnType<
+    (typeof apiClient)['api']['media']['upload']['get-presigned-url']['post']
+  >,
   onUploaded: (fileId: string, imageUrl: string) => void,
 ) {
   let fileType: MimeType = 'IMAGE_JPEG';
@@ -100,7 +146,7 @@ async function handleGroupFileChange(
   }
 
   const { error: presignedUrlError, data: presignedUrlData } =
-    await apiClient.api.media.upload['get-presigned-url'].post({
+    await getPresignedUrl({
       filename: file.name,
       mimetype: fileType,
       size: file.size,

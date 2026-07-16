@@ -170,7 +170,7 @@ model Rank {
   user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId   String   @unique
   points   Int      @default(0)
-  position Position
+  position Position @default(DEFAULT)
 }
 
 model Notification {

@@ -4,12 +4,18 @@ import { seasonsQueryKey } from "./use-seasons";
 import { createLogger } from "@repo/logger";
 import { apiClient } from "@/lib/api-client";
 import { notificationsQueryKey } from "./use-notifications";
+import { useMutation } from "@tanstack/react-query";
+import { rankQueryKey } from "./use-rank";
 
 const logger = createLogger("web:socket-hook");
 
 export function useSocket() {
   const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+
+  function createNotification(message: string) {
+    return apiClient.api.notification.post({ message });
+  }
 
   useEffect(() => {
     const wsUrl =
@@ -24,7 +30,7 @@ export function useSocket() {
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-        handleNotificationUpdate(message.payload);
+        handleNotificationUpdate(message.payload, createNotification);
       } catch (err) {
         logger.error("Fehler beim Verarbeiten der WebSocket-Nachricht:" + err);
       }
@@ -57,20 +63,23 @@ interface eventTypes {
   eventType: "game_updated" | "seasons_updated";
 }
 
-async function handleNotificationUpdate(payload: eventTypes) {
+async function handleNotificationUpdate(
+  payload: eventTypes,
+  createNotification: (
+    message: string,
+  ) => ReturnType<(typeof apiClient)["api"]["notification"]["post"]>,
+) {
   switch (payload?.eventType) {
     case "game_updated":
-      await apiClient.api.notification.post({
-        message: "Ein Spiel wurde aktualisiert.",
-      });
-      queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
-      queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+      await queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
+      await queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+      await queryClient.invalidateQueries({ queryKey: rankQueryKey });
+      await apiClient.api.rank["evaluate-points"].patch();
+      await createNotification("Ein Spiel wurde aktualisiert.");
       break;
     case "seasons_updated":
-      await apiClient.api.notification.post({
-        message: "Die neue Saison ist verfügbar!",
-      });
-      queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
+      await createNotification("Die neue Saison ist verfügbar!");
+      await queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
       break;
     default:
       logger.warn("Unbekannter Nachrichtentyp:", payload?.eventType);
