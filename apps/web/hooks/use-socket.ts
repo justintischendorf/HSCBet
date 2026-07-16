@@ -6,6 +6,7 @@ import { apiClient } from "@/lib/api-client";
 import { notificationsQueryKey } from "./use-notifications";
 import { useMutation } from "@tanstack/react-query";
 import { rankQueryKey } from "./use-rank";
+import { seasonStatsQueryKey } from "./use-season-stats";
 
 const logger = createLogger("web:socket-hook");
 
@@ -74,6 +75,7 @@ async function handleNotificationUpdate(
       await queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
       await queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       await queryClient.invalidateQueries({ queryKey: rankQueryKey });
+      await queryClient.invalidateQueries({ queryKey: seasonStatsQueryKey });
       await apiClient.api.rank["evaluate-points"].patch();
       await createNotification("Ein Spiel wurde aktualisiert.");
       break;
