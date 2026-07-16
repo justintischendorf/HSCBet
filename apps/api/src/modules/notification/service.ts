@@ -48,6 +48,59 @@ export abstract class NotificationService {
     });
   }
 
+  // --------------------------------------------------------------------------> PATCH api/notification/:id/unread
+  //                                                                             - mark a single notification as unread
+  static async markAsUnread({
+    user,
+    params,
+  }: {
+    user: { id: string };
+    params: (typeof IdParams)["static"];
+  }) {
+    const notification = await prisma.notification.findFirst({
+      where: { id: params.id, userId: user.id },
+    });
+
+    if (!notification) {
+      throw new Error("Unauthorized");
+    }
+
+    return prisma.notification.update({
+      where: { id: notification.id },
+      data: { read: false },
+    });
+  }
+
+  // --------------------------------------------------------------------------> DELETE api/notification/:id
+  //                                                                             - delete a single notification
+  static async deleteNotification({
+    user,
+    params,
+  }: {
+    user: { id: string };
+    params: (typeof IdParams)["static"];
+  }) {
+    const notification = await prisma.notification.findFirst({
+      where: { id: params.id, userId: user.id },
+    });
+
+    if (!notification) {
+      throw new Error("Unauthorized");
+    }
+
+    return prisma.notification.delete({
+      where: { id: notification.id },
+    });
+  }
+
+  // --------------------------------------------------------------------------> DELETE api/notification/read
+  //                                                                             - delete all read notifications for the authenticated user
+  static async deleteAllRead({ user }: { user: { id: string } }) {
+    await prisma.notification.deleteMany({
+      where: { userId: user.id, read: true },
+    });
+  }
+
   // --------------------------------------------------------------------------> PATCH api/notification
   //                                                                             - add a new notification for the authenticated user
   static async addNotification({

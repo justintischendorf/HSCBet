@@ -5,10 +5,15 @@ export type Options = {
   hostname: string;
 };
 
-export type ChanelName<userId extends string = string> = `user:${userId}`;
+export type ChanelName<userId extends string = string> =
+  | `user:${userId}`
+  | "broadcast";
 
 export type Payload =
-  GameDeletedPayload | GameUpdatedPayload | GroupeInvitedPayload;
+  | GameDeletedPayload
+  | GameUpdatedPayload
+  | GroupeInvitedPayload
+  | SeasonsUpdatedPayload;
 
 type GameUpdatedPayload = {
   gameId: string;
@@ -25,4 +30,8 @@ type GroupeInvitedPayload = {
   targetId: string;
   executorId: string;
   eventType: "group_invited";
+};
+
+type SeasonsUpdatedPayload = {
+  eventType: "seasons_updated";
 };

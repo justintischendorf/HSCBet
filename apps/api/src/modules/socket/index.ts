@@ -18,5 +18,12 @@ export const socket = new Elysia({ prefix: "/socket" })
           ws.send({ payload });
         },
       });
+
+      ws.data.store.pubSubManager.subscribe({
+        chanelName: "broadcast",
+        callback({ payload }) {
+          ws.send({ payload });
+        },
+      });
     },
   });

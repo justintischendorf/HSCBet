@@ -43,7 +43,53 @@ export const notification = new Elysia({ prefix: "/notification" })
     },
   )
 
-  // --------------------------------------------------------------------------> PATCH api/notification
+  // --------------------------------------------------------------------------> PATCH api/notification/:id/unread
+  //                                                                             - mark a single notification as unread
+  .patch(
+    "/:id/unread",
+    async ({ set, user, params }) => {
+      set.status = 200;
+      return {
+        success: true,
+        notification: await NotificationService.markAsUnread({
+          user,
+          params,
+        }),
+      };
+    },
+    {
+      params: IdParams,
+    },
+  )
+
+  // --------------------------------------------------------------------------> DELETE api/notification/read
+  //                                                                             - delete all read notifications
+  .delete("/read", async ({ set, user }) => {
+    await NotificationService.deleteAllRead({ user });
+    set.status = 200;
+    return { success: true };
+  })
+
+  // --------------------------------------------------------------------------> DELETE api/notification/:id
+  //                                                                             - delete a single notification
+  .delete(
+    "/:id",
+    async ({ set, user, params }) => {
+      set.status = 200;
+      return {
+        success: true,
+        notification: await NotificationService.deleteNotification({
+          user,
+          params,
+        }),
+      };
+    },
+    {
+      params: IdParams,
+    },
+  )
+
+  // --------------------------------------------------------------------------> POST api/notification
   //                                                                             - add a new notification for the authenticated user
   .post(
     "/",

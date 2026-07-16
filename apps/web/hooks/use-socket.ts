@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from "react";
 import { seasonsQueryKey } from "./use-seasons";
 import { createLogger } from "@repo/logger";
 import { apiClient } from "@/lib/api-client";
-import { toast } from "sonner";
 import { notificationsQueryKey } from "./use-notifications";
 
 const logger = createLogger("web:socket-hook");
@@ -68,6 +67,9 @@ async function handleNotificationUpdate(payload: eventTypes) {
       queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       break;
     case "seasons_updated":
+      await apiClient.api.notification.post({
+        message: "Die neue Saison ist verfügbar!",
+      });
       queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
       break;
     default:

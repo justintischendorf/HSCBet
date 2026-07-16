@@ -34,8 +34,10 @@ export class PubSubManager {
         console.log(`Subscribe erfolgreich auf ${count} Chanels`);
       }
     });
-    this.redis.on("message", (_, payload) =>
-      callback({ payload: JSON.parse(payload) }),
-    );
+    this.redis.on("message", (channel, payload) => {
+      if (channel === chanelName) {
+        callback({ payload: JSON.parse(payload) });
+      }
+    });
   }
 }
