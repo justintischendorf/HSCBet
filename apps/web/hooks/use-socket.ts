@@ -4,12 +4,19 @@ import { seasonsQueryKey } from "./use-seasons";
 import { createLogger } from "@repo/logger";
 import { apiClient } from "@/lib/api-client";
 import { notificationsQueryKey } from "./use-notifications";
+import { useMutation } from "@tanstack/react-query";
 
 const logger = createLogger("web:socket-hook");
 
 export function useSocket() {
   const wsRef = useRef<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+
+  const { mutateAsync: createNotification } = useMutation({
+    mutationFn: async (message: string) => {
+      return apiClient.api.notification.post({ message });
+    },
+  });
 
   useEffect(() => {
     const wsUrl =
@@ -24,7 +31,7 @@ export function useSocket() {
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
-        handleNotificationUpdate(message.payload);
+        handleNotificationUpdate(message.payload, createNotification);
       } catch (err) {
         logger.error("Fehler beim Verarbeiten der WebSocket-Nachricht:" + err);
       }
@@ -48,7 +55,7 @@ export function useSocket() {
         socket.close();
       }
     };
-  }, []);
+  }, [createNotification]);
 
   return { isConnected };
 }
@@ -57,19 +64,20 @@ interface eventTypes {
   eventType: "game_updated" | "seasons_updated";
 }
 
-async function handleNotificationUpdate(payload: eventTypes) {
+async function handleNotificationUpdate(
+  payload: eventTypes,
+  createNotification: (
+    message: string,
+  ) => ReturnType<(typeof apiClient)["api"]["notification"]["post"]>,
+) {
   switch (payload?.eventType) {
     case "game_updated":
-      await apiClient.api.notification.post({
-        message: "Ein Spiel wurde aktualisiert.",
-      });
+      await createNotification("Ein Spiel wurde aktualisiert.");
       queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
       queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       break;
     case "seasons_updated":
-      await apiClient.api.notification.post({
-        message: "Die neue Saison ist verfügbar!",
-      });
+      await createNotification("Die neue Saison ist verfügbar!");
       queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
       break;
     default:

@@ -9,6 +9,7 @@ import { apiClient } from '@/lib/api-client';
 import { MimeType } from '@repo/database';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
+import { useMutation } from '@tanstack/react-query';
 
 export function InputGroupPicture({
   fileId,
@@ -21,11 +22,26 @@ export function InputGroupPicture({
 }) {
   const [imageUrl, setImageUrl] = useState<string | undefined>();
 
+  const { mutateAsync: getPresignedUrl } = useMutation({
+    mutationFn: async (input: {
+      filename: string;
+      mimetype: MimeType;
+      size: number;
+    }) => {
+      return apiClient.api.media.upload['get-presigned-url'].post(input);
+    },
+  });
+
   async function handleFileChange(file: File) {
-    await handleGroupFileChange(file, fileId, (newFileId, newImageUrl) => {
-      onFileIdChange(newFileId);
-      setImageUrl(newImageUrl);
-    });
+    await handleGroupFileChange(
+      file,
+      fileId,
+      getPresignedUrl,
+      (newFileId, newImageUrl) => {
+        onFileIdChange(newFileId);
+        setImageUrl(newImageUrl);
+      },
+    );
   }
 
   async function handleDelete() {
@@ -87,6 +103,13 @@ export function InputGroupPicture({
 async function handleGroupFileChange(
   file: File,
   previousFileId: string | undefined,
+  getPresignedUrl: (input: {
+    filename: string;
+    mimetype: MimeType;
+    size: number;
+  }) => ReturnType<
+    (typeof apiClient)['api']['media']['upload']['get-presigned-url']['post']
+  >,
   onUploaded: (fileId: string, imageUrl: string) => void,
 ) {
   let fileType: MimeType = 'IMAGE_JPEG';
@@ -100,7 +123,7 @@ async function handleGroupFileChange(
   }
 
   const { error: presignedUrlError, data: presignedUrlData } =
-    await apiClient.api.media.upload['get-presigned-url'].post({
+    await getPresignedUrl({
       filename: file.name,
       mimetype: fileType,
       size: file.size,

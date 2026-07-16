@@ -19,6 +19,7 @@ import {
   notificationsQueryKey,
   useNotifications,
 } from "@/hooks/use-notifications";
+import { useMutation } from "@tanstack/react-query";
 
 type Filter = "unread" | "read";
 
@@ -43,10 +44,26 @@ export function InboxPopover() {
     filter === "unread" ? !n.read : n.read,
   );
 
+  const { mutateAsync: markAsRead } = useMutation({
+    mutationFn: async (notificationId: string) => {
+      return apiClient.api.notification({ id: notificationId }).read.patch();
+    },
+  });
+
+  const { mutateAsync: markAllAsRead } = useMutation({
+    mutationFn: async () => {
+      return apiClient.api.notification.readAll.patch();
+    },
+  });
+
+  const { mutateAsync: markAsUnread } = useMutation({
+    mutationFn: async (notificationId: string) => {
+      return apiClient.api.notification({ id: notificationId }).unread.patch();
+    },
+  });
+
   async function handleMarkAsRead(notificationId: string) {
-    const { error } = await apiClient.api
-      .notification({ id: notificationId })
-      .read.patch();
+    const { error } = await markAsRead(notificationId);
 
     if (error) {
       toast.error(`${error.status}: ${error.value}`);
@@ -57,7 +74,7 @@ export function InboxPopover() {
   }
 
   async function handleMarkAllAsRead() {
-    const { error } = await apiClient.api.notification.readAll.patch();
+    const { error } = await markAllAsRead();
 
     if (error) {
       toast.error(`${error.status}: ${error.value}`);
@@ -68,9 +85,7 @@ export function InboxPopover() {
   }
 
   async function handleMarkAsUnread(notificationId: string) {
-    const { error } = await apiClient.api
-      .notification({ id: notificationId })
-      .unread.patch();
+    const { error } = await markAsUnread(notificationId);
 
     if (error) {
       toast.error(`${error.status}: ${error.value}`);
@@ -116,10 +131,7 @@ export function InboxPopover() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent
-        className="flex h-[28rem] w-96 flex-col p-3"
-        align="end"
-      >
+      <PopoverContent className="flex h-112 w-96 flex-col p-3" align="end">
         <div className="flex shrink-0 items-start justify-between">
           <PopoverTitle>Postfach</PopoverTitle>
           <div className="flex flex-col items-end gap-0.5">

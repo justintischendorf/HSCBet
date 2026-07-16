@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { ConfirmAlert } from "./confirm-alert";
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 
 type GroupWithUsers = GroupModel & {
   user: {
@@ -53,11 +54,14 @@ export default function Group({ group }: { group: GroupWithUsers }) {
     ? `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/media/${group.files[0].id}/image`
     : undefined;
 
+  const { mutateAsync: leaveGroup } = useMutation({
+    mutationFn: async (groupId: string) => {
+      return apiClient.api.group.leaveGroup.patch({ groupId });
+    },
+  });
+
   async function handleLeaveGroup(groupId: string) {
-    const { error: leaveGroupError } =
-      await apiClient.api.group.leaveGroup.patch({
-        groupId,
-      });
+    const { error: leaveGroupError } = await leaveGroup(groupId);
 
     if (leaveGroupError) {
       toast.error(

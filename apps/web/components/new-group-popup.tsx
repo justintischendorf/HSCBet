@@ -30,6 +30,7 @@ import { apiClient } from '@/lib/api-client';
 import { useSession } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { queryClient } from '@/lib/queryClient';
+import { useMutation } from '@tanstack/react-query';
 
 export function NewGroupPopup() {
   const [open, setOpen] = React.useState(false);
@@ -88,8 +89,19 @@ function GroupForm({
   const [available, setAvailable] = React.useState(64);
   const [fileId, setFileId] = React.useState<string | undefined>();
 
+  const { mutateAsync: createGroup } = useMutation({
+    mutationFn: async (input: {
+      name: string;
+      description: string;
+      fileId: string | undefined;
+      user: { id: string; name: string; email: string };
+    }) => {
+      return apiClient.api.group.post(input);
+    },
+  });
+
   async function handleGroupCreation() {
-    const { data: group, error: groupError } = await apiClient.api.group.post({
+    const { data: group, error: groupError } = await createGroup({
       name,
       description,
       fileId,

@@ -10,11 +10,22 @@ import { MimeType } from '@repo/database';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
 import { Skeleton } from './ui/skeleton';
+import { useMutation } from '@tanstack/react-query';
 
 export function InputProfilePicture() {
   const { data: session, refetch, isPending } = useSession();
   const user = session?.user;
   const fallbackChar = user?.name?.charAt(0).toUpperCase() ?? '?';
+
+  const { mutateAsync: getPresignedUrl } = useMutation({
+    mutationFn: async (input: {
+      filename: string;
+      mimetype: MimeType;
+      size: number;
+    }) => {
+      return apiClient.api.media.upload['get-presigned-url'].post(input);
+    },
+  });
 
   if (isPending) {
     return <Skeleton className="size-30 rounded-full" />;
@@ -42,7 +53,11 @@ export function InputProfilePicture() {
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (file) {
-                  await handleFileChange(file, user?.image ?? undefined);
+                  await handleFileChange(
+                    file,
+                    user?.image ?? undefined,
+                    getPresignedUrl,
+                  );
                   await refetch();
                 }
               }}
@@ -73,7 +88,14 @@ export function InputProfilePicture() {
 
 export async function handleFileChange(
   file: File,
-  previousImageUrl?: string | null,
+  previousImageUrl: string | null | undefined,
+  getPresignedUrl: (input: {
+    filename: string;
+    mimetype: MimeType;
+    size: number;
+  }) => ReturnType<
+    (typeof apiClient)['api']['media']['upload']['get-presigned-url']['post']
+  >,
 ) {
   let fileType: MimeType = 'IMAGE_JPEG';
   if (file.type === 'image/png') {
@@ -86,7 +108,7 @@ export async function handleFileChange(
   }
 
   const { error: presignedUrlError, data: presignedUrlData } =
-    await apiClient.api.media.upload['get-presigned-url'].post({
+    await getPresignedUrl({
       filename: file.name,
       mimetype: fileType,
       size: file.size,

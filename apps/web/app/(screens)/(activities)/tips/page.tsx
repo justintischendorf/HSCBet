@@ -15,7 +15,6 @@ import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableHead,
   TableHeader,
@@ -29,6 +28,7 @@ import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "sonner";
 import type { GameModel } from "@repo/database";
+import { useMutation } from "@tanstack/react-query";
 
 interface TipDraft {
   host: string;
@@ -100,29 +100,34 @@ export default function TipsScreen() {
     };
   };
 
+  const { mutateAsync: updateTip } = useMutation({
+    mutationFn: async (input: {
+      seasonId: string;
+      gameId: string;
+      userId: string;
+      draft: TipDraft;
+    }) => {
+      return apiClient.api.tip.put({
+        seasonId: input.seasonId,
+        gameId: input.gameId,
+        userId: input.userId,
+        tipHost: Number(input.draft.host),
+        tipGuest: Number(input.draft.guest),
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: tipsQueryKey(selectedSeasonId),
+      });
+    },
+    onError: () => {
+      toast.error("Fehler beim Speichern des Tipps.");
+    },
+  });
+
   const saveTip = async (gameId: string, draft: TipDraft) => {
     if (!userId || !selectedSeasonId) return;
-
-    const { error } = await apiClient.api.tip.put({
-      seasonId: selectedSeasonId,
-      gameId,
-      userId,
-      tipHost: Number(draft.host),
-      tipGuest: Number(draft.guest),
-    });
-
-    if (error) {
-      const message =
-        error.value &&
-        typeof error.value === "object" &&
-        "message" in error.value
-          ? String(error.value.message)
-          : `${error.status}: ${error.value}`;
-      toast.error(message);
-      return;
-    }
-
-    queryClient.invalidateQueries({ queryKey: tipsQueryKey(selectedSeasonId) });
+    await updateTip({ seasonId: selectedSeasonId, gameId, userId, draft });
   };
 
   const handleFieldChange = (
