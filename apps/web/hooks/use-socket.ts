@@ -23,6 +23,7 @@ export function useSocket() {
       process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001/api/socket";
 
     const socket = new WebSocket(wsUrl);
+    let isCleaningUp = false;
 
     socket.onopen = () => {
       setIsConnected(true);
@@ -38,6 +39,7 @@ export function useSocket() {
     };
 
     socket.onerror = (error) => {
+      if (isCleaningUp) return;
       logger.error("WebSocket-Fehler:", error);
     };
 
@@ -48,6 +50,7 @@ export function useSocket() {
     wsRef.current = socket;
 
     return () => {
+      isCleaningUp = true;
       if (
         socket.readyState === WebSocket.OPEN ||
         socket.readyState === WebSocket.CONNECTING

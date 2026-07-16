@@ -50,10 +50,32 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: [process.env.WEB_SERVER_URL!],
+  emailVerification: {
+    sendVerificationEmail: async ({ user, url }) => {
+      await MailService.sendVerifyMail({
+        body: {
+          email: user.email,
+          subject: otpEmailSubjects["email-verification"],
+          html: `<p>Klicke auf den folgenden Link, um deine E-Mail-Adresse zu bestätigen:</p><p><a href="${url}">${url}</a></p>`,
+        },
+        user: { id: user.id },
+      });
+    },
+  },
   user: {
     changeEmail: {
       enabled: true,
       updateEmailWithoutVerification: true,
+      sendChangeEmailConfirmation: async ({ user, newEmail, url }) => {
+        await MailService.sendVerifyMail({
+          body: {
+            email: user.email,
+            subject: otpEmailSubjects["change-email"],
+            html: `<p>Klicke auf den folgenden Link, um deine neue E-Mail-Adresse (${newEmail}) zu bestätigen:</p><p><a href="${url}">${url}</a></p>`,
+          },
+          user: { id: user.id },
+        });
+      },
     },
     deleteUser: {
       enabled: true,
