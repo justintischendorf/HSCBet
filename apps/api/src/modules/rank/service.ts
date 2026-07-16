@@ -1,5 +1,6 @@
 import { Position, prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
+import { TipEvaluationService } from "../../global/services/tip-evaluation-service";
 
 const logger = createLogger("api:rank");
 
@@ -54,16 +55,23 @@ export abstract class RankService {
       const hostPoints = tip.game.hostPoints ?? 0;
       const guestPoints = tip.game.guestPoints ?? 0;
 
-      const actualResult = Math.sign(hostPoints - guestPoints);
-      const tippedResult = Math.sign(tip.tipHost - tip.tipGuest);
-      const isWinnerCorrect = actualResult === tippedResult;
+      const isWinnerCorrect = TipEvaluationService.isWinnerCorrect({
+        tipHost: tip.tipHost,
+        tipGuest: tip.tipGuest,
+        hostPoints,
+        guestPoints,
+      });
 
       let points = 0;
       if (isWinnerCorrect) {
         points = WINNER_POINTS;
 
-        const isExactResult =
-          tip.tipHost === hostPoints && tip.tipGuest === guestPoints;
+        const isExactResult = TipEvaluationService.isExactResult({
+          tipHost: tip.tipHost,
+          tipGuest: tip.tipGuest,
+          hostPoints,
+          guestPoints,
+        });
         if (isExactResult) {
           points *= EXACT_RESULT_BONUS_MULTIPLIER;
         }
