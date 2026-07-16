@@ -14,6 +14,7 @@ import { tip } from "./modules/tip";
 import { group } from "./modules/group";
 import { mail } from "./modules/mail";
 import { notification } from "./modules/notification";
+import { rank } from "./modules/rank";
 
 const logger = createLogger("api");
 
@@ -67,6 +68,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(authPlugin)
   .use(socket)
   .use(media)
+  .use(rank)
   .use(tip)
   .use(mail)
   .use(group)

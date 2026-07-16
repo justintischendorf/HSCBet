@@ -10,6 +10,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Separator } from "./ui/separator";
+import { Spinner } from "./ui/spinner";
 import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
 import { toast } from "sonner";
@@ -54,7 +55,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
     ? `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/media/${group.files[0].id}/image`
     : undefined;
 
-  const { mutateAsync: leaveGroup } = useMutation({
+  const { mutateAsync: leaveGroup, isPending: isLeavingGroup } = useMutation({
     mutationFn: async (groupId: string) => {
       return apiClient.api.group.leaveGroup.patch({ groupId });
     },
@@ -178,11 +179,13 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                 variant="destructive"
                 size="lg"
                 className="flex-1 sm:flex-none"
+                disabled={isLeavingGroup}
                 onClick={(e) => {
                   e.preventDefault();
                   setShowLeaveGroupConfirm(true);
                 }}
               >
+                {isLeavingGroup && <Spinner />}
                 Gruppe verlassen
               </Button>
               <Button

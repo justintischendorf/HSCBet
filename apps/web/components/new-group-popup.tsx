@@ -31,6 +31,7 @@ import { useSession } from '@/lib/auth-client';
 import { toast } from 'sonner';
 import { queryClient } from '@/lib/queryClient';
 import { useMutation } from '@tanstack/react-query';
+import { Spinner } from '@/components/ui/spinner';
 
 export function NewGroupPopup() {
   const [open, setOpen] = React.useState(false);
@@ -89,7 +90,7 @@ function GroupForm({
   const [available, setAvailable] = React.useState(64);
   const [fileId, setFileId] = React.useState<string | undefined>();
 
-  const { mutateAsync: createGroup } = useMutation({
+  const { mutateAsync: createGroup, isPending: isCreatingGroup } = useMutation({
     mutationFn: async (input: {
       name: string;
       description: string;
@@ -175,7 +176,10 @@ function GroupForm({
           />
         </Field>
       </div>
-      <Button type="submit">Gruppe erstellen</Button>
+      <Button type="submit" disabled={isCreatingGroup}>
+        {isCreatingGroup && <Spinner />}
+        Gruppe erstellen
+      </Button>
     </form>
   );
 }

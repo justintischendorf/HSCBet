@@ -11,6 +11,7 @@ import {
 import { Button } from "./ui/button";
 import { ConfirmAlert } from "./confirm-alert";
 import { ScrollArea } from "./ui/scroll-area";
+import { Spinner } from "./ui/spinner";
 import { cn } from "@/lib/utils";
 import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
@@ -44,19 +45,28 @@ export function InboxPopover() {
     filter === "unread" ? !n.read : n.read,
   );
 
-  const { mutateAsync: markAsRead } = useMutation({
+  const {
+    mutateAsync: markAsRead,
+    isPending: isMarkingAsRead,
+    variables: markAsReadId,
+  } = useMutation({
     mutationFn: async (notificationId: string) => {
       return apiClient.api.notification({ id: notificationId }).read.patch();
     },
   });
 
-  const { mutateAsync: markAllAsRead } = useMutation({
-    mutationFn: async () => {
-      return apiClient.api.notification.readAll.patch();
-    },
-  });
+  const { mutateAsync: markAllAsRead, isPending: isMarkingAllAsRead } =
+    useMutation({
+      mutationFn: async () => {
+        return apiClient.api.notification.readAll.patch();
+      },
+    });
 
-  const { mutateAsync: markAsUnread } = useMutation({
+  const {
+    mutateAsync: markAsUnread,
+    isPending: isMarkingAsUnread,
+    variables: markAsUnreadId,
+  } = useMutation({
     mutationFn: async (notificationId: string) => {
       return apiClient.api.notification({ id: notificationId }).unread.patch();
     },
@@ -138,9 +148,11 @@ export function InboxPopover() {
             {unreadCount > 0 && (
               <button
                 type="button"
+                disabled={isMarkingAllAsRead}
                 onClick={handleMarkAllAsRead}
-                className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+                className="flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:pointer-events-none disabled:opacity-60"
               >
+                {isMarkingAllAsRead && <Spinner className="size-3" />}
                 Alle als gelesen markieren
               </button>
             )}
@@ -196,76 +208,94 @@ export function InboxPopover() {
                   : "Keine gelesenen Nachrichten"}
               </p>
             ) : (
-              filteredNotifications.map((n) => (
-                <div
-                  key={n.id}
-                  className={cn(
-                    "group flex items-start gap-2 rounded-lg px-2.5 py-2 transition-colors hover:bg-muted/60",
-                    !n.read && "bg-muted/40",
-                  )}
-                >
-                  <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
-                    <div className="flex w-full items-center gap-2">
-                      {!n.read && (
-                        <span className="size-1.5 shrink-0 rounded-full bg-huk-accent" />
-                      )}
-                      <span
-                        className={cn(
-                          "flex-1 truncate text-sm",
-                          !n.read
-                            ? "font-medium text-foreground"
-                            : "text-muted-foreground",
+              filteredNotifications.map((n) => {
+                const isThisMarkingAsRead =
+                  isMarkingAsRead && markAsReadId === n.id;
+                const isThisMarkingAsUnread =
+                  isMarkingAsUnread && markAsUnreadId === n.id;
+                const isRowActionPending =
+                  isThisMarkingAsRead || isThisMarkingAsUnread;
+
+                return (
+                  <div
+                    key={n.id}
+                    className={cn(
+                      "group flex items-start gap-2 rounded-lg px-2.5 py-2 transition-colors hover:bg-muted/60",
+                      !n.read && "bg-muted/40",
+                    )}
+                  >
+                    <div className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
+                      <div className="flex w-full items-center gap-2">
+                        {!n.read && (
+                          <span className="size-1.5 shrink-0 rounded-full bg-huk-accent" />
                         )}
-                      >
-                        {n.message}
+                        <span
+                          className={cn(
+                            "flex-1 truncate text-sm",
+                            !n.read
+                              ? "font-medium text-foreground"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          {n.message}
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {new Date(n.createdAt).toLocaleString("de-DE", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}{" "}
+                        Uhr
                       </span>
                     </div>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(n.createdAt).toLocaleString("de-DE", {
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}{" "}
-                      Uhr
-                    </span>
-                  </div>
 
-                  <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100 [@media(hover:none)]:opacity-100">
-                    {n.read ? (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        title="Als ungelesen markieren"
-                        onClick={() => handleMarkAsUnread(n.id)}
-                      >
-                        <Undo2 />
-                      </Button>
-                    ) : (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-xs"
-                        title="Als gelesen markieren"
-                        onClick={() => handleMarkAsRead(n.id)}
-                      >
-                        <Check />
-                      </Button>
-                    )}
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon-xs"
-                      title="Löschen"
-                      onClick={() => handleDelete(n.id)}
+                    <div
+                      className={cn(
+                        "flex shrink-0 items-center gap-0.5 transition-opacity",
+                        isRowActionPending
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100",
+                      )}
                     >
-                      <Trash />
-                    </Button>
+                      {n.read ? (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          title="Als ungelesen markieren"
+                          disabled={isThisMarkingAsUnread}
+                          onClick={() => handleMarkAsUnread(n.id)}
+                        >
+                          {isThisMarkingAsUnread ? <Spinner /> : <Undo2 />}
+                        </Button>
+                      ) : (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-xs"
+                          title="Als gelesen markieren"
+                          disabled={isThisMarkingAsRead}
+                          onClick={() => handleMarkAsRead(n.id)}
+                        >
+                          {isThisMarkingAsRead ? <Spinner /> : <Check />}
+                        </Button>
+                      )}
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon-xs"
+                        title="Löschen"
+                        onClick={() => handleDelete(n.id)}
+                      >
+                        <Trash />
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </ScrollArea>

@@ -37,6 +37,21 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          await prisma.rank.create({
+            data: {
+              userId: user.id,
+              points: 0,
+              position: "DEFAULT",
+            },
+          });
+        },
+      },
+    },
+  },
   trustedOrigins: [process.env.WEB_SERVER_URL!],
   user: {
     changeEmail: {

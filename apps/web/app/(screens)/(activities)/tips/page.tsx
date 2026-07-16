@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import { useSeasons } from "@/hooks/use-seasons";
 import { useTips, tipsQueryKey } from "@/hooks/use-tips";
 import { useSession } from "@/lib/auth-client";
@@ -100,7 +101,11 @@ export default function TipsScreen() {
     };
   };
 
-  const { mutateAsync: updateTip } = useMutation({
+  const {
+    mutateAsync: updateTip,
+    isPending: isSavingTip,
+    variables: savingTipVariables,
+  } = useMutation({
     mutationFn: async (input: {
       seasonId: string;
       gameId: string;
@@ -212,6 +217,8 @@ export default function TipsScreen() {
                   }
 
                   const draft = getDraft(game.id);
+                  const isSavingThisTip =
+                    isSavingTip && savingTipVariables?.gameId === game.id;
                   const dateObj = new Date(game.date);
                   const dateStr = dateObj.toLocaleDateString("de-DE", {
                     day: "2-digit",
@@ -273,6 +280,9 @@ export default function TipsScreen() {
                                 handleFieldChange(game, "guest", e.target.value)
                               }
                             />
+                            {isSavingThisTip && (
+                              <Spinner className="shrink-0" />
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="truncate text-left py-3 text-xs sm:text-sm font-semibold">

@@ -1,9 +1,8 @@
 import Elysia from "elysia";
 import { sessionPlugin } from "../auth";
 import { RankService } from "./service";
-import { RankModel } from "./model";
 
-export const season = new Elysia({ prefix: "/rank" })
+export const rank = new Elysia({ prefix: "/rank" })
   .use(sessionPlugin)
 
   // --------------------------------------------------------------------------> GET api/rank
@@ -12,22 +11,16 @@ export const season = new Elysia({ prefix: "/rank" })
     set.status = 200;
     return {
       success: true,
-      season: await RankService.getRankById({ user }),
+      rank: await RankService.getRankById({ user }),
     };
   })
 
-  // --------------------------------------------------------------------------> PATCH api/rank
+  // --------------------------------------------------------------------------> PATCH api/rank/evaluate-points
   //                                                                             - update user rank score
-  .patch(
-    "/",
-    async ({ set, user, body }) => {
-      set.status = 200;
-      return {
-        success: true,
-        rank: await RankService.evaluatePoints({ user, body }),
-      };
-    },
-    {
-      body: RankModel.UpdateUserRank,
-    },
-  );
+  .patch("/evaluate-points", async ({ set, user }) => {
+    set.status = 200;
+    return {
+      success: true,
+      rank: await RankService.evaluatePoints({ user }),
+    };
+  });
