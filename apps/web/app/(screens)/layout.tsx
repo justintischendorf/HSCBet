@@ -1,11 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { authClient, useSession } from "@/lib/auth-client";
-import { Inbox, LogOut } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import Image from "next/image";
@@ -18,6 +17,7 @@ import Link from "next/link";
 import { queryClient } from "@/lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { useSocket } from "@/hooks/use-socket";
+import { InboxPopover } from "@/components/inbox-popover";
 
 export default function ScreensLayout({
   children,
@@ -27,9 +27,8 @@ export default function ScreensLayout({
   const router = useRouter();
   const session = useSession();
   const user = session?.data?.user;
-  const [isConnected, setIsConnected] = useState(false);
 
-  const socket = useSocket();
+  const { isConnected } = useSocket();
 
   async function handleLogout() {
     const { error } = await authClient.signOut();
@@ -82,9 +81,7 @@ export default function ScreensLayout({
               ) : (
                 <Skeleton className="h-8 w-8 rounded-full" />
               )}
-              <Button variant="outline" size="icon">
-                <Inbox className="h-5 w-5" />
-              </Button>
+              <InboxPopover />
               <ModeToggle />
             </div>
           </div>

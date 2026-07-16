@@ -3,6 +3,7 @@ import { toast } from "sonner";
 
 export function useSocket() {
   const wsRef = useRef<WebSocket | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     const wsUrl =
@@ -10,13 +11,22 @@ export function useSocket() {
 
     const socket = new WebSocket(wsUrl);
 
-    socket.onopen = () => {};
+    socket.onopen = () => {
+      setIsConnected(true);
+    };
 
     socket.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
+        switch (message.type) {
+          case "game_updated":
+            toast(message.payload.message);
+            break;
+          default:
+            console.warn("Unbekannter Nachrichtentyp:", message.type);
+        }
       } catch (err) {
-        toast.error("Fehler beim Verarbeiten der WebSocket-Nachricht:" + err);
+        console.error("Fehler beim Verarbeiten der WebSocket-Nachricht:" + err);
       }
     };
 
@@ -24,7 +34,9 @@ export function useSocket() {
       console.log("WebSocket-Fehler:", error);
     };
 
-    socket.onclose = (event) => {};
+    socket.onclose = () => {
+      setIsConnected(false);
+    };
 
     wsRef.current = socket;
 
@@ -37,4 +49,6 @@ export function useSocket() {
       }
     };
   }, []);
+
+  return { isConnected };
 }

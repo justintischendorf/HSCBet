@@ -13,6 +13,7 @@ import { admin } from "./modules/admin";
 import { tip } from "./modules/tip";
 import { group } from "./modules/group";
 import { mail } from "./modules/mail";
+import { notification } from "./modules/notification";
 
 const logger = createLogger("api");
 
@@ -70,6 +71,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(mail)
   .use(group)
   .use(season)
+  .use(notification)
   .onError(({ error, set }) => {
     if (error instanceof Error && error.message === "rate-limit") {
       set.status = 429;
