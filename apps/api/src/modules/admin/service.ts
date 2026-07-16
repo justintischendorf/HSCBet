@@ -60,22 +60,6 @@ export abstract class AdminService {
     });
   }
 
-  // --------------------------------------------------------------------------> GET api/admin/game-by-id/:id
-  //                                                                             - get a game by id from the database
-  static async getGameById({
-    params,
-  }: {
-    params: (typeof IdParams)["static"];
-  }) {
-    logger.info("fetching game from the database with id: " + params.id);
-
-    return await prisma.game.findUnique({
-      where: {
-        id: params.id,
-      },
-    });
-  }
-
   // --------------------------------------------------------------------------> PATCH api/admin/update-game/:id
   //                                                                             - update a game by id in the database
   static async updateGameById({

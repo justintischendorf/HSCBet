@@ -2,15 +2,10 @@ import Elysia, { t } from "elysia";
 import { AdminModel } from "./model";
 import { AdminService } from "./service";
 import { IdParams } from "src/global/models";
-import { QueueManager } from "@repo/queue";
-
-// bitte qm in Kontext injecten
-const qm = new QueueManager({
-  port: Number(process.env.REDIS_PORT),
-  hostname: String(process.env.REDIS_HOST),
-});
+import { contextPlugin } from "../../context";
 
 export const admin = new Elysia({ prefix: "/admin" })
+  .use(contextPlugin)
 
   // --------------------------------------------------------------------------> GET api/admin/all-seasons
   //                                                                             - get all seasons from the database
@@ -32,7 +27,7 @@ export const admin = new Elysia({ prefix: "/admin" })
   //                                                                             - add a new season to the database
   .post(
     "/new-season",
-    async ({ body, set, request }) => {
+    async ({ body, set, request, store }) => {
       const apiKey = request.headers.get("x-api-key");
       if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
         set.status = 401;
@@ -40,9 +35,11 @@ export const admin = new Elysia({ prefix: "/admin" })
       }
 
       set.status = 200;
-
       const season = await AdminService.addNewSeason({ body });
-
+      store.queueManager.produce({
+        topic: "seasons",
+        payload: { eventType: "seasons_updated" },
+      });
       return {
         success: true,
         season: season,
@@ -57,35 +54,7 @@ export const admin = new Elysia({ prefix: "/admin" })
   //                                                                             - delete a season from the database
   .delete(
     "/delete-season/:id",
-    async ({ params, set, request }) => {
-      const apiKey = request.headers.get("x-api-key");
-      if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
-        set.status = 401;
-        return { success: false, error: "UNAUTHORIZED" };
-      }
-
-      const deltedGame = await AdminService.deleteSeason({ params });
-      qm.produce({
-        topic: "games",
-        payload: { eventType: "game_deleted", gameId: params.id },
-      });
-
-      set.status = 200;
-      return {
-        success: true,
-        season: deltedGame,
-      };
-    },
-    {
-      params: IdParams,
-    },
-  )
-
-  // --------------------------------------------------------------------------> GET api/admin/game-by-id/:id
-  //                                                                             - get a game by id from the database
-  .get(
-    "/game-by-id/:id",
-    async ({ params, set, request }) => {
+    async ({ params, set, request, store }) => {
       const apiKey = request.headers.get("x-api-key");
       if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
         set.status = 401;
@@ -95,7 +64,7 @@ export const admin = new Elysia({ prefix: "/admin" })
       set.status = 200;
       return {
         success: true,
-        season: await AdminService.getGameById({ params }),
+        season: await AdminService.deleteSeason({ params }),
       };
     },
     {
@@ -107,7 +76,7 @@ export const admin = new Elysia({ prefix: "/admin" })
   //                                                                             - update a game by id in the database
   .patch(
     "/update-game/:id",
-    async ({ params, set, request, body }) => {
+    async ({ params, set, request, body, store }) => {
       const apiKey = request.headers.get("x-api-key");
       if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
         set.status = 401;
@@ -115,7 +84,7 @@ export const admin = new Elysia({ prefix: "/admin" })
       }
 
       const updatedGame = await AdminService.updateGameById({ params, body });
-      qm.produce({
+      store.queueManager.produce({
         topic: "games",
         payload: { eventType: "game_updated", gameId: params.id },
       });

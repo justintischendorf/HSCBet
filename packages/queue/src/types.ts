@@ -4,9 +4,10 @@ export type Options = {
 };
 
 export type TopicPayloadMap = {
-  games: GameUpdatedPayload | GameDeletedPayload;
+  games: GameUpdatedPayload;
   groups: GroupeInvitedPayload;
   tips: never;
+  seasons: SeasonsUpdatedPayload;
 };
 
 export type Topic = keyof TopicPayloadMap;
@@ -16,14 +17,13 @@ type GameUpdatedPayload = {
   eventType: "game_updated";
 };
 
-type GameDeletedPayload = {
-  gameId: string;
-  eventType: "game_deleted";
-};
-
 type GroupeInvitedPayload = {
   groupId: string;
   targetId: string;
   executorId: string;
   eventType: "group_invited";
+};
+
+type SeasonsUpdatedPayload = {
+  eventType: "seasons_updated";
 };

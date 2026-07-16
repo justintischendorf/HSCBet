@@ -1,7 +1,7 @@
 import { t, UnwrapSchema } from "elysia";
 
 export namespace TipModel {
-  export const CreateNewTip = t.Object({
+  export const UpsertTip = t.Object({
     seasonId: t.String(),
     gameId: t.String(),
     userId: t.String(),

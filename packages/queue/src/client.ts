@@ -1,16 +1,16 @@
-import IORedis from "ioredis";
 import type { Options, TopicPayloadMap, Topic } from "./types";
 import { Job, Queue, Worker } from "bullmq";
 
 export class QueueManager {
   private queues: Record<Topic, Queue>;
-  private redis: IORedis;
+  private connection: { host: string; port: number };
   constructor({ port, hostname }: Options) {
-    this.redis = new IORedis(port, hostname);
+    this.connection = { host: hostname, port };
     this.queues = {
-      games: new Queue("games", { connection: this.redis }),
-      groups: new Queue("groups", { connection: this.redis }),
-      tips: new Queue("tips", { connection: this.redis }),
+      games: new Queue("games", { connection: this.connection }),
+      groups: new Queue("groups", { connection: this.connection }),
+      tips: new Queue("tips", { connection: this.connection }),
+      seasons: new Queue("seasons", { connection: this.connection }),
     };
   }
 
@@ -24,7 +24,7 @@ export class QueueManager {
       payload: TopicPayloadMap[K];
     };
   }[keyof TopicPayloadMap]): Promise<void> {
-    await this.queues[topic].add(payload.eventType, JSON.stringify(payload));
+    await this.queues[topic].add(payload.eventType, payload);
   }
 
   // --------------------------------------------------------------------------> consume
@@ -41,8 +41,12 @@ export class QueueManager {
       job: Job;
     }) => void | Promise<void>;
   }): Worker {
-    return new Worker(topic, async (job: Job) => {
-      return callback({ job: job, payload: job.data });
-    });
+    return new Worker(
+      topic,
+      async (job: Job) => {
+        return callback({ job: job, payload: job.data });
+      },
+      { connection: this.connection },
+    );
   }
 }

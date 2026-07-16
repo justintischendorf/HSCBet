@@ -1,7 +1,7 @@
-import Elysia, { t } from "elysia";
+import Elysia from "elysia";
 import { sessionPlugin } from "../auth";
 import { TipService } from "./service";
-import { IdParams } from "src/global/models";
+import { IdParams } from "../../global/models";
 import { TipModel } from "./model";
 
 export const tip = new Elysia({ prefix: "/tip" })
@@ -23,18 +23,18 @@ export const tip = new Elysia({ prefix: "/tip" })
     },
   )
 
-  // --------------------------------------------------------------------------> POST api/tip
-  //                                                                             - add a new tip to the database
-  .post(
+  // --------------------------------------------------------------------------> PUT api/tip
+  //                                                                             - create or update a tip for a game, as long as it hasn't started yet
+  .put(
     "/",
     async ({ set, body, user }) => {
       set.status = 200;
       return {
         success: true,
-        season: await TipService.createNewTip({ body, user }),
+        tip: await TipService.upsertTip({ body, user }),
       };
     },
     {
-      body: TipModel.CreateNewTip,
+      body: TipModel.UpsertTip,
     },
   );

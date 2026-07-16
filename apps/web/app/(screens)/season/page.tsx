@@ -1,8 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 import { Separator } from '@/components/ui/separator';
-import { SeasonTable } from '@/components/season-table';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { useSeasons } from '@/hooks/use-seasons';
 import {
   Combobox,
@@ -28,6 +35,7 @@ export default function SeasonScreen() {
 
   const currentSeason = seasonsList.find((s) => s.id === selectedSeasonId);
   const selectedSeasonTitle = currentSeason?.title || '';
+  const games = currentSeason?.game ?? [];
 
   return (
     <main className="w-full sm:py-16 py-8 px-4 md:px-12 sm:px-6">
@@ -90,9 +98,89 @@ export default function SeasonScreen() {
           {isSeasonsPending ? (
             <Skeleton className="h-96 w-full" />
           ) : (
-            <SeasonTable
-              games={isSeasonsPending ? [] : (currentSeason?.game ?? [])}
-            />
+            <div className="w-full">
+              <Table className="table-fixed">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="hidden md:table-cell md:w-24 lg:w-30">
+                      Spielzeit
+                    </TableHead>
+                    <TableHead className="text-right">Heimteam</TableHead>
+                    <TableHead className="w-14 sm:w-20 text-center">
+                      Ergebnis
+                    </TableHead>
+                    <TableHead className="text-left">Gastteam</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {games.map((game) => {
+                    const dateObj = new Date(game.date);
+                    const dateStr = dateObj.toLocaleDateString('de-DE', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric',
+                    });
+                    const timeOnly =
+                      dateObj.toLocaleTimeString('de-DE', {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }) + ' Uhr';
+
+                    const isCoburgHome = game.host === 'HSC 2000 Coburg';
+                    const isCoburgAway = game.guest === 'HSC 2000 Coburg';
+
+                    const hasPlayed =
+                      game.hostPoints !== null && game.guestPoints !== null;
+
+                    return (
+                      <Fragment key={game.host + game.guest}>
+                        <TableRow className="border-none hover:bg-transparent md:hidden">
+                          <TableCell
+                            colSpan={3}
+                            className="pt-3 pb-0 text-center text-xs text-muted-foreground"
+                          >
+                            {dateStr} · {timeOnly}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="hidden md:table-cell py-3">
+                            <div className="text-sm font-medium">
+                              {dateStr}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {timeOnly}
+                            </div>
+                          </TableCell>
+                          <TableCell
+                            className={`truncate text-right py-3 text-xs sm:text-sm ${
+                              isCoburgHome
+                                ? 'text-foreground font-semibold'
+                                : 'text-muted-foreground'
+                            }`}
+                          >
+                            {game.host}
+                          </TableCell>
+                          <TableCell className="text-center font-bold tracking-wider py-3 px-1 sm:px-2 text-sm sm:text-base">
+                            {hasPlayed
+                              ? `${game.hostPoints} : ${game.guestPoints}`
+                              : '- : -'}
+                          </TableCell>
+                          <TableCell
+                            className={`truncate text-left py-3 text-xs sm:text-sm ${
+                              isCoburgAway
+                                ? 'text-foreground font-semibold'
+                                : 'text-muted-foreground'
+                            }`}
+                          >
+                            {game.guest}
+                          </TableCell>
+                        </TableRow>
+                      </Fragment>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
           )}
         </div>
       </div>
