@@ -27,7 +27,7 @@ export const admin = new Elysia({ prefix: "/admin" })
   //                                                                             - add a new season to the database
   .post(
     "/new-season",
-    async ({ body, set, request }) => {
+    async ({ body, set, request, store }) => {
       const apiKey = request.headers.get("x-api-key");
       if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
         set.status = 401;
@@ -36,6 +36,10 @@ export const admin = new Elysia({ prefix: "/admin" })
 
       set.status = 200;
       const season = await AdminService.addNewSeason({ body });
+      store.queueManager.produce({
+        topic: "seasons",
+        payload: { eventType: "seasons_updated" },
+      });
       return {
         success: true,
         season: season,
@@ -57,38 +61,10 @@ export const admin = new Elysia({ prefix: "/admin" })
         return { success: false, error: "UNAUTHORIZED" };
       }
 
-      const deltedGame = await AdminService.deleteSeason({ params });
-      store.queueManager.produce({
-        topic: "games",
-        payload: { eventType: "game_deleted", gameId: params.id },
-      });
-
       set.status = 200;
       return {
         success: true,
-        season: deltedGame,
-      };
-    },
-    {
-      params: IdParams,
-    },
-  )
-
-  // --------------------------------------------------------------------------> GET api/admin/game-by-id/:id
-  //                                                                             - get a game by id from the database
-  .get(
-    "/game-by-id/:id",
-    async ({ params, set, request }) => {
-      const apiKey = request.headers.get("x-api-key");
-      if (!apiKey || apiKey !== process.env.ADMIN_API_KEY) {
-        set.status = 401;
-        return { success: false, error: "UNAUTHORIZED" };
-      }
-
-      set.status = 200;
-      return {
-        success: true,
-        season: await AdminService.getGameById({ params }),
+        season: await AdminService.deleteSeason({ params }),
       };
     },
     {

@@ -2,6 +2,7 @@ import Elysia from "elysia";
 import { sessionPlugin } from "../auth";
 import { NotificationService } from "./service";
 import { IdParams } from "../../global/models";
+import { NotificationModel } from "./model";
 
 export const notification = new Elysia({ prefix: "/notification" })
   .use(sessionPlugin)
@@ -39,5 +40,21 @@ export const notification = new Elysia({ prefix: "/notification" })
     },
     {
       params: IdParams,
+    },
+  )
+
+  // --------------------------------------------------------------------------> PATCH api/notification
+  //                                                                             - add a new notification for the authenticated user
+  .post(
+    "/",
+    async ({ set, user, body }) => {
+      set.status = 200;
+      return {
+        success: true,
+        notification: await NotificationService.addNotification({ user, body }),
+      };
+    },
+    {
+      body: NotificationModel.AddNotification,
     },
   );

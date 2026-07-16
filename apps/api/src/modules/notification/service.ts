@@ -1,6 +1,7 @@
 import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
 import { IdParams } from "../../global/models";
+import { NotificationModel } from "./model";
 
 const logger = createLogger("api:notification");
 
@@ -44,6 +45,23 @@ export abstract class NotificationService {
     await prisma.notification.updateMany({
       where: { userId: user.id, read: false },
       data: { read: true },
+    });
+  }
+
+  // --------------------------------------------------------------------------> PATCH api/notification
+  //                                                                             - add a new notification for the authenticated user
+  static async addNotification({
+    user,
+    body,
+  }: {
+    user: { id: string };
+    body: (typeof NotificationModel.AddNotification)["static"];
+  }) {
+    return prisma.notification.create({
+      data: {
+        ...body,
+        userId: user.id,
+      },
     });
   }
 }
