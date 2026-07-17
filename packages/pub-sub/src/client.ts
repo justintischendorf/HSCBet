@@ -1,6 +1,8 @@
 import IORedis from "ioredis";
 import type { ChanelName, Options, Payload } from "./types";
-import { string, unknown } from "zod";
+import { createLogger } from "@repo/logger";
+
+const logger = createLogger("PubSubManager");
 
 export class PubSubManager {
   private redis: IORedis;
@@ -27,11 +29,13 @@ export class PubSubManager {
   }) {
     this.redis.subscribe(chanelName, (err, count) => {
       if (err) {
-        console.error(
-          `Fehler bei dem Subscriben auf den Chanel: ${chanelName}, Fehler: ${err.message}`,
+        logger.error(
+          `error subscribing to channel ${chanelName}: ${err.message}`,
         );
       } else {
-        console.log(`Subscribe erfolgreich auf ${count} Chanels`);
+        logger.info(
+          `subscribed to channel ${chanelName}, total subscriptions: ${count}`,
+        );
       }
     });
     this.redis.on("message", (channel, payload) => {

@@ -1,7 +1,7 @@
 import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
 import { AdminModel } from "./model";
-import { IdParams } from "src/global/models";
+import { IdParams } from "../../global/models";
 
 const logger = createLogger("api:admin");
 

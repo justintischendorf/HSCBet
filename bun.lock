@@ -126,6 +126,7 @@
     "packages/pub-sub": {
       "name": "@repo/pubsub",
       "dependencies": {
+        "@repo/logger": "workspace:*",
         "ioredis": "5.10.1",
         "zod": "^4.4.3",
       },
@@ -166,6 +167,9 @@
     },
     "packages/worker": {
       "name": "worker",
+      "dependencies": {
+        "@repo/logger": "workspace:*",
+      },
       "devDependencies": {
         "@types/bun": "latest",
       },

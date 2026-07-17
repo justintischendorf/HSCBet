@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { EmptyGroups } from '@/components/empty-groups';
-import Group from '@/components/group';
-import { NewGroupPopup } from '@/components/new-group-popup';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useGroups } from '@/hooks/use-groups';
+import { EmptyGroups } from "@/components/empty-groups";
+import Group from "@/components/group";
+import { NewGroupPopup } from "@/components/new-group-popup";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useGroups } from "@/hooks/use-groups";
 
 export default function GroupsScreen() {
   const { data: groupsResponse, isLoading } = useGroups();
@@ -21,7 +21,7 @@ export default function GroupsScreen() {
             Mitglied bist. Außerdem kannst du neue Gruppen erstellen oder
             bestehenden Gruppen beitreten.
           </p>
-          <div className="shrink-0">
+          <div className="shrink-0 sm:w-auto w-full">
             <NewGroupPopup />
           </div>
         </div>

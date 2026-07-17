@@ -9,6 +9,7 @@ import { rankQueryKey } from "./use-rank";
 import { seasonStatsQueryKey } from "./use-season-stats";
 
 const logger = createLogger("web:socket-hook");
+const RECONNECT_DELAY_MS = 3000;
 
 export function useSocket() {
   const wsRef = useRef<WebSocket | null>(null);
@@ -19,38 +20,58 @@ export function useSocket() {
   }
 
   useEffect(() => {
-    const wsUrl =
-      process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001/api/socket";
+    let isUnmounted = false;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
-    const socket = new WebSocket(wsUrl);
+    function connect() {
+      const wsUrl =
+        process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:3001/api/socket";
 
-    socket.onopen = () => {
-      setIsConnected(true);
-    };
+      const socket = new WebSocket(wsUrl);
 
-    socket.onmessage = (event) => {
-      try {
-        const message = JSON.parse(event.data);
-        handleNotificationUpdate(message.payload, createNotification);
-      } catch (err) {
-        logger.error("Fehler beim Verarbeiten der WebSocket-Nachricht:" + err);
-      }
-    };
+      socket.onopen = () => {
+        setIsConnected(true);
+      };
 
-    socket.onerror = (error) => {
-      logger.error("WebSocket-Fehler:", error);
-    };
+      socket.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          handleNotificationUpdate(message.payload, createNotification);
+        } catch (err) {
+          logger.error(
+            "Fehler beim Verarbeiten der WebSocket-Nachricht:" + err,
+          );
+        }
+      };
 
-    socket.onclose = () => {
-      setIsConnected(false);
-    };
+      socket.onerror = (error) => {
+        if (isUnmounted) return;
+        logger.error("WebSocket-Fehler:", error);
+      };
 
-    wsRef.current = socket;
+      socket.onclose = () => {
+        setIsConnected(false);
+
+        if (isUnmounted) return;
+        reconnectTimer = setTimeout(connect, RECONNECT_DELAY_MS);
+      };
+
+      wsRef.current = socket;
+    }
+
+    connect();
 
     return () => {
+      isUnmounted = true;
+      if (reconnectTimer) {
+        clearTimeout(reconnectTimer);
+      }
+
+      const socket = wsRef.current;
       if (
-        socket.readyState === WebSocket.OPEN ||
-        socket.readyState === WebSocket.CONNECTING
+        socket &&
+        (socket.readyState === WebSocket.OPEN ||
+          socket.readyState === WebSocket.CONNECTING)
       ) {
         socket.close();
       }
