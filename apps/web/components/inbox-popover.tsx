@@ -141,7 +141,10 @@ export function InboxPopover() {
           )}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="flex h-112 w-96 flex-col p-3" align="end">
+      <PopoverContent
+        className="flex h-96 w-[calc(100vw-1.5rem)] max-w-72 flex-col p-2.5 sm:h-112 sm:w-96 sm:max-w-96 sm:p-3"
+        align="end"
+      >
         <div className="flex shrink-0 items-start justify-between">
           <PopoverTitle>Postfach</PopoverTitle>
           <div className="flex flex-col items-end gap-0.5">
@@ -168,12 +171,12 @@ export function InboxPopover() {
           </div>
         </div>
 
-        <div className="mt-3 flex shrink-0 items-center gap-1 rounded-lg bg-muted p-1">
+        <div className="mt-2 flex shrink-0 items-center gap-1 rounded-lg bg-muted p-1 sm:mt-3">
           <button
             type="button"
             onClick={() => setFilter("unread")}
             className={cn(
-              "flex-1 rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+              "flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors sm:px-2.5",
               filter === "unread"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
@@ -185,7 +188,7 @@ export function InboxPopover() {
             type="button"
             onClick={() => setFilter("read")}
             className={cn(
-              "flex-1 rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
+              "flex-1 rounded-md px-2 py-1 text-xs font-medium transition-colors sm:px-2.5",
               filter === "read"
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground",
@@ -195,7 +198,7 @@ export function InboxPopover() {
           </button>
         </div>
 
-        <ScrollArea className="mt-3 min-h-0 flex-1">
+        <ScrollArea className="mt-2 min-h-0 flex-1 sm:mt-3">
           <div className="flex flex-col gap-1">
             {isPending ? (
               <p className="py-6 text-center text-sm text-muted-foreground">
@@ -220,7 +223,7 @@ export function InboxPopover() {
                   <div
                     key={n.id}
                     className={cn(
-                      "group flex items-start gap-2 rounded-lg px-2.5 py-2 transition-colors hover:bg-muted/60",
+                      "group flex items-start gap-1.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-muted/60 sm:gap-2 sm:px-2.5 sm:py-2",
                       !n.read && "bg-muted/40",
                     )}
                   >

@@ -1,38 +1,46 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Camera, Trash } from 'lucide-react';
-import { authClient, useSession } from '@/lib/auth-client';
+import { authClient } from '@/lib/auth-client';
 import { apiClient } from '@/lib/api-client';
 import { MimeType } from '@repo/database';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
-import { Skeleton } from './ui/skeleton';
-import { Spinner } from './ui/spinner';
-import { useMutation } from '@tanstack/react-query';
-import { cn } from '@/lib/utils';
 
-export function InputProfilePicture() {
-  const { data: session, refetch, isPending } = useSession();
-  const user = session?.user;
-  const fallbackChar = user?.name?.charAt(0).toUpperCase() ?? '?';
+export function InputProfilePicture({
+  fallbackChar,
+  currentImageUrl,
+  file,
+  onFileChange,
+  removeExisting,
+  onRemoveExistingChange,
+}: {
+  fallbackChar: string;
+  currentImageUrl: string | null | undefined;
+  file: File | null;
+  onFileChange: (file: File | null) => void;
+  removeExisting: boolean;
+  onRemoveExistingChange: (remove: boolean) => void;
+}) {
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>();
 
-  const { mutateAsync: getPresignedUrl, isPending: isUploading } =
-    useMutation({
-    mutationFn: async (input: {
-      filename: string;
-      mimetype: MimeType;
-      size: number;
-    }) => {
-      return apiClient.api.media.upload['get-presigned-url'].post(input);
-    },
-  });
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl(undefined);
+      return;
+    }
 
-  if (isPending) {
-    return <Skeleton className="size-30 rounded-full" />;
-  }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
+
+  const displayImageUrl =
+    previewUrl ?? (removeExisting ? undefined : (currentImageUrl ?? undefined));
 
   return (
     <Field className="w-fit items-center gap-6">
@@ -44,7 +52,7 @@ export function InputProfilePicture() {
           >
             <AvatarImage
               id="profile-picture"
-              src={user?.image ?? undefined}
+              src={displayImageUrl}
               alt="Profilbild"
             />
             <AvatarFallback className="text-4xl">{fallbackChar}</AvatarFallback>
@@ -53,40 +61,25 @@ export function InputProfilePicture() {
               type="file"
               accept="image/*"
               className="sr-only"
-              disabled={isUploading}
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  await handleFileChange(
-                    file,
-                    user?.image ?? undefined,
-                    getPresignedUrl,
+              onChange={(e) => {
+                const selected = e.target.files?.[0];
+                e.target.value = '';
+                if (!selected) return;
+
+                if (!isSupportedImage(selected)) {
+                  toast.error(
+                    'Nicht unterstütztes Dateiformat. Bitte wähle ein PNG- oder JPEG-Bild aus.',
                   );
-                  await refetch();
+                  return;
                 }
+
+                onFileChange(selected);
+                onRemoveExistingChange(false);
               }}
             />
-            <span
-              className={cn(
-                'pointer-events-none absolute inset-0 rounded-full bg-black/45 transition-opacity duration-200',
-                isUploading
-                  ? 'opacity-100'
-                  : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
-              )}
-            />
-            <span
-              className={cn(
-                'pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white transition-opacity duration-200',
-                isUploading
-                  ? 'opacity-100'
-                  : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
-              )}
-            >
-              {isUploading ? (
-                <Spinner className="size-9" />
-              ) : (
-                <Camera className="size-9" />
-              )}
+            <span className="pointer-events-none absolute inset-0 rounded-full bg-black/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100" />
+            <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100">
+              <Camera className="size-9" />
             </span>
           </Avatar>
         </label>
@@ -96,10 +89,17 @@ export function InputProfilePicture() {
           variant="ghost"
           size="icon"
           className="absolute -bottom-1 -right-5 hover:-translate-y-0.5 transition-transform duration-200"
-          disabled={isUploading}
-          onClick={async (e) => {
+          onClick={(e) => {
             e.preventDefault();
-            await handleDeleteProfilePicture(user?.image, refetch);
+            if (file) {
+              onFileChange(null);
+              return;
+            }
+            if (currentImageUrl) {
+              onRemoveExistingChange(true);
+              return;
+            }
+            toast.error('Du hast kein Profilbild ausgewählt.');
           }}
         >
           <Trash className="size-4" />
@@ -109,7 +109,20 @@ export function InputProfilePicture() {
   );
 }
 
-export async function handleFileChange(
+function isSupportedImage(file: File) {
+  return (
+    file.type === 'image/png' ||
+    file.type === 'image/jpeg' ||
+    file.type === 'image/jpg'
+  );
+}
+
+/**
+ * Lädt ein ausgewähltes Profilbild erst tatsächlich zu MinIO hoch und
+ * hinterlegt es am User. Wird vom aufrufenden Formular erst beim
+ * tatsächlichen Speichern aufgerufen, nicht bereits bei der Bildauswahl.
+ */
+export async function uploadProfilePicture(
   file: File,
   previousImageUrl: string | null | undefined,
   getPresignedUrl: (input: {
@@ -127,7 +140,7 @@ export async function handleFileChange(
     fileType = 'IMAGE_JPEG';
   } else {
     toast.error('Unsupported file type. Please select a PNG or JPEG image.');
-    return;
+    return false;
   }
 
   const { error: presignedUrlError, data: presignedUrlData } =
@@ -139,7 +152,7 @@ export async function handleFileChange(
 
   if (presignedUrlError) {
     toast.error('Failed to get presigned URL. Please try again.');
-    return;
+    return false;
   }
 
   try {
@@ -152,7 +165,7 @@ export async function handleFileChange(
     });
   } catch (err) {
     toast.error('Failed to upload file.' + err);
-    return;
+    return false;
   }
 
   const imageUrl = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/media/${presignedUrlData.file_id}/image`;
@@ -163,7 +176,7 @@ export async function handleFileChange(
 
   if (updateUserError) {
     toast.error(updateUserError.status + ': ' + updateUserError.message);
-    return;
+    return false;
   }
 
   if (previousImageUrl && previousImageUrl !== imageUrl) {
@@ -180,24 +193,18 @@ export async function handleFileChange(
       );
     }
   }
+
+  return true;
 }
 
-export async function handleDeleteProfilePicture(
-  imageUrl: string | null | undefined,
-  refetch: () => Promise<unknown>,
-) {
-  if (!imageUrl) {
-    toast.error('Du hast kein Profilbild gesetzt.');
-    return;
-  }
-
+export async function removeProfilePicture(imageUrl: string) {
   const { error } = await apiClient.api.media['by-url'].delete({
-    imageUrl: imageUrl,
+    imageUrl,
   });
 
   if (error) {
     toast.error(error.status + ': ' + error.value.message);
-    return;
+    return false;
   }
 
   const { error: updateUserError } = await authClient.updateUser({
@@ -206,9 +213,8 @@ export async function handleDeleteProfilePicture(
 
   if (updateUserError) {
     toast.error(updateUserError.status + ': ' + updateUserError.message);
-    return;
+    return false;
   }
 
-  await refetch();
-  toast.success('Profilbild erfolgreich gelöscht!');
+  return true;
 }
