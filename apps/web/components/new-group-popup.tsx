@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/drawer';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { InputGroupPicture } from './input-group-picture';
+import { InputGroupPicture, uploadGroupPicture } from './input-group-picture';
 import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
 import { Textarea } from '@/components/ui/textarea';
 import { apiClient } from '@/lib/api-client';
@@ -32,6 +32,7 @@ import { toast } from 'sonner';
 import { queryClient } from '@/lib/queryClient';
 import { useMutation } from '@tanstack/react-query';
 import { Spinner } from '@/components/ui/spinner';
+import { MimeType } from '@repo/database';
 
 export function NewGroupPopup() {
   const [open, setOpen] = React.useState(false);
@@ -88,7 +89,18 @@ function GroupForm({
   const [description, setDescription] = React.useState('');
   const [length, setLength] = React.useState(0);
   const [available, setAvailable] = React.useState(64);
-  const [fileId, setFileId] = React.useState<string | undefined>();
+  const [pendingFile, setPendingFile] = React.useState<File | null>(null);
+  const [isUploadingPicture, setIsUploadingPicture] = React.useState(false);
+
+  const { mutateAsync: getPresignedUrl } = useMutation({
+    mutationFn: async (input: {
+      filename: string;
+      mimetype: MimeType;
+      size: number;
+    }) => {
+      return apiClient.api.media.upload['get-presigned-url'].post(input);
+    },
+  });
 
   const { mutateAsync: createGroup, isPending: isCreatingGroup } = useMutation({
     mutationFn: async (input: {
@@ -102,6 +114,17 @@ function GroupForm({
   });
 
   async function handleGroupCreation() {
+    let fileId: string | undefined;
+
+    if (pendingFile) {
+      setIsUploadingPicture(true);
+      const uploaded = await uploadGroupPicture(pendingFile, getPresignedUrl);
+      setIsUploadingPicture(false);
+
+      if (!uploaded) return;
+      fileId = uploaded.fileId;
+    }
+
     const { data: group, error: groupError } = await createGroup({
       name,
       description,
@@ -120,6 +143,7 @@ function GroupForm({
 
     toast.success('Gruppe erfolgreich erstellt!');
     setOpen(false);
+    setPendingFile(null);
     queryClient.invalidateQueries({ queryKey: ['groups'] });
   }
 
@@ -133,8 +157,8 @@ function GroupForm({
     >
       <div className="grid place-content-center">
         <InputGroupPicture
-          fileId={fileId}
-          onFileIdChange={setFileId}
+          file={pendingFile}
+          onFileChange={setPendingFile}
           fallbackChar={name.charAt(0).toUpperCase()}
         />
       </div>
@@ -176,8 +200,8 @@ function GroupForm({
           />
         </Field>
       </div>
-      <Button type="submit" disabled={isCreatingGroup}>
-        {isCreatingGroup && <Spinner />}
+      <Button type="submit" disabled={isCreatingGroup || isUploadingPicture}>
+        {(isCreatingGroup || isUploadingPicture) && <Spinner />}
         Gruppe erstellen
       </Button>
     </form>
