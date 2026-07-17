@@ -6,6 +6,9 @@
   "devDependencies": {
     "@types/bun": "latest"
   },
+  "dependencies": {
+    "@repo/logger": "workspace:*"
+  },
   "peerDependencies": {
     "typescript": "^5"
   }

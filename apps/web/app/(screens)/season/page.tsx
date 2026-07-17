@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Fragment, useState, useEffect } from 'react';
-import { Separator } from '@/components/ui/separator';
+import { Fragment, useState, useEffect } from "react";
+import { Separator } from "@/components/ui/separator";
 import {
   Table,
   TableBody,
@@ -9,8 +9,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { useSeasons } from '@/hooks/use-seasons';
+} from "@/components/ui/table";
+import { useSeasons } from "@/hooks/use-seasons";
 import {
   Combobox,
   ComboboxContent,
@@ -18,14 +18,14 @@ import {
   ComboboxInput,
   ComboboxItem,
   ComboboxList,
-} from '@/components/ui/combobox';
-import { Skeleton } from '@/components/ui/skeleton';
+} from "@/components/ui/combobox";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SeasonScreen() {
   const { data: seasonsResponse, isPending: isSeasonsPending } = useSeasons();
   const seasonsData = seasonsResponse?.data?.season;
   const seasonsList = seasonsData ?? [];
-  const [selectedSeasonId, setSelectedSeasonId] = useState<string>('');
+  const [selectedSeasonId, setSelectedSeasonId] = useState<string>("");
 
   useEffect(() => {
     if (seasonsData && seasonsData.length > 0 && !selectedSeasonId) {
@@ -34,13 +34,13 @@ export default function SeasonScreen() {
   }, [seasonsData, selectedSeasonId]);
 
   const currentSeason = seasonsList.find((s) => s.id === selectedSeasonId);
-  const selectedSeasonTitle = currentSeason?.title || '';
+  const selectedSeasonTitle = currentSeason?.title || "";
   const games = currentSeason?.game ?? [];
 
   return (
     <main className="w-full sm:py-16 py-8 px-4 md:px-12 sm:px-6">
       <div className="max-w-4xl mx-auto">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col sm:gap-1">
           <span className="text-lg">
             {isSeasonsPending ? (
               <Skeleton className="h-7 w-46" />
@@ -60,9 +60,9 @@ export default function SeasonScreen() {
               {isSeasonsPending ? (
                 <Skeleton className="sm:h-5 sm:w-42 h-4 w-34" />
               ) : currentSeason ? (
-                `${new Date(currentSeason.from).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })} - ${new Date(currentSeason.to).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
+                `${new Date(currentSeason.from).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })} - ${new Date(currentSeason.to).toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", year: "numeric" })}`
               ) : (
-                ''
+                ""
               )}
             </span>
           </div>
@@ -77,11 +77,11 @@ export default function SeasonScreen() {
             items={seasonsList}
             disabled={isSeasonsPending}
             value={selectedSeasonId}
-            onValueChange={(val) => setSelectedSeasonId(val ?? '')}
+            onValueChange={(val) => setSelectedSeasonId(val ?? "")}
           >
             <ComboboxInput
               placeholder="Wähle eine Saison"
-              value={isSeasonsPending ? 'Laden...' : selectedSeasonTitle}
+              value={isSeasonsPending ? "Laden..." : selectedSeasonTitle}
             />
             <ComboboxContent>
               <ComboboxEmpty>Keine Saison gefunden.</ComboboxEmpty>
@@ -115,19 +115,19 @@ export default function SeasonScreen() {
                 <TableBody>
                   {games.map((game) => {
                     const dateObj = new Date(game.date);
-                    const dateStr = dateObj.toLocaleDateString('de-DE', {
-                      day: '2-digit',
-                      month: '2-digit',
-                      year: 'numeric',
+                    const dateStr = dateObj.toLocaleDateString("de-DE", {
+                      day: "2-digit",
+                      month: "2-digit",
+                      year: "numeric",
                     });
                     const timeOnly =
-                      dateObj.toLocaleTimeString('de-DE', {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                      }) + ' Uhr';
+                      dateObj.toLocaleTimeString("de-DE", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) + " Uhr";
 
-                    const isCoburgHome = game.host === 'HSC 2000 Coburg';
-                    const isCoburgAway = game.guest === 'HSC 2000 Coburg';
+                    const isCoburgHome = game.host === "HSC 2000 Coburg";
+                    const isCoburgAway = game.guest === "HSC 2000 Coburg";
 
                     const hasPlayed =
                       game.hostPoints !== null && game.guestPoints !== null;
@@ -144,9 +144,7 @@ export default function SeasonScreen() {
                         </TableRow>
                         <TableRow>
                           <TableCell className="hidden md:table-cell py-3">
-                            <div className="text-sm font-medium">
-                              {dateStr}
-                            </div>
+                            <div className="text-sm font-medium">{dateStr}</div>
                             <div className="text-xs text-muted-foreground">
                               {timeOnly}
                             </div>
@@ -154,8 +152,8 @@ export default function SeasonScreen() {
                           <TableCell
                             className={`truncate text-right py-3 text-xs sm:text-sm ${
                               isCoburgHome
-                                ? 'text-foreground font-semibold'
-                                : 'text-muted-foreground'
+                                ? "text-foreground font-semibold"
+                                : "text-muted-foreground"
                             }`}
                           >
                             {game.host}
@@ -163,13 +161,13 @@ export default function SeasonScreen() {
                           <TableCell className="text-center font-bold tracking-wider py-3 px-1 sm:px-2 text-sm sm:text-base">
                             {hasPlayed
                               ? `${game.hostPoints} : ${game.guestPoints}`
-                              : '- : -'}
+                              : "- : -"}
                           </TableCell>
                           <TableCell
                             className={`truncate text-left py-3 text-xs sm:text-sm ${
                               isCoburgAway
-                                ? 'text-foreground font-semibold'
-                                : 'text-muted-foreground'
+                                ? "text-foreground font-semibold"
+                                : "text-muted-foreground"
                             }`}
                           >
                             {game.guest}

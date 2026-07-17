@@ -1,7 +1,7 @@
 import Elysia, { t } from "elysia";
 import { AdminModel } from "./model";
 import { AdminService } from "./service";
-import { IdParams } from "src/global/models";
+import { IdParams } from "../../global/models";
 import { contextPlugin } from "../../context";
 
 export const admin = new Elysia({ prefix: "/admin" })

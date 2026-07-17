@@ -27,6 +27,14 @@ import { queryClient } from "@/lib/queryClient";
 import { groupsQueryKey, groupsQueryFn } from "@/hooks/use-groups";
 import { seasonsQueryKey, seasonsQueryFn } from "@/hooks/use-seasons";
 import { tipsQueryKey, tipsQueryFn } from "@/hooks/use-tips";
+import {
+  notificationsQueryKey,
+  notificationsQueryFn,
+} from "@/hooks/use-notifications";
+import {
+  seasonStatsQueryKey,
+  seasonStatsQueryFn,
+} from "@/hooks/use-season-stats";
 import Image from "next/image";
 import { useRank } from "@/hooks/use-rank";
 import type { Position } from "@repo/database";
@@ -123,6 +131,16 @@ export default function DashboardScreen() {
     queryClient.prefetchQuery({
       queryKey: groupsQueryKey,
       queryFn: groupsQueryFn,
+    });
+
+    queryClient.prefetchQuery({
+      queryKey: notificationsQueryKey,
+      queryFn: notificationsQueryFn,
+    });
+
+    queryClient.prefetchQuery({
+      queryKey: seasonStatsQueryKey,
+      queryFn: seasonStatsQueryFn,
     });
 
     queryClient

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -9,49 +9,29 @@ import { apiClient } from '@/lib/api-client';
 import { MimeType } from '@repo/database';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
-import { Spinner } from './ui/spinner';
-import { useMutation } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 
 export function InputGroupPicture({
-  fileId,
-  onFileIdChange,
+  file,
+  onFileChange,
   fallbackChar,
 }: {
-  fileId: string | undefined;
-  onFileIdChange: (fileId: string | undefined) => void;
+  file: File | null;
+  onFileChange: (file: File | null) => void;
   fallbackChar: string;
 }) {
-  const [imageUrl, setImageUrl] = useState<string | undefined>();
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>();
 
-  const { mutateAsync: getPresignedUrl, isPending: isUploading } =
-    useMutation({
-      mutationFn: async (input: {
-        filename: string;
-        mimetype: MimeType;
-        size: number;
-      }) => {
-        return apiClient.api.media.upload['get-presigned-url'].post(input);
-      },
-    });
+  useEffect(() => {
+    if (!file) {
+      setPreviewUrl(undefined);
+      return;
+    }
 
-  async function handleFileChange(file: File) {
-    await handleGroupFileChange(
-      file,
-      fileId,
-      getPresignedUrl,
-      (newFileId, newImageUrl) => {
-        onFileIdChange(newFileId);
-        setImageUrl(newImageUrl);
-      },
-    );
-  }
-
-  async function handleDelete() {
-    await handleDeleteGroupPicture(fileId);
-    onFileIdChange(undefined);
-    setImageUrl(undefined);
-  }
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+    return () => URL.revokeObjectURL(url);
+  }, [file]);
 
   return (
     <Field className="w-fit items-center gap-6">
@@ -63,7 +43,7 @@ export function InputGroupPicture({
           >
             <AvatarImage
               id="group-profile-picture"
-              src={imageUrl}
+              src={previewUrl}
               alt="Gruppenbild"
             />
             <AvatarFallback className="text-4xl">{fallbackChar}</AvatarFallback>
@@ -72,35 +52,24 @@ export function InputGroupPicture({
               type="file"
               accept="image/*"
               className="sr-only"
-              disabled={isUploading}
-              onChange={async (e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  await handleFileChange(file);
+              onChange={(e) => {
+                const selected = e.target.files?.[0];
+                e.target.value = '';
+                if (!selected) return;
+
+                if (!isSupportedImage(selected)) {
+                  toast.error(
+                    'Nicht unterstütztes Dateiformat. Bitte wähle ein PNG- oder JPEG-Bild aus.',
+                  );
+                  return;
                 }
+
+                onFileChange(selected);
               }}
             />
-            <span
-              className={cn(
-                'pointer-events-none absolute inset-0 rounded-full bg-black/45 transition-opacity duration-200',
-                isUploading
-                  ? 'opacity-100'
-                  : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
-              )}
-            />
-            <span
-              className={cn(
-                'pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white transition-opacity duration-200',
-                isUploading
-                  ? 'opacity-100'
-                  : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
-              )}
-            >
-              {isUploading ? (
-                <Spinner className="size-9" />
-              ) : (
-                <Camera className="size-9" />
-              )}
+            <span className="pointer-events-none absolute inset-0 rounded-full bg-black/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100" />
+            <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100">
+              <Camera className="size-9" />
             </span>
           </Avatar>
         </label>
@@ -110,10 +79,9 @@ export function InputGroupPicture({
           variant="ghost"
           size="icon"
           className="absolute -bottom-1 -right-5 hover:-translate-y-0.5 transition-transform duration-200"
-          disabled={isUploading}
-          onClick={async (e) => {
+          onClick={(e) => {
             e.preventDefault();
-            await handleDelete();
+            onFileChange(null);
           }}
         >
           <Trash className="size-4" />
@@ -123,9 +91,21 @@ export function InputGroupPicture({
   );
 }
 
-async function handleGroupFileChange(
+function isSupportedImage(file: File) {
+  return (
+    file.type === 'image/png' ||
+    file.type === 'image/jpeg' ||
+    file.type === 'image/jpg'
+  );
+}
+
+/**
+ * Lädt ein ausgewähltes Gruppenbild erst tatsächlich zu MinIO hoch. Wird vom
+ * aufrufenden Formular erst beim tatsächlichen Erstellen der Gruppe
+ * aufgerufen, nicht bereits bei der Bildauswahl.
+ */
+export async function uploadGroupPicture(
   file: File,
-  previousFileId: string | undefined,
   getPresignedUrl: (input: {
     filename: string;
     mimetype: MimeType;
@@ -133,8 +113,7 @@ async function handleGroupFileChange(
   }) => ReturnType<
     (typeof apiClient)['api']['media']['upload']['get-presigned-url']['post']
   >,
-  onUploaded: (fileId: string, imageUrl: string) => void,
-) {
+): Promise<{ fileId: string; imageUrl: string } | undefined> {
   let fileType: MimeType = 'IMAGE_JPEG';
   if (file.type === 'image/png') {
     fileType = 'IMAGE_PNG';
@@ -170,38 +149,7 @@ async function handleGroupFileChange(
     return;
   }
 
-  if (previousFileId) {
-    const { error: previousFileDeleteError } = await apiClient.api
-      .media({
-        id: previousFileId,
-      })
-      .delete();
-
-    if (previousFileDeleteError) {
-      console.error(
-        'Failed to delete previous group picture:',
-        previousFileDeleteError,
-      );
-    }
-  }
-
   const imageUrl = `${process.env.NEXT_PUBLIC_API_SERVER_URL}/api/media/${presignedUrlData.file_id}/image`;
 
-  onUploaded(presignedUrlData.file_id, imageUrl);
-}
-
-async function handleDeleteGroupPicture(fileId: string | undefined) {
-  if (!fileId) {
-    toast.error('Du hast kein Gruppenbild ausgewählt.');
-    return;
-  }
-
-  const { error } = await apiClient.api.media({ id: fileId }).delete();
-
-  if (error) {
-    toast.error(error.status + ': ' + error.value.message);
-    return;
-  }
-
-  toast.success('Gruppenbild erfolgreich gelöscht!');
+  return { fileId: presignedUrlData.file_id, imageUrl };
 }

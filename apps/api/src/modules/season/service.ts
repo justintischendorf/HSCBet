@@ -1,7 +1,7 @@
 import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
-import { IdParams } from "src/global/models";
-import { TipEvaluationService } from "src/global/services/tip-evaluation-service";
+import { IdParams } from "../../global/models";
+import { TipEvaluationService } from "../../global/services/tip-evaluation-service";
 
 const logger = createLogger("api:season");
 

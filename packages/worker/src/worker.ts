@@ -1,5 +1,8 @@
 import { QueueManager } from "../../queue/src/client";
 import { PubSubManager } from "../../pub-sub/src/client";
+import { createLogger } from "@repo/logger";
+
+const logger = createLogger("Worker");
 
 const qm = new QueueManager({
   port: Number(process.env.REDIS_PORT),
@@ -11,12 +14,11 @@ const pm = new PubSubManager({
   hostname: String(process.env.REDIS_HOST),
 });
 
-// Wir bauen separate, unendliche Schleifen als Funktionen
 function startGamesLoop() {
   qm.consume({
     topic: "games",
     callback: async ({ payload }) => {
-      console.log("Verarbeite Spiel:", payload.gameId);
+      logger.info("processing game update:", payload);
       pm.publish({
         chanelName: "broadcast",
         payload,
@@ -29,7 +31,7 @@ function startGroupsLoop() {
   qm.consume({
     topic: "groups",
     callback: async ({ payload }) => {
-      console.log("Verarbeite Gruppe:", payload.groupId);
+      logger.info("processing group update:", payload);
       pm.publish({
         chanelName: `user:${payload.targetId}`,
         payload,
@@ -42,7 +44,7 @@ function startSeasonsLoop() {
   qm.consume({
     topic: "seasons",
     callback: async ({ payload }) => {
-      console.log("Verarbeite Season-Update");
+      logger.info("processing season update:", payload);
       pm.publish({
         chanelName: "broadcast",
         payload,
@@ -51,12 +53,8 @@ function startSeasonsLoop() {
   });
 }
 
-// Hauptfunktion, die alle Schleifen gleichzeitig startet
 async function main() {
-  console.log("[Worker] Starte alle Queue-Loops parallel...");
-
-  // Promise.all startet alle Funktionen zeitgleich.
-  // Da alle eine unendliche while-Schleife haben, läuft das endlos parallel.
+  logger.info("starting worker...");
   await Promise.all([startGamesLoop(), startGroupsLoop(), startSeasonsLoop()]);
 }
 

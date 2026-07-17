@@ -2,8 +2,15 @@ import { createLogger } from "@repo/logger";
 import { Resend } from "resend";
 import { MailModel } from "./model";
 
-// const resend = new Resend(process.env.RESEND_API_KEY);
 const logger = createLogger("api:mail");
+
+let resend: Resend | undefined;
+function getResendClient() {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return resend;
+}
 
 export abstract class MailService {
   // --------------------------------------------------------------------------> GET api/mail
@@ -13,7 +20,7 @@ export abstract class MailService {
   }: {
     body: (typeof MailModel.SendForgotPasswordMail)["static"];
   }) {
-    const { error, data } = await resend.emails.send({
+    const { error, data } = await getResendClient().emails.send({
       from: process.env.RESEND_MAIL_ADDRESS as string,
       to: body.email,
       subject: body.subject,
@@ -40,7 +47,7 @@ export abstract class MailService {
   }) {
     logger.info("sending verification email for user: " + user.id);
 
-    const { error, data } = await resend.emails.send({
+    const { error, data } = await getResendClient().emails.send({
       from: process.env.RESEND_MAIL_ADDRESS as string,
       to: body.email,
       subject: body.subject,
