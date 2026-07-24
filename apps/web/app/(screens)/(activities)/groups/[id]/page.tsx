@@ -1,7 +1,7 @@
 "use client";
 
 import { Separator } from "@/components/ui/separator";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import {
   Combobox,
@@ -67,6 +67,12 @@ export default function GroupStats() {
   const selectedSeasonTitle = currentSeason?.title ?? "";
 
   const gamesList = currentSeason?.game ?? [];
+
+  useEffect(() => {
+    if (seasonsList.length > 0 && !selectedSeasonId) {
+      setSelectedSeasonId(seasonsList[0].id);
+    }
+  }, [seasonsList, selectedSeasonId]);
 
   return (
     <main className="w-full sm:py-16 py-8 px-4 md:px-12 sm:px-6">

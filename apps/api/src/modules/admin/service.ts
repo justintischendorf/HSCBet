@@ -7,9 +7,6 @@ const logger = createLogger("api:admin");
 
 const KICKOFF_TIME_ZONE = "Europe/Berlin";
 
-// Kickoff times are always meant as Europe/Berlin wall-clock time, even when
-// the incoming string carries a "Z" suffix, so we strip it and convert from
-// Berlin time to UTC ourselves (DST-aware) instead of trusting the raw offset.
 function berlinKickoffToUtc(dateTimeStr: string): Date {
   const isoLocal = dateTimeStr.replace(/Z$/, "");
   const naiveUtc = new Date(`${isoLocal}Z`);
@@ -23,7 +20,8 @@ function berlinKickoffToUtc(dateTimeStr: string): Date {
   const match = offsetPart?.match(/GMT([+-]\d{1,2})(?::(\d{2}))?/);
   const hours = Number(match?.[1] ?? 0);
   const minutes = Number(match?.[2] ?? 0);
-  const offsetMs = (Math.abs(hours) * 60 + minutes) * 60_000 * Math.sign(hours || 1);
+  const offsetMs =
+    (Math.abs(hours) * 60 + minutes) * 60_000 * Math.sign(hours || 1);
 
   return new Date(naiveUtc.getTime() - offsetMs);
 }
