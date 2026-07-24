@@ -51,7 +51,14 @@ export default function GroupStats() {
     useGroupById(groupId);
 
   const userList = useMemo(() => {
-    return groupResponse?.data?.group?.user ?? [];
+    const users = groupResponse?.data?.group?.user ?? [];
+
+    return [...users].sort((a, b) => {
+      const pointsA = a.rank?.points ?? 0;
+      const pointsB = b.rank?.points ?? 0;
+
+      return pointsB - pointsA;
+    });
   }, [groupResponse?.data?.group?.user]);
 
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>("");
@@ -111,6 +118,7 @@ export default function GroupStats() {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
+                <TableHead> Position </TableHead>
                 <TableHead className="w-32 sm:w-40 sticky left-0 z-20 bg-background border-r">
                   Name
                 </TableHead>
@@ -154,13 +162,17 @@ export default function GroupStats() {
             </TableHeader>
             <TableBody>
               {userList.map((user) => {
+                let place: number = 0;
                 const position = user.rank?.position;
                 const positionSlug = position
                   ? POSITION_ASSET_SLUGS[position]
                   : "none";
 
+                place += 1;
+
                 return (
                   <TableRow key={user.id}>
+                    <TableCell className="text-center"> {place}</TableCell>
                     <TableCell className="sticky left-0 z-10 bg-background border-r font-medium">
                       {user.name}
                     </TableCell>
