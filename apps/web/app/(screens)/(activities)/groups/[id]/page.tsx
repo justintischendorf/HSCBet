@@ -110,8 +110,12 @@ export default function GroupStats() {
                 <TableHead>Punkte</TableHead>
                 {gamesList.map((game) => (
                   <TableHead key={game.id} className="font-medium text-center">
-                    {`${game.host} vs ${game.guest}`} <br />
-                    {`${game.hostPoints} : ${game.guestPoints}`}
+                    {`${game.host} `}{" "}
+                    <span className="font-bold text-lg">
+                      {" "}
+                      {`${game.hostPoints} : ${game.guestPoints}`}{" "}
+                    </span>{" "}
+                    {`${game.guest}`}
                   </TableHead>
                 ))}
               </TableRow>
@@ -128,7 +132,7 @@ export default function GroupStats() {
                     <TableCell>{user.name}</TableCell>
                     <TableCell>
                       {isGroupPending ? (
-                        <Skeleton className="h-10 w-10 rounded-full" />
+                        <Skeleton className="h-10 w- rounded-full" />
                       ) : (
                         <Image
                           loading="eager"
