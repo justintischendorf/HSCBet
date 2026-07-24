@@ -21,6 +21,7 @@ import {
 import { useGroupById } from "@/hooks/use-groupById";
 import { useSeasons } from "@/hooks/use-seasons";
 import { useTips } from "@/hooks/use-tips";
+import { cn } from "@/lib/utils";
 import type { Position } from "@repo/database";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -110,22 +111,46 @@ export default function GroupStats() {
 
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-25 sticky left-0 bg-background">
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-32 sm:w-40 sticky left-0 z-20 bg-background border-r">
                   Name
                 </TableHead>
-                <TableHead>Rang</TableHead>
-                <TableHead>Punkte</TableHead>
-                {gamesList.map((game) => (
-                  <TableHead key={game.id} className="font-medium text-center">
-                    {`${game.host} `}{" "}
-                    <span className="font-bold text-lg">
-                      {" "}
-                      {`${game.hostPoints} : ${game.guestPoints}`}{" "}
-                    </span>{" "}
-                    {`${game.guest}`}
-                  </TableHead>
-                ))}
+                <TableHead className="w-16 text-center">Rang</TableHead>
+                <TableHead className="w-16 text-center">Punkte</TableHead>
+                {gamesList.map((game) => {
+                  const dateObj = new Date(game.date);
+                  const dateStr = dateObj.toLocaleDateString("de-DE", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "2-digit",
+                  });
+                  const timeStr = dateObj.toLocaleTimeString("de-DE", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+
+                  return (
+                    <TableHead
+                      key={game.id}
+                      className="min-w-32 text-center align-top py-2"
+                    >
+                      <div className="text-[11px] font-normal text-muted-foreground whitespace-nowrap">
+                        {dateStr} · {timeStr} Uhr
+                      </div>
+                      <div className="mt-1 flex items-center justify-center gap-1.5">
+                        <span className="min-w-0 flex-1 truncate text-right text-xs font-medium">
+                          {game.host}
+                        </span>
+                        <span className="shrink-0 font-bold tabular-nums">
+                          {game.hostPoints} : {game.guestPoints}
+                        </span>
+                        <span className="min-w-0 flex-1 truncate text-left text-xs font-medium">
+                          {game.guest}
+                        </span>
+                      </div>
+                    </TableHead>
+                  );
+                })}
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -137,12 +162,12 @@ export default function GroupStats() {
 
                 return (
                   <TableRow key={user.id}>
-                    <TableCell className="sticky left-0 z-10 bg-background">
+                    <TableCell className="sticky left-0 z-10 bg-background border-r font-medium">
                       {user.name}
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="text-center">
                       {isGroupPending ? (
-                        <Skeleton className="h-10 w- rounded-full" />
+                        <Skeleton className="h-10 w-10 mx-auto rounded-full" />
                       ) : (
                         <Image
                           loading="eager"
@@ -150,11 +175,13 @@ export default function GroupStats() {
                           alt={position || "Rang"}
                           width={40}
                           height={40}
-                          className="w-10 h-10 shrink-0 object-contain"
+                          className="w-10 h-10 mx-auto shrink-0 object-contain"
                         />
                       )}
                     </TableCell>
-                    <TableCell>{user.rank?.points ?? 0}</TableCell>
+                    <TableCell className="text-center font-semibold tabular-nums">
+                      {user.rank?.points ?? 0}
+                    </TableCell>
                     {gamesList.map((game) => {
                       const userTip = tipList.find(
                         (tip) =>
@@ -163,19 +190,29 @@ export default function GroupStats() {
                       return (
                         <TableCell
                           key={game.id}
-                          className="relative h-14 min-w-20 text-center p-2"
+                          className="h-16 min-w-32 text-center"
                         >
                           {userTip ? (
-                            <>
-                              <span className="font-medium block">
-                                {`${userTip.tipHost} : ${userTip.tipGuest}`}
+                            <div className="flex flex-col items-center gap-1">
+                              <span className="font-medium tabular-nums">
+                                {userTip.tipHost} : {userTip.tipGuest}
                               </span>
-                              <span className="text-[10px] text-muted-foreground leading-none text-center">
-                                ({userTip.result ?? 0} Pkt.)
+                              <span
+                                className={cn(
+                                  "rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums",
+                                  userTip.result > 0
+                                    ? "bg-positive/10 text-positive"
+                                    : userTip.result < 0
+                                      ? "bg-destructive/10 text-destructive"
+                                      : "bg-muted text-muted-foreground",
+                                )}
+                              >
+                                {userTip.result > 0 ? "+" : ""}
+                                {userTip.result ?? 0} Pkt.
                               </span>
-                            </>
+                            </div>
                           ) : (
-                            "-"
+                            <span className="text-muted-foreground">-</span>
                           )}
                         </TableCell>
                       );
