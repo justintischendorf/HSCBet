@@ -5,10 +5,10 @@ export const groupQueryKey = (groupId: string) => ["groups", groupId];
 export const groupQueryFn = (groupId: string) => () =>
   apiClient.api.group({ id: groupId }).get();
 
-export function useTips(seasonId: string) {
+export function useGroupById(groupId: string) {
   return useQuery({
-    queryKey: groupQueryKey(seasonId),
-    queryFn: groupQueryFn(seasonId),
-    enabled: !!seasonId,
+    queryKey: groupQueryKey(groupId),
+    queryFn: groupQueryFn(groupId),
+    enabled: !!groupId,
   });
 }
