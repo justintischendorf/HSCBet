@@ -135,7 +135,7 @@ export default function GroupStats() {
                       className="min-w-32 text-center align-top py-2"
                     >
                       <div className="text-[11px] font-normal text-muted-foreground whitespace-nowrap">
-                        {dateStr} · {timeStr} Uhr
+                        {dateStr}, {timeStr} Uhr
                       </div>
                       <div className="mt-1 flex items-center justify-center gap-1.5">
                         <span className="min-w-0 flex-1 truncate text-right text-xs font-medium">
@@ -197,19 +197,24 @@ export default function GroupStats() {
                               <span className="font-medium tabular-nums">
                                 {userTip.tipHost} : {userTip.tipGuest}
                               </span>
-                              <span
-                                className={cn(
-                                  "rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums",
-                                  userTip.result > 0
-                                    ? "bg-positive/10 text-positive"
-                                    : userTip.result < 0
-                                      ? "bg-destructive/10 text-destructive"
-                                      : "bg-muted text-muted-foreground",
-                                )}
-                              >
-                                {userTip.result > 0 ? "+" : ""}
-                                {userTip.result ?? 0} Pkt.
-                              </span>
+                              {(() => {
+                                const result = userTip.result ?? 0;
+                                return (
+                                  <span
+                                    className={cn(
+                                      "rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums",
+                                      result > 0
+                                        ? "bg-positive/10 text-positive"
+                                        : result < 0
+                                          ? "bg-destructive/10 text-destructive"
+                                          : "bg-muted text-muted-foreground",
+                                    )}
+                                  >
+                                    {result > 0 ? "+" : ""}
+                                    {result} Pkt.
+                                  </span>
+                                );
+                              })()}
                             </div>
                           ) : (
                             <span className="text-muted-foreground">-</span>
