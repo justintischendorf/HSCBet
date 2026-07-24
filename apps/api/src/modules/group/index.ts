@@ -3,6 +3,7 @@ import { sessionPlugin } from "../auth";
 import { GroupService } from "./service";
 import { GroupModel } from "./model";
 import { contextPlugin } from "../../context";
+import { IdParams } from "src/global/models";
 
 export const group = new Elysia({ prefix: "/group" })
   .use(contextPlugin)
@@ -17,6 +18,22 @@ export const group = new Elysia({ prefix: "/group" })
       group: await GroupService.getAllGroupsForUser({ user }),
     };
   })
+
+  // --------------------------------------------------------------------------> GET api/group/:id
+  //                                                                             - get group by id
+  .get(
+    "/:id",
+    async ({ set, params }) => {
+      set.status = 200;
+      return {
+        success: true,
+        group: await GroupService.getGroupById({ params }),
+      };
+    },
+    {
+      params: IdParams,
+    },
+  )
 
   // --------------------------------------------------------------------------> POST api/group
   //                                                                             - create a new group by a user

@@ -2,6 +2,7 @@ import { prisma } from "@repo/database";
 import { S3Manager } from "@repo/bucket";
 import { createLogger } from "@repo/logger";
 import { GroupModel } from "./model";
+import { IdParams } from "src/global/models";
 
 const logger = createLogger("api:group");
 
@@ -31,6 +32,32 @@ export abstract class GroupService {
         },
       },
     });
+  }
+
+  // --------------------------------------------------------------------------> GET api/group/:id
+  //                                                                             - get group by their id
+  static async getGroupById({
+    params,
+  }: {
+    params: (typeof IdParams)["static"];
+  }) {
+    logger.info("fetching group by group id: " + params.id);
+    const group = await prisma.group.findUnique({
+      where: {
+        id: params.id,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+            rank: { select: { points: true, position: true } },
+          },
+        },
+      },
+    });
+    return group;
   }
 
   // --------------------------------------------------------------------------> POST api/group
