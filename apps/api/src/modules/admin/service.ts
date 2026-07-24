@@ -5,6 +5,29 @@ import { IdParams } from "../../global/models";
 
 const logger = createLogger("api:admin");
 
+const KICKOFF_TIME_ZONE = "Europe/Berlin";
+
+// Kickoff times are always meant as Europe/Berlin wall-clock time, even when
+// the incoming string carries a "Z" suffix, so we strip it and convert from
+// Berlin time to UTC ourselves (DST-aware) instead of trusting the raw offset.
+function berlinKickoffToUtc(dateTimeStr: string): Date {
+  const isoLocal = dateTimeStr.replace(/Z$/, "");
+  const naiveUtc = new Date(`${isoLocal}Z`);
+
+  const offsetPart = new Intl.DateTimeFormat("en-US", {
+    timeZone: KICKOFF_TIME_ZONE,
+    timeZoneName: "longOffset",
+  })
+    .formatToParts(naiveUtc)
+    .find((part) => part.type === "timeZoneName")?.value;
+  const match = offsetPart?.match(/GMT([+-]\d{1,2})(?::(\d{2}))?/);
+  const hours = Number(match?.[1] ?? 0);
+  const minutes = Number(match?.[2] ?? 0);
+  const offsetMs = (Math.abs(hours) * 60 + minutes) * 60_000 * Math.sign(hours || 1);
+
+  return new Date(naiveUtc.getTime() - offsetMs);
+}
+
 export abstract class AdminService {
   // --------------------------------------------------------------------------> GET api/admin/all-seasons
   //                                                                             - get all seasons from the database
@@ -35,7 +58,7 @@ export abstract class AdminService {
         league: body.league,
         game: {
           create: body.game.map((g) => ({
-            date: new Date(g.date),
+            date: berlinKickoffToUtc(g.date),
             host: g.host,
             guest: g.guest,
           })),
