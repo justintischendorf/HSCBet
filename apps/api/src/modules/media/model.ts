@@ -1,5 +1,6 @@
+import { t, type UnwrapSchema } from "elysia";
+
 import { MimeType } from "@repo/database";
-import { t, UnwrapSchema } from "elysia";
 
 export namespace MediaModel {
   export const UploadMediaBody = t.Object({

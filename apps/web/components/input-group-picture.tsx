@@ -1,15 +1,16 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Field } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Camera, Trash } from 'lucide-react';
-import { apiClient } from '@/lib/api-client';
-import { MimeType } from '@repo/database';
-import { toast } from 'sonner';
-import { Button } from './ui/button';
-import { cn } from '@/lib/utils';
+import { Camera, Trash } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { apiClient } from "@/lib/api-client";
+import { MimeType } from "@repo/database";
+
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 
 export function InputGroupPicture({
   file,
@@ -54,12 +55,12 @@ export function InputGroupPicture({
               className="sr-only"
               onChange={(e) => {
                 const selected = e.target.files?.[0];
-                e.target.value = '';
+                e.target.value = "";
                 if (!selected) return;
 
                 if (!isSupportedImage(selected)) {
                   toast.error(
-                    'Nicht unterstütztes Dateiformat. Bitte wähle ein PNG- oder JPEG-Bild aus.',
+                    "Nicht unterstütztes Dateiformat. Bitte wähle ein PNG- oder JPEG-Bild aus.",
                   );
                   return;
                 }
@@ -93,9 +94,9 @@ export function InputGroupPicture({
 
 function isSupportedImage(file: File) {
   return (
-    file.type === 'image/png' ||
-    file.type === 'image/jpeg' ||
-    file.type === 'image/jpg'
+    file.type === "image/png" ||
+    file.type === "image/jpeg" ||
+    file.type === "image/jpg"
   );
 }
 
@@ -111,16 +112,16 @@ export async function uploadGroupPicture(
     mimetype: MimeType;
     size: number;
   }) => ReturnType<
-    (typeof apiClient)['api']['media']['upload']['get-presigned-url']['post']
+    (typeof apiClient)["api"]["media"]["upload"]["get-presigned-url"]["post"]
   >,
 ): Promise<{ fileId: string; imageUrl: string } | undefined> {
-  let fileType: MimeType = 'IMAGE_JPEG';
-  if (file.type === 'image/png') {
-    fileType = 'IMAGE_PNG';
-  } else if (file.type === 'image/jpg' || file.type === 'image/jpeg') {
-    fileType = 'IMAGE_JPEG';
+  let fileType: MimeType = "IMAGE_JPEG";
+  if (file.type === "image/png") {
+    fileType = "IMAGE_PNG";
+  } else if (file.type === "image/jpg" || file.type === "image/jpeg") {
+    fileType = "IMAGE_JPEG";
   } else {
-    toast.error('Unsupported file type. Please select a PNG or JPEG image.');
+    toast.error("Unsupported file type. Please select a PNG or JPEG image.");
     return;
   }
 
@@ -132,20 +133,20 @@ export async function uploadGroupPicture(
     });
 
   if (presignedUrlError) {
-    toast.error('Failed to get presigned URL. Please try again.');
+    toast.error("Failed to get presigned URL. Please try again.");
     return;
   }
 
   try {
     await fetch(presignedUrlData.pre_signed_url, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
-        'Content-Type': file.type,
+        "Content-Type": file.type,
       },
       body: file,
     });
   } catch (err) {
-    toast.error('Failed to upload file.' + err);
+    toast.error("Failed to upload file." + err);
     return;
   }
 

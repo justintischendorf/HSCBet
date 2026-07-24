@@ -11,10 +11,9 @@
     "react/no-danger": "warn",
     "react/no-direct-mutation-state": "error",
 "typescript/no-explicit-any": "warn",
-    "typescript/no-unused-vars": "warn",
     "nextjs/no-img-element": "warn",
     "nextjs/no-html-link-for-pages": "warn",
-    "no-unused-vars": "off",
+    "no-unused-vars": "warn",
     "no-undef": "off"
   },
   "ignorePatterns": [

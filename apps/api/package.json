@@ -8,7 +8,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "bun run --watch src/index.ts",
-    "lint": "oxlint ."
+    "lint": "oxlint .",
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@elysia/cron": "^1.4.2",

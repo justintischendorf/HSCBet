@@ -1,5 +1,9 @@
 "use client";
 
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+
 import {
   Combobox,
   ComboboxContent,
@@ -23,9 +27,6 @@ import { useSeasons } from "@/hooks/use-seasons";
 import { useTips } from "@/hooks/use-tips";
 import { cn } from "@/lib/utils";
 import type { Position } from "@repo/database";
-import Image from "next/image";
-import { useParams } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
 
 const POSITION_ASSET_SLUGS: Record<Position, string> = {
   BRONZE: "bronze",

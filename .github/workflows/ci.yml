@@ -26,6 +26,9 @@ jobs:
       - name: Run oxlint
         run: bun lint
 
+      - name: Check types
+        run: bun run check-types
+
       - name: Check formatting
         run: |
-          bun run oxfmt apps packages
+          bun run oxfmt --check apps packages

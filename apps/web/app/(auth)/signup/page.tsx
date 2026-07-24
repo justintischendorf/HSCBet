@@ -1,5 +1,6 @@
-import { SignupForm } from '@/components/signup-form';
-import Image from 'next/image';
+import Image from "next/image";
+
+import { SignupForm } from "@/components/signup-form";
 
 export default function SignupScreen() {
   return (

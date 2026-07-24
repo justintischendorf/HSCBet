@@ -1,5 +1,6 @@
-import { SigninForm } from '@/components/signin-form';
-import Image from 'next/image';
+import Image from "next/image";
+
+import { SigninForm } from "@/components/signin-form";
 
 export default function SigninScreen() {
   return (

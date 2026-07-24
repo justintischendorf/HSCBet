@@ -1,6 +1,15 @@
-import type { GroupModel, Position } from "@repo/database";
+import { useMutation } from "@tanstack/react-query";
 import { MoveRight } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { toast } from "sonner";
+
+import { apiClient } from "@/lib/api-client";
+import { queryClient } from "@/lib/queryClient";
+import type { GroupModel, Position } from "@repo/database";
+
+import { ConfirmAlert } from "./confirm-alert";
 import {
   Accordion,
   AccordionContent,
@@ -10,13 +19,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
-import { apiClient } from "@/lib/api-client";
-import { queryClient } from "@/lib/queryClient";
-import { toast } from "sonner";
-import { ConfirmAlert } from "./confirm-alert";
-import React from "react";
-import { useRouter } from "next/navigation";
-import { useMutation } from "@tanstack/react-query";
 
 type GroupWithUsers = GroupModel & {
   user: {

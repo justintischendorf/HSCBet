@@ -1,8 +1,9 @@
 import Elysia from "elysia";
-import { sessionPlugin } from "../auth";
-import { NotificationService } from "./service";
+
 import { IdParams } from "../../global/models";
+import { sessionPlugin } from "../auth";
 import { NotificationModel } from "./model";
+import { NotificationService } from "./service";
 
 export const notification = new Elysia({ prefix: "/notification" })
   .use(sessionPlugin)

@@ -1,8 +1,9 @@
-import { prisma } from "@repo/database";
 import { S3Manager } from "@repo/bucket";
+import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
+
+import { IdParams } from "../../global/models";
 import { GroupModel } from "./model";
-import { IdParams } from "src/global/models";
 
 const logger = createLogger("api:group");
 

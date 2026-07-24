@@ -1,4 +1,4 @@
-import { t, UnwrapSchema } from "elysia";
+import { t, type UnwrapSchema } from "elysia";
 
 export namespace AdminModel {
   export const AddNewSeason = t.Object({

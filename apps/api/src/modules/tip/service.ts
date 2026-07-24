@@ -1,5 +1,6 @@
 import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
+
 import { IdParams } from "../../global/models";
 import { TipModel } from "./model";
 

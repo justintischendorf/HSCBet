@@ -1,41 +1,43 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from '@/components/ui/field';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Input } from '@/components/ui/input';
-import { Eye, EyeOff } from 'lucide-react';
-import React from 'react';
-import PasswordSafetyLevel from './password-safety-level';
-import { authClient } from '@/lib/auth-client';
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
-import Footer from './footer';
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+
+import Footer from "./footer";
+import PasswordSafetyLevel from "./password-safety-level";
 
 export function SignupForm({
   className,
   ...props
-}: React.ComponentProps<'div'>) {
+}: React.ComponentProps<"div">) {
   const router = useRouter();
-  const [username, setUsername] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [username, setUsername] = React.useState("");
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
-  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [confirmPassword, setConfirmPassword] = React.useState("");
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   async function handleSignup() {
     if (password !== confirmPassword) {
-      toast.error('Passwörter stimmen nicht überein');
+      toast.error("Passwörter stimmen nicht überein");
       return;
     }
 
@@ -46,16 +48,16 @@ export function SignupForm({
     });
 
     if (signupError) {
-      toast.error(signupError.status + ': ' + signupError.message);
+      toast.error(signupError.status + ": " + signupError.message);
       return;
     }
 
-    toast.success('Account erfolgreich erstellt');
-    router.push('/dashboard');
+    toast.success("Account erfolgreich erstellt");
+    router.push("/dashboard");
   }
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form
@@ -107,7 +109,7 @@ export function SignupForm({
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        type={showPassword ? 'text' : 'password'}
+                        type={showPassword ? "text" : "password"}
                         required
                         aria-invalid={password !== confirmPassword}
                         className="pr-7"
@@ -134,7 +136,7 @@ export function SignupForm({
                         id="confirm-password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
-                        type={showConfirmPassword ? 'text' : 'password'}
+                        type={showConfirmPassword ? "text" : "password"}
                         required
                         aria-invalid={password !== confirmPassword}
                         className="pr-7"
@@ -162,7 +164,7 @@ export function SignupForm({
                 oder
               </FieldSeparator>
               <FieldDescription className="text-center">
-                Du hast bereits einen Account?{' '}
+                Du hast bereits einen Account?{" "}
                 <Link href="/signin">Anmelden</Link>
               </FieldDescription>
             </FieldGroup>

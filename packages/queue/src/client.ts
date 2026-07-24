@@ -1,5 +1,6 @@
-import type { Options, TopicPayloadMap, Topic } from "./types";
 import { Job, Queue, Worker } from "bullmq";
+
+import type { Options, TopicPayloadMap, Topic } from "./types";
 
 export class QueueManager {
   private queues: Record<Topic, Queue>;

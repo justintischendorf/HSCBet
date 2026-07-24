@@ -10,9 +10,7 @@
     "lint": {
       "dependsOn": ["^lint"]
     },
-    "check-types": {
-      "dependsOn": ["^check-types"]
-    },
+    "check-types": {},
     "dev": {
       "cache": false,
       "persistent": true

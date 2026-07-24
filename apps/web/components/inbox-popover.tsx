@@ -1,26 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 import { Check, Inbox, Trash, Undo2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
 import {
   Popover,
   PopoverContent,
   PopoverTitle,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "./ui/button";
-import { ConfirmAlert } from "./confirm-alert";
-import { ScrollArea } from "./ui/scroll-area";
-import { Spinner } from "./ui/spinner";
-import { cn } from "@/lib/utils";
-import { apiClient } from "@/lib/api-client";
-import { queryClient } from "@/lib/queryClient";
-import { toast } from "sonner";
 import {
   notificationsQueryKey,
   useNotifications,
 } from "@/hooks/use-notifications";
-import { useMutation } from "@tanstack/react-query";
+import { apiClient } from "@/lib/api-client";
+import { queryClient } from "@/lib/queryClient";
+import { cn } from "@/lib/utils";
+
+import { ConfirmAlert } from "./confirm-alert";
+import { Button } from "./ui/button";
+import { ScrollArea } from "./ui/scroll-area";
+import { Spinner } from "./ui/spinner";
 
 type Filter = "unread" | "read";
 

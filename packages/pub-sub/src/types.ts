@@ -1,5 +1,3 @@
-import { unknown } from "zod";
-
 export type Options = {
   port: number;
   hostname: string;

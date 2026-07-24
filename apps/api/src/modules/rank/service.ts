@@ -1,5 +1,6 @@
 import { Position, prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
+
 import { TipEvaluationService } from "../../global/services/tip-evaluation-service";
 
 const logger = createLogger("api:rank");

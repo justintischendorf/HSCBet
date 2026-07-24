@@ -1,12 +1,13 @@
-import { queryClient } from "@/lib/queryClient";
 import { useEffect, useRef, useState } from "react";
-import { seasonsQueryKey } from "./use-seasons";
-import { createLogger } from "@repo/logger";
+
 import { apiClient } from "@/lib/api-client";
+import { queryClient } from "@/lib/queryClient";
+import { createLogger } from "@repo/logger";
+
 import { notificationsQueryKey } from "./use-notifications";
-import { useMutation } from "@tanstack/react-query";
 import { rankQueryKey } from "./use-rank";
 import { seasonStatsQueryKey } from "./use-season-stats";
+import { seasonsQueryKey } from "./use-seasons";
 
 const logger = createLogger("web:socket-hook");
 const RECONNECT_DELAY_MS = 3000;
