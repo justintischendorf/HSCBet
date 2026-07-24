@@ -97,7 +97,7 @@ export default function GroupStats() {
               <TableHead>Rang</TableHead>
               <TableHead>Punkte</TableHead>
               {gamesList.map((game) => (
-                <TableHead key={game.id} className="font-medium">
+                <TableHead key={game.id} className="font-medium text-center">
                   {`${game.host} vs ${game.guest}`} <br />
                   {`${game.hostPoints} : ${game.guestPoints}`}
                 </TableHead>
@@ -115,10 +115,18 @@ export default function GroupStats() {
                     (tip) => tip.gameId === game.id && tip.userId === user.id,
                   );
                   return (
-                    <TableCell key={game.id}>
-                      {userTip
-                        ? `${userTip.tipHost} : ${userTip.tipGuest}`
-                        : "-"}
+                    <TableCell key={game.id} className="text-center">
+                      {userTip ? (
+                        <>
+                          <span>{`${userTip.tipHost} : ${userTip.tipGuest}`}</span>
+                          <br />
+                          <div className="text-xs text-muted-foreground">
+                            ({userTip.result ?? 0} Pkt.)
+                          </div>
+                        </>
+                      ) : (
+                        "-"
+                      )}
                     </TableCell>
                   );
                 })}
