@@ -2,6 +2,7 @@
 
 import { Separator } from "@/components/ui/separator";
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import {
   Combobox,
   ComboboxContent,
@@ -22,6 +23,17 @@ import { useSeasons } from "@/hooks/use-seasons";
 import { useTips } from "@/hooks/use-tips";
 import { useParams } from "next/navigation";
 import { useGroupById } from "@/hooks/use-groupById";
+import type { Position } from "@repo/database";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const POSITION_ASSET_SLUGS: Record<Position, string> = {
+  BRONZE: "bronze",
+  SILVER: "silver",
+  GOLD: "gold",
+  PLATINUM: "platinum",
+  DIAMOND: "diamond",
+  DEFAULT: "none",
+};
 
 export default function GroupStats() {
   const params = useParams();
@@ -105,33 +117,57 @@ export default function GroupStats() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {userList.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell>{user.name}</TableCell>
-                <TableCell>{user.rank?.position}</TableCell>
-                <TableCell>{user.rank?.points}</TableCell>
-                {gamesList.map((game) => {
-                  const userTip = tipList.find(
-                    (tip) => tip.gameId === game.id && tip.userId === user.id,
-                  );
-                  return (
-                    <TableCell key={game.id} className="text-center">
-                      {userTip ? (
-                        <>
-                          <span>{`${userTip.tipHost} : ${userTip.tipGuest}`}</span>
-                          <br />
-                          <div className="text-xs text-muted-foreground">
-                            ({userTip.result ?? 0} Pkt.)
-                          </div>
-                        </>
-                      ) : (
-                        "-"
-                      )}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
+            {userList.map((user) => {
+              const position = user.rank?.position;
+              const positionSlug = position
+                ? POSITION_ASSET_SLUGS[position]
+                : "none";
+
+              return (
+                <TableRow key={user.id}>
+                  <TableCell>{user.name}</TableCell>
+                  <TableCell>
+                    {isGroupPending ? (
+                      <Skeleton className="h-[40px] w-[40px] rounded-full" />
+                    ) : (
+                      <Image
+                        loading="eager"
+                        src={`/assets/images/rank-${positionSlug}.svg`}
+                        alt={position || "Rang"}
+                        width={40}
+                        height={40}
+                        className="w-[40px] h-[40px] shrink-0 object-contain"
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell>{user.rank?.points ?? 0}</TableCell>
+                  {gamesList.map((game) => {
+                    const userTip = tipList.find(
+                      (tip) => tip.gameId === game.id && tip.userId === user.id,
+                    );
+                    return (
+                      <TableCell
+                        key={game.id}
+                        className="relative h-14 min-w-[80px] text-center p-2"
+                      >
+                        {userTip ? (
+                          <>
+                            <span className="font-medium block">
+                              {`${userTip.tipHost} : ${userTip.tipGuest}`}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground leading-none text-center">
+                              ({userTip.result ?? 0} Pkt.)
+                            </span>
+                          </>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </div>
