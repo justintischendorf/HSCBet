@@ -1,8 +1,5 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
-import { useEffect, useMemo, useState } from "react";
-import Image from "next/image";
 import {
   Combobox,
   ComboboxContent,
@@ -11,6 +8,8 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -19,12 +18,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useGroupById } from "@/hooks/use-groupById";
 import { useSeasons } from "@/hooks/use-seasons";
 import { useTips } from "@/hooks/use-tips";
-import { useParams } from "next/navigation";
-import { useGroupById } from "@/hooks/use-groupById";
 import type { Position } from "@repo/database";
-import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
+import { useParams } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
 
 const POSITION_ASSET_SLUGS: Record<Position, string> = {
   BRONZE: "bronze",
@@ -111,7 +111,9 @@ export default function GroupStats() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-25">Name</TableHead>
+                <TableHead className="w-25 sticky left-0 bg-background">
+                  Name
+                </TableHead>
                 <TableHead>Rang</TableHead>
                 <TableHead>Punkte</TableHead>
                 {gamesList.map((game) => (
@@ -135,7 +137,9 @@ export default function GroupStats() {
 
                 return (
                   <TableRow key={user.id}>
-                    <TableCell>{user.name}</TableCell>
+                    <TableCell className="sticky left-0 z-10 bg-background">
+                      {user.name}
+                    </TableCell>
                     <TableCell>
                       {isGroupPending ? (
                         <Skeleton className="h-10 w- rounded-full" />
