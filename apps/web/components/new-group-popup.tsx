@@ -88,7 +88,6 @@ function GroupForm({
   const user = session?.data?.user;
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [length, setLength] = React.useState(0);
   const [available, setAvailable] = React.useState(64);
   const [pendingFile, setPendingFile] = React.useState<File | null>(null);
   const [isUploadingPicture, setIsUploadingPicture] = React.useState(false);
@@ -126,7 +125,7 @@ function GroupForm({
       fileId = uploaded.fileId;
     }
 
-    const { data: group, error: groupError } = await createGroup({
+    const { error: groupError } = await createGroup({
       name,
       description,
       fileId,
@@ -195,7 +194,6 @@ function GroupForm({
             onChange={(e) => {
               e.preventDefault();
               setDescription(e.target.value);
-              setLength(e.target.value.length);
               setAvailable(64 - e.target.value.length);
             }}
           />

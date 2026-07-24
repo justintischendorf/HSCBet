@@ -62,10 +62,16 @@ export const admin = new Elysia({ prefix: "/admin" })
         return { success: false, error: "UNAUTHORIZED" };
       }
 
+      const season = await AdminService.deleteSeason({ params });
+      store.queueManager.produce({
+        topic: "seasons",
+        payload: { eventType: "seasons_updated" },
+      });
+
       set.status = 200;
       return {
         success: true,
-        season: await AdminService.deleteSeason({ params }),
+        season,
       };
     },
     {

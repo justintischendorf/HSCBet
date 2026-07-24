@@ -132,10 +132,12 @@ export class S3Manager {
         }),
       );
       return true;
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (
-        error.name === "NotFound" ||
-        error.$metadata?.httpStatusCode === 404
+        error instanceof Error &&
+        (error.name === "NotFound" ||
+          (error as { $metadata?: { httpStatusCode?: number } }).$metadata
+            ?.httpStatusCode === 404)
       ) {
         return false;
       }

@@ -58,9 +58,7 @@ export default function GroupStats() {
 
   const currentSeason = seasonsList.find((s) => s.id === selectedSeasonId);
 
-  const { data: tipResponse, isPending: isTipPending } = useTips(
-    String(currentSeason?.id),
-  );
+  const { data: tipResponse } = useTips(String(currentSeason?.id));
 
   const tipList = useMemo(() => {
     return tipResponse?.data?.season ?? [];
