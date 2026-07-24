@@ -106,7 +106,7 @@ export default function SeasonScreen() {
                       Spielzeit
                     </TableHead>
                     <TableHead className="text-right">Heimteam</TableHead>
-                    <TableHead className="w-14 sm:w-20 text-center">
+                    <TableHead className="w-20 sm:w-24 text-center">
                       Ergebnis
                     </TableHead>
                     <TableHead className="text-left">Gastteam</TableHead>
