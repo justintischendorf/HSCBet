@@ -83,7 +83,7 @@ export function useSocket() {
 }
 
 interface eventTypes {
-  eventType: "game_updated" | "seasons_updated";
+  eventType: "game_updated" | "seasons_updated" | "group_invited";
 }
 
 async function handleNotificationUpdate(
@@ -104,6 +104,9 @@ async function handleNotificationUpdate(
     case "seasons_updated":
       await createNotification("Die neue Saison ist verfügbar!");
       await queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
+      break;
+    case "group_invited":
+      await queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
       break;
     default:
       logger.warn("Unbekannter Nachrichtentyp:", payload?.eventType);

@@ -1,3 +1,4 @@
+import { NotificationType, prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
 
 import { PubSubManager } from "../../pub-sub/src/client";
@@ -32,7 +33,24 @@ function startGroupsLoop() {
   qm.consume({
     topic: "groups",
     callback: async ({ payload }) => {
-      logger.info("processing group update:", payload);
+      logger.info("processing group invite:", payload);
+
+      const group = await prisma.group.findUnique({
+        where: { id: payload.groupId },
+        select: { name: true, leader: { select: { name: true } } },
+      });
+
+      if (group) {
+        await prisma.notification.create({
+          data: {
+            userId: payload.targetId,
+            groupId: payload.groupId,
+            type: NotificationType.GROUP_INVITE,
+            message: `${group.leader.name} hat dich eingeladen, der Gruppe "${group.name}" beizutreten.`,
+          },
+        });
+      }
+
       pm.publish({
         chanelName: `user:${payload.targetId}`,
         payload,
