@@ -24,7 +24,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(contextPlugin)
   .use(
     cors({
-      origin: process.env.WEB_SERVER_URL,
+      origin: process.env.WEB_SERVER_URL?.replace(/\/$/, ""),
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
