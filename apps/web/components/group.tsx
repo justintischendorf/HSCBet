@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
-import { useSession } from "@/lib/auth-client";
 import { apiClient } from "@/lib/api-client";
+import { useSession } from "@/lib/auth-client";
 import { queryClient } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
 import type { GroupModel, Position } from "@repo/database";

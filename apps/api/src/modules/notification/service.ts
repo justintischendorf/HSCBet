@@ -114,7 +114,11 @@ export abstract class NotificationService {
     params: (typeof IdParams)["static"];
   }) {
     const notification = await prisma.notification.findFirst({
-      where: { id: params.id, userId: user.id, type: NotificationType.GROUP_INVITE },
+      where: {
+        id: params.id,
+        userId: user.id,
+        type: NotificationType.GROUP_INVITE,
+      },
     });
 
     if (!notification || !notification.groupId) {

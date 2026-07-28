@@ -5,10 +5,10 @@ import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
 
+import CopyButton from "./copy-button";
 import { AvatarBadge, Avatar, AvatarImage, AvatarFallback } from "./ui/avatar";
 import { HoverCardTrigger, HoverCardContent, HoverCard } from "./ui/hover-card";
 import { Skeleton } from "./ui/skeleton";
-import CopyButton from "./copy-button";
 
 export default function NavbarAvatar({ connected }: { connected: boolean }) {
   const { data: session, isPending } = useSession();
