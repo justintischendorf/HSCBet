@@ -1,5 +1,5 @@
-import { twoFactorClient } from "better-auth/plugins/two-factor";
 import { emailOTPClient } from "better-auth/client/plugins";
+import { twoFactorClient } from "better-auth/plugins/two-factor";
 import { createAuthClient } from "better-auth/react";
 
 const authBaseURL = process.env.NEXT_PUBLIC_AUTH_BASE_URL?.trim();

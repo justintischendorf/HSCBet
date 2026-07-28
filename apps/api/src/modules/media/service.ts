@@ -1,7 +1,8 @@
-import { prisma } from "@repo/database";
 import { S3Manager } from "@repo/bucket";
-import { MediaModel } from "./model";
+import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
+
+import { MediaModel } from "./model";
 
 const logger = createLogger("MediaService");
 

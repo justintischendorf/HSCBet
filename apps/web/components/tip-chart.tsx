@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { toast } from "sonner";
 
 import {
   ChartContainer,
@@ -11,7 +12,6 @@ import {
 } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSeasonStats } from "@/hooks/use-season-stats";
-import { toast } from "sonner";
 
 const chartConfig = {
   correct: {

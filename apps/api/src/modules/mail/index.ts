@@ -1,7 +1,9 @@
-import Elysia, { t } from "elysia";
+import Elysia from "elysia";
+
 import { auth } from "@repo/auth";
-import { MailService } from "./service";
+
 import { MailModel } from "./model";
+import { MailService } from "./service";
 
 export const mail = new Elysia({ prefix: "/mail" })
   // --------------------------------------------------------------------------> GET api/mail/forgot-password

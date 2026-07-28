@@ -1,4 +1,5 @@
 import { Elysia } from "elysia";
+
 import { auth } from "@repo/auth";
 export const sessionPlugin = new Elysia({ name: "session" }).derive(
   { as: "global" },

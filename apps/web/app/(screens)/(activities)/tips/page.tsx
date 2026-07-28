@@ -1,6 +1,9 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+
 import Tip from "@/components/tip";
 import {
   Combobox,
@@ -10,8 +13,10 @@ import {
   ComboboxItem,
   ComboboxList,
 } from "@/components/ui/combobox";
-import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -20,16 +25,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Spinner } from "@/components/ui/spinner";
 import { useSeasons } from "@/hooks/use-seasons";
 import { useTips, tipsQueryKey } from "@/hooks/use-tips";
-import { useSession } from "@/lib/auth-client";
 import { apiClient } from "@/lib/api-client";
+import { useSession } from "@/lib/auth-client";
 import { queryClient } from "@/lib/queryClient";
-import { toast } from "sonner";
 import type { GameModel } from "@repo/database";
-import { useMutation } from "@tanstack/react-query";
 
 interface TipDraft {
   host: string;
@@ -159,7 +160,7 @@ export default function TipsScreen() {
     <main className="w-full sm:py-16 py-8 px-4 md:px-12 sm:px-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold tracking-tight">Meine Tipps</h1>
-        <p className="text-base mt-2">
+        <p className="text-base">
           Hier findest du alle Spiele der Saison. Tippe direkt auf ein Spiel –
           dein Tipp wird automatisch gespeichert und ist bis zum Spielbeginn
           änderbar. Danach wird er gesperrt.

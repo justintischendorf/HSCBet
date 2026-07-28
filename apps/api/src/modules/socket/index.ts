@@ -1,7 +1,9 @@
 import Elysia from "elysia";
-import { sessionPlugin } from "../auth";
+
 import { createLogger } from "@repo/logger";
+
 import { contextPlugin } from "../../context";
+import { sessionPlugin } from "../auth";
 
 const logger = createLogger("api:socket");
 

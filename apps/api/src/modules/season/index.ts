@@ -1,7 +1,8 @@
-import Elysia, { t } from "elysia";
+import Elysia from "elysia";
+
+import { IdParams } from "../../global/models";
 import { sessionPlugin } from "../auth";
 import { SeasonService } from "./service";
-import { IdParams } from "../../global/models";
 
 export const season = new Elysia({ prefix: "/season" })
   .use(sessionPlugin)

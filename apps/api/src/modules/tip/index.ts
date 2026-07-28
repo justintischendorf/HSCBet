@@ -1,8 +1,9 @@
 import Elysia from "elysia";
-import { sessionPlugin } from "../auth";
-import { TipService } from "./service";
+
 import { IdParams } from "../../global/models";
+import { sessionPlugin } from "../auth";
 import { TipModel } from "./model";
+import { TipService } from "./service";
 
 export const tip = new Elysia({ prefix: "/tip" })
   .use(sessionPlugin)

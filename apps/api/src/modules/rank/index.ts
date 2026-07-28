@@ -1,4 +1,5 @@
 import Elysia from "elysia";
+
 import { sessionPlugin } from "../auth";
 import { RankService } from "./service";
 

@@ -1,4 +1,4 @@
-import { t, UnwrapSchema } from "elysia";
+import { t, type UnwrapSchema } from "elysia";
 
 export namespace TipModel {
   export const UpsertTip = t.Object({

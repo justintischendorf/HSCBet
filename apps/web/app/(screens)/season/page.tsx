@@ -1,7 +1,17 @@
 "use client";
 
 import { Fragment, useState, useEffect } from "react";
+
+import {
+  Combobox,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxItem,
+  ComboboxList,
+} from "@/components/ui/combobox";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -11,15 +21,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSeasons } from "@/hooks/use-seasons";
-import {
-  Combobox,
-  ComboboxContent,
-  ComboboxEmpty,
-  ComboboxInput,
-  ComboboxItem,
-  ComboboxList,
-} from "@/components/ui/combobox";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SeasonScreen() {
   const { data: seasonsResponse, isPending: isSeasonsPending } = useSeasons();
@@ -106,7 +107,7 @@ export default function SeasonScreen() {
                       Spielzeit
                     </TableHead>
                     <TableHead className="text-right">Heimteam</TableHead>
-                    <TableHead className="w-14 sm:w-20 text-center">
+                    <TableHead className="w-20 sm:w-24 text-center">
                       Ergebnis
                     </TableHead>
                     <TableHead className="text-left">Gastteam</TableHead>

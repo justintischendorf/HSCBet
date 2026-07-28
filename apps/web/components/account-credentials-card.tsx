@@ -1,6 +1,10 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { useMutation } from "@tanstack/react-query";
+import React, { useEffect } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,22 +12,20 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { authClient, useSession } from '@/lib/auth-client';
-import { apiClient } from '@/lib/api-client';
-import { MimeType } from '@repo/database';
-import { useMutation } from '@tanstack/react-query';
-import React, { useEffect } from 'react';
-import { toast } from 'sonner';
-import { ConfirmAlert } from './confirm-alert';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { apiClient } from "@/lib/api-client";
+import { authClient, useSession } from "@/lib/auth-client";
+import { MimeType } from "@repo/database";
+
+import { ConfirmAlert } from "./confirm-alert";
 import {
   InputProfilePicture,
   removeProfilePicture,
   uploadProfilePicture,
-} from './input-profile-picture';
-import { Spinner } from './ui/spinner';
+} from "./input-profile-picture";
+import { Spinner } from "./ui/spinner";
 
 export function AccountCredentialsCard({
   user,
@@ -33,8 +35,8 @@ export function AccountCredentialsCard({
   const { refetch } = useSession();
   const [showChangeCredentialsConfirm, setShowChangeCredentialsConfirm] =
     React.useState(false);
-  const [username, setUsername] = React.useState(user?.name || '');
-  const [email, setEmail] = React.useState(user?.email || '');
+  const [username, setUsername] = React.useState(user?.name || "");
+  const [email, setEmail] = React.useState(user?.email || "");
   const [pendingFile, setPendingFile] = React.useState<File | null>(null);
   const [removeExistingPicture, setRemoveExistingPicture] =
     React.useState(false);
@@ -46,14 +48,14 @@ export function AccountCredentialsCard({
       mimetype: MimeType;
       size: number;
     }) => {
-      return apiClient.api.media.upload['get-presigned-url'].post(input);
+      return apiClient.api.media.upload["get-presigned-url"].post(input);
     },
   });
 
   useEffect(() => {
     if (user) {
-      setUsername(user.name || '');
-      setEmail(user.email || '');
+      setUsername(user.name || "");
+      setEmail(user.email || "");
     }
   }, [user]);
 
@@ -83,7 +85,7 @@ export function AccountCredentialsCard({
         newEmail: email,
       });
       if (emailChangeError) {
-        toast.error(emailChangeError.status + ': ' + emailChangeError.message);
+        toast.error(emailChangeError.status + ": " + emailChangeError.message);
         setIsSubmitting(false);
         return;
       }
@@ -94,7 +96,7 @@ export function AccountCredentialsCard({
         name: username,
       });
       if (updateUserError) {
-        toast.error(updateUserError.status + ': ' + updateUserError.message);
+        toast.error(updateUserError.status + ": " + updateUserError.message);
         setIsSubmitting(false);
         return;
       }
@@ -104,7 +106,7 @@ export function AccountCredentialsCard({
     setPendingFile(null);
     setRemoveExistingPicture(false);
     setIsSubmitting(false);
-    toast.success('Profilinformationen erfolgreich aktualisiert!');
+    toast.success("Profilinformationen erfolgreich aktualisiert!");
   }
 
   return (
@@ -126,7 +128,7 @@ export function AccountCredentialsCard({
           <div className="flex flex-col gap-6">
             <div className="flex justify-center">
               <InputProfilePicture
-                fallbackChar={(username || user?.name || '?')
+                fallbackChar={(username || user?.name || "?")
                   .charAt(0)
                   .toUpperCase()}
                 currentImageUrl={user?.image}

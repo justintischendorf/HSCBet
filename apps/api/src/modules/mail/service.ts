@@ -1,5 +1,7 @@
-import { createLogger } from "@repo/logger";
 import { Resend } from "resend";
+
+import { createLogger } from "@repo/logger";
+
 import { MailModel } from "./model";
 
 const logger = createLogger("api:mail");

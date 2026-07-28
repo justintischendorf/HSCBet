@@ -1,8 +1,10 @@
-'use client';
+"use client";
 
-import { Fragment } from 'react';
-import { GameModel, TipModel } from '@repo/database';
-import { TableCell, TableRow } from './ui/table';
+import { Fragment } from "react";
+
+import { GameModel, TipModel } from "@repo/database";
+
+import { TableCell, TableRow } from "./ui/table";
 
 interface TipProps {
   tipData: TipModel | null;
@@ -11,16 +13,16 @@ interface TipProps {
 
 export default function Tip({ tipData, gameData }: TipProps) {
   const dateObj = new Date(gameData.date);
-  const dateStr = dateObj.toLocaleDateString('de-DE', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
+  const dateStr = dateObj.toLocaleDateString("de-DE", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
   });
   const timeOnly =
-    dateObj.toLocaleTimeString('de-DE', {
-      hour: '2-digit',
-      minute: '2-digit',
-    }) + ' Uhr';
+    dateObj.toLocaleTimeString("de-DE", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }) + " Uhr";
 
   return (
     <Fragment>
@@ -41,7 +43,7 @@ export default function Tip({ tipData, gameData }: TipProps) {
           {gameData.host}
         </TableCell>
         <TableCell className="text-center py-3 px-1 sm:px-2 font-bold tracking-wider text-sm sm:text-base">
-          {tipData ? `${tipData.tipHost} : ${tipData.tipGuest}` : '- : -'}
+          {tipData ? `${tipData.tipHost} : ${tipData.tipGuest}` : "- : -"}
         </TableCell>
         <TableCell className="truncate text-left py-3 text-xs sm:text-sm font-semibold">
           {gameData.guest}

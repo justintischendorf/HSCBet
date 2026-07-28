@@ -1,5 +1,12 @@
-'use client';
+"use client";
 
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { Eye, EyeOff, Info, ShieldAlert } from "lucide-react";
+import Image from "next/image";
+import React from "react";
+import { toast } from "sonner";
+
+import CopyButton from "@/components/copy-button";
 import {
   AlertDialogContent,
   AlertDialogHeader,
@@ -9,46 +16,40 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
   AlertDialog,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Field } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
-import { authClient, useSession } from '@/lib/auth-client';
-import { Eye, EyeOff, Info, ShieldAlert } from 'lucide-react';
-import React from 'react';
-import { toast } from 'sonner';
-import Image from 'next/image';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Field } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from '@/components/ui/input-otp';
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
-import CopyButton from '@/components/copy-button';
+} from "@/components/ui/input-otp";
+import { Separator } from "@/components/ui/separator";
+import { authClient, useSession } from "@/lib/auth-client";
 
 export default function AccountSettings() {
   const { data: sessionData, refetch } = useSession();
   const user = sessionData?.user;
-  const [step, setStep] = React.useState<'idle' | 'qr'>('idle');
-  const [totpURI, setTotpURI] = React.useState('');
+  const [step, setStep] = React.useState<"idle" | "qr">("idle");
+  const [totpURI, setTotpURI] = React.useState("");
   const [backupCodes, setBackupCodes] = React.useState<string[]>([]);
-  const [code, setCode] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [code, setCode] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [pendingAction, setPendingAction] = React.useState<
-    'enable' | 'disable' | null
+    "enable" | "disable" | null
   >(null);
   const [passwordDialogOpen, setPasswordDialogOpen] = React.useState(false);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const isTwoFactorEnabled = Boolean(user?.twoFactorEnabled);
   const dialogTitle = isTwoFactorEnabled
-    ? '2-Faktor-Authentifizierung deaktivieren'
-    : '2-Faktor-Authentifizierung aktivieren';
-  const statusText = isTwoFactorEnabled ? 'Aktiviert' : 'Deaktiviert';
-  const statusClass = isTwoFactorEnabled ? 'text-positive' : 'text-destructive';
-  const actionLabel = isTwoFactorEnabled ? 'Deaktivieren' : 'Aktivieren';
+    ? "2-Faktor-Authentifizierung deaktivieren"
+    : "2-Faktor-Authentifizierung aktivieren";
+  const statusText = isTwoFactorEnabled ? "Aktiviert" : "Deaktiviert";
+  const statusClass = isTwoFactorEnabled ? "text-positive" : "text-destructive";
+  const actionLabel = isTwoFactorEnabled ? "Deaktivieren" : "Aktivieren";
 
   async function handleVerifyTotp(code: string) {
     setIsSubmitting(true);
@@ -59,65 +60,65 @@ export default function AccountSettings() {
     setIsSubmitting(false);
 
     if (error) {
-      toast.error(error.message || 'Die 2FA-Verifizierung ist fehlgeschlagen.');
+      toast.error(error.message || "Die 2FA-Verifizierung ist fehlgeschlagen.");
       return;
     }
 
     await refetch?.();
-    setStep('idle');
-    setTotpURI('');
+    setStep("idle");
+    setTotpURI("");
     setBackupCodes([]);
-    setCode('');
-    toast.success('2-Faktor-Authentifizierung aktiviert!');
+    setCode("");
+    toast.success("2-Faktor-Authentifizierung aktiviert!");
   }
 
   function openPasswordDialog() {
-    setPendingAction(isTwoFactorEnabled ? 'disable' : 'enable');
-    setPassword('');
+    setPendingAction(isTwoFactorEnabled ? "disable" : "enable");
+    setPassword("");
     setPasswordDialogOpen(true);
   }
 
   async function handlePasswordConfirm() {
     if (!password.trim()) {
-      toast.error('Aktion abgebrochen: Passwort benötigt.');
+      toast.error("Aktion abgebrochen: Passwort benötigt.");
       return;
     }
 
     setIsSubmitting(true);
 
-    if (pendingAction === 'disable') {
+    if (pendingAction === "disable") {
       const { error } = await authClient.twoFactor.disable({ password });
       setIsSubmitting(false);
       if (error) {
-        toast.error('Fehler beim Deaktivieren der 2-Faktor-Authentifizierung.');
+        toast.error("Fehler beim Deaktivieren der 2-Faktor-Authentifizierung.");
         return;
       }
 
       await refetch?.();
       setPasswordDialogOpen(false);
       setPendingAction(null);
-      setPassword('');
-      toast.success('2-Faktor-Authentifizierung deaktiviert!');
+      setPassword("");
+      toast.success("2-Faktor-Authentifizierung deaktiviert!");
       return;
     }
 
     const { error, data } = await authClient.twoFactor.enable({
       password,
-      issuer: 'HSCBet',
+      issuer: "HSCBet",
     });
     setIsSubmitting(false);
 
     if (error) {
-      toast.error('Fehler beim Aktivieren der 2-Faktor-Authentifizierung.');
+      toast.error("Fehler beim Aktivieren der 2-Faktor-Authentifizierung.");
       return;
     }
 
     setPasswordDialogOpen(false);
     setPendingAction(null);
-    setPassword('');
+    setPassword("");
 
     if (data?.totpURI) {
-      setStep('qr');
+      setStep("qr");
       setTotpURI(data.totpURI);
       setBackupCodes(data.backupCodes || []);
     }
@@ -162,7 +163,7 @@ export default function AccountSettings() {
 
               <div className="relative">
                 <Input
-                  type={showPassword ? 'text' : 'password'}
+                  type={showPassword ? "text" : "password"}
                   placeholder="Passwort"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -188,13 +189,13 @@ export default function AccountSettings() {
                   }}
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? 'Bitte warten...' : 'Weiter'}
+                  {isSubmitting ? "Bitte warten..." : "Weiter"}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
 
-          {step === 'qr' && (
+          {step === "qr" && (
             <div className="flex flex-col border border-border rounded-xl bg-card p-4 sm:p-6 shadow-sm sm:gap-8 gap-6">
               <div className="flex flex-row items-center gap-2">
                 <ShieldAlert />

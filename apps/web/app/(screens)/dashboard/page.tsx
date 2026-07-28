@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { MailWarning, ShieldAlert } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 import { TipChart } from "@/components/tip-chart";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,22 +23,21 @@ import {
 } from "@/components/ui/input-otp";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { authClient, useSession } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
-import { queryClient } from "@/lib/queryClient";
 import { groupsQueryKey, groupsQueryFn } from "@/hooks/use-groups";
-import { seasonsQueryKey, seasonsQueryFn } from "@/hooks/use-seasons";
-import { tipsQueryKey, tipsQueryFn } from "@/hooks/use-tips";
 import {
   notificationsQueryKey,
   notificationsQueryFn,
 } from "@/hooks/use-notifications";
+import { useRank } from "@/hooks/use-rank";
 import {
   seasonStatsQueryKey,
   seasonStatsQueryFn,
 } from "@/hooks/use-season-stats";
-import Image from "next/image";
-import { useRank } from "@/hooks/use-rank";
+import { seasonsQueryKey, seasonsQueryFn } from "@/hooks/use-seasons";
+import { tipsQueryKey, tipsQueryFn } from "@/hooks/use-tips";
+import { authClient, useSession } from "@/lib/auth-client";
+import { queryClient } from "@/lib/queryClient";
+import { cn } from "@/lib/utils";
 import type { Position } from "@repo/database";
 
 const RANKS = [
