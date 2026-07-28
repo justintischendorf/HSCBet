@@ -1,10 +1,12 @@
-import { prisma } from "@repo/database";
+import { NotificationType, prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
 
 import { IdParams } from "../../global/models";
 import { NotificationModel } from "./model";
 
 const logger = createLogger("api:notification");
+
+const MAX_GROUP_MEMBERS = 16;
 
 export abstract class NotificationService {
   // --------------------------------------------------------------------------> GET api/notification
@@ -100,6 +102,54 @@ export abstract class NotificationService {
     await prisma.notification.deleteMany({
       where: { userId: user.id, read: true },
     });
+  }
+
+  // --------------------------------------------------------------------------> PATCH api/notification/:id/accept
+  //                                                                             - accept a group invite notification, joining the group
+  static async acceptGroupInvite({
+    user,
+    params,
+  }: {
+    user: { id: string };
+    params: (typeof IdParams)["static"];
+  }) {
+    const notification = await prisma.notification.findFirst({
+      where: {
+        id: params.id,
+        userId: user.id,
+        type: NotificationType.GROUP_INVITE,
+      },
+    });
+
+    if (!notification || !notification.groupId) {
+      throw new Error("Einladung nicht gefunden");
+    }
+
+    const group = await prisma.group.findUnique({
+      where: { id: notification.groupId },
+      include: { members: { select: { id: true } } },
+    });
+
+    if (!group) {
+      await prisma.notification.delete({ where: { id: notification.id } });
+      throw new Error("Gruppe existiert nicht mehr");
+    }
+
+    const alreadyMember = group.members.some((member) => member.id === user.id);
+
+    if (!alreadyMember && group.members.length >= MAX_GROUP_MEMBERS) {
+      throw new Error("Die Gruppe hat die maximale Mitgliederzahl erreicht");
+    }
+
+    const [updatedGroup] = await prisma.$transaction([
+      prisma.group.update({
+        where: { id: group.id },
+        data: { members: { connect: { id: user.id } } },
+      }),
+      prisma.notification.delete({ where: { id: notification.id } }),
+    ]);
+
+    return updatedGroup;
   }
 
   // --------------------------------------------------------------------------> PATCH api/notification

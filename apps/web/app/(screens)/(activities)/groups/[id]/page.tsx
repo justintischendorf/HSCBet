@@ -51,7 +51,7 @@ export default function GroupStats() {
     useGroupById(groupId);
 
   const userList = useMemo(() => {
-    const users = groupResponse?.data?.group?.user ?? [];
+    const users = groupResponse?.data?.group?.members ?? [];
 
     return [...users].sort((a, b) => {
       const pointsA = a.rank?.points ?? 0;
@@ -59,7 +59,7 @@ export default function GroupStats() {
 
       return pointsB - pointsA;
     });
-  }, [groupResponse?.data?.group?.user]);
+  }, [groupResponse?.data?.group?.members]);
 
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>("");
 

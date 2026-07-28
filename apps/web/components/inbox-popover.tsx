@@ -74,6 +74,16 @@ export function InboxPopover() {
     },
   });
 
+  const {
+    mutateAsync: acceptInvite,
+    isPending: isAcceptingInvite,
+    variables: acceptingInviteId,
+  } = useMutation({
+    mutationFn: async (notificationId: string) => {
+      return apiClient.api.notification({ id: notificationId }).accept.patch();
+    },
+  });
+
   async function handleMarkAsRead(notificationId: string) {
     const { error } = await markAsRead(notificationId);
 
@@ -105,6 +115,19 @@ export function InboxPopover() {
     }
 
     queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+  }
+
+  async function handleAcceptInvite(notificationId: string) {
+    const { error } = await acceptInvite(notificationId);
+
+    if (error) {
+      toast.error(`${error.status}: ${error.value}`);
+      return;
+    }
+
+    toast.success("Der Gruppe beigetreten!");
+    queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
+    queryClient.invalidateQueries({ queryKey: ["groups"] });
   }
 
   async function handleDelete(notificationId: string) {
@@ -255,6 +278,24 @@ export function InboxPopover() {
                         })}{" "}
                         Uhr
                       </span>
+                      {n.type === "GROUP_INVITE" && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="mt-1"
+                          disabled={
+                            isAcceptingInvite && acceptingInviteId === n.id
+                          }
+                          onClick={() => handleAcceptInvite(n.id)}
+                        >
+                          {isAcceptingInvite && acceptingInviteId === n.id ? (
+                            <Spinner />
+                          ) : (
+                            <Check />
+                          )}
+                          Beitreten
+                        </Button>
+                      )}
                     </div>
 
                     <div
