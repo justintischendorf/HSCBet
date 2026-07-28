@@ -14,6 +14,11 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    env:
+      # prisma.config.ts requires DATABASE_URL to be resolvable even for
+      # `prisma generate`, which never actually connects to the database.
+      DATABASE_URL: postgresql://user:password@localhost:5432/db
+
     steps:
       - uses: actions/checkout@v4
 

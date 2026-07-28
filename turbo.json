@@ -4,6 +4,7 @@
   "tasks": {
     "generate": {
       "cache": true,
+      "env": ["DATABASE_URL"],
       "inputs": ["prisma/schema.prisma"],
       "outputs": ["generated/**"]
     },
