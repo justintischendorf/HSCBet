@@ -117,7 +117,7 @@ export default function GroupStats() {
 
           <Table>
             <TableHeader>
-              <TableRow className="hover:bg-transparent">
+              <TableRow className="hover:bg-background">
                 <TableHead> Position </TableHead>
                 <TableHead className="w-32 sm:w-40 sticky left-0 z-20 bg-background border-r">
                   Name
@@ -171,7 +171,7 @@ export default function GroupStats() {
                 place += 1;
 
                 return (
-                  <TableRow key={user.id}>
+                  <TableRow key={user.id} className="hover:bg-background">
                     <TableCell className="text-center"> {place}</TableCell>
                     <TableCell className="sticky left-0 z-10 bg-background border-r font-medium">
                       {user.name}
