@@ -52,6 +52,27 @@ export const group = new Elysia({ prefix: "/group" })
     },
   )
 
+  // --------------------------------------------------------------------------> POST api/group/:id/invite
+  //                                                                             - invite a player to the group by id (leader only)
+  .post(
+    "/:id/invite",
+    async ({ set, user, params, body, store }) => {
+      await GroupService.inviteToGroup({
+        user,
+        params,
+        body,
+        queueManager: store.queueManager,
+      });
+
+      set.status = 200;
+      return { success: true };
+    },
+    {
+      params: IdParams,
+      body: GroupModel.InviteToGroup,
+    },
+  )
+
   // --------------------------------------------------------------------------> PATCH api/group/leaveGroup
   //                                                                             - leave a group, deleting it if it becomes empty
   .patch(

@@ -168,6 +168,7 @@
     "packages/worker": {
       "name": "worker",
       "dependencies": {
+        "@repo/database": "workspace:*",
         "@repo/logger": "workspace:*",
       },
       "devDependencies": {

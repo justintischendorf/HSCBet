@@ -63,6 +63,22 @@ export const notification = new Elysia({ prefix: "/notification" })
     },
   )
 
+  // --------------------------------------------------------------------------> PATCH api/notification/:id/accept
+  //                                                                             - accept a group invite notification
+  .patch(
+    "/:id/accept",
+    async ({ set, user, params }) => {
+      set.status = 200;
+      return {
+        success: true,
+        group: await NotificationService.acceptGroupInvite({ user, params }),
+      };
+    },
+    {
+      params: IdParams,
+    },
+  )
+
   // --------------------------------------------------------------------------> DELETE api/notification/read
   //                                                                             - delete all read notifications
   .delete("/read", async ({ set, user }) => {

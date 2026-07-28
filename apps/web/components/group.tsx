@@ -1,15 +1,18 @@
 import { useMutation } from "@tanstack/react-query";
-import { MoveRight } from "lucide-react";
+import { Crown, MoveRight } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
+import { useSession } from "@/lib/auth-client";
 import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
+import { cn } from "@/lib/utils";
 import type { GroupModel, Position } from "@repo/database";
 
 import { ConfirmAlert } from "./confirm-alert";
+import { InviteMemberPopup } from "./invite-member-popup";
 import {
   Accordion,
   AccordionContent,
@@ -21,7 +24,12 @@ import { Button } from "./ui/button";
 import { Spinner } from "./ui/spinner";
 
 type GroupWithUsers = GroupModel & {
-  user: {
+  leader: {
+    id: string;
+    name: string;
+    image: string | null;
+  };
+  members: {
     id: string;
     name: string;
     image: string | null;
@@ -50,6 +58,8 @@ const POSITION_ICONS: Record<Position, string> = {
 
 export default function Group({ group }: { group: GroupWithUsers }) {
   const router = useRouter();
+  const { data: session } = useSession();
+  const isLeader = session?.user?.id === group.leader.id;
   const [showLeaveGroupConfirm, setShowLeaveGroupConfirm] =
     React.useState(false);
   const imageUrl = group.files?.[0]
@@ -76,10 +86,12 @@ export default function Group({ group }: { group: GroupWithUsers }) {
     queryClient.invalidateQueries({ queryKey: ["groups"] });
   }
 
-  const memberCount = group.user.length;
-  const rankedMembers = [...group.user].sort(
-    (a, b) => (b.rank?.points ?? 0) - (a.rank?.points ?? 0),
-  );
+  const memberCount = group.members.length;
+  const rankedMembers = [...group.members].sort((a, b) => {
+    if (a.id === group.leader.id) return -1;
+    if (b.id === group.leader.id) return 1;
+    return (b.rank?.points ?? 0) - (a.rank?.points ?? 0);
+  });
 
   return (
     <div className="w-full rounded-xl border border-border bg-card shadow-sm overflow-hidden">
@@ -138,11 +150,17 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                           const points: number = user.rank?.points ?? 0;
                           const position: Position =
                             user.rank?.position ?? "DEFAULT";
+                          const isGroupLeader = user.id === group.leader.id;
 
                           return (
                             <div
                               key={user.id}
-                              className="flex items-center gap-2.5 rounded-lg border border-border bg-muted px-3 py-2 min-w-0"
+                              className={cn(
+                                "flex items-center gap-2.5 rounded-lg border px-3 py-2 min-w-0",
+                                isGroupLeader
+                                  ? "border-huk-accent bg-huk-accent/10"
+                                  : "border-border bg-muted",
+                              )}
                             >
                               <Avatar size="sm" className="shrink-0">
                                 <AvatarImage
@@ -154,9 +172,17 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                                 </AvatarFallback>
                               </Avatar>
                               <div className="flex flex-col min-w-0 flex-1">
-                                <span className="truncate text-xs sm:text-sm font-medium">
-                                  {user.name}
-                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="truncate text-xs sm:text-sm font-medium">
+                                    {user.name}
+                                  </span>
+                                  {isGroupLeader && (
+                                    <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-huk-accent px-1.5 py-0.5 text-[10px] font-medium text-black">
+                                      <Crown className="size-2.5" />
+                                      Leader
+                                    </span>
+                                  )}
+                                </div>
                                 <span className="text-xs text-muted-foreground tabular-nums">
                                   {points} {points === 1 ? "Punkt" : "Punkte"}
                                 </span>
@@ -182,7 +208,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
         </AccordionItem>
       </Accordion>
 
-      <div className="flex items-center gap-2 border-t border-border px-4 py-3.5 sm:justify-end">
+      <div className="flex flex-wrap items-center gap-2 border-t border-border px-4 py-3.5 sm:justify-end">
         <Button
           variant="destructive"
           size="lg"
@@ -195,6 +221,9 @@ export default function Group({ group }: { group: GroupWithUsers }) {
           {isLeavingGroup && <Spinner />}
           Gruppe verlassen
         </Button>
+        {isLeader && (
+          <InviteMemberPopup groupId={group.id} groupName={group.name} />
+        )}
         <Button
           size="lg"
           className="flex-1 sm:flex-none"

@@ -15,6 +15,10 @@ export namespace GroupModel {
   export const LeaveGroup = t.Object({
     groupId: t.String(),
   });
+
+  export const InviteToGroup = t.Object({
+    playerId: t.String(),
+  });
 }
 
 export type GroupModel = {

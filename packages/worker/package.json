@@ -10,6 +10,7 @@
     "@types/bun": "latest"
   },
   "dependencies": {
+    "@repo/database": "workspace:*",
     "@repo/logger": "workspace:*"
   },
   "peerDependencies": {
