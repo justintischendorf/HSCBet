@@ -1,6 +1,11 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
+import { Eye, EyeOff } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,24 +13,21 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { authClient, useSession } from '@/lib/auth-client';
-import { Eye, EyeOff } from 'lucide-react';
-import React, { useEffect } from 'react';
-import { toast } from 'sonner';
-import { ConfirmAlert } from './confirm-alert';
-import { useRouter } from 'next/navigation';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { authClient, useSession } from "@/lib/auth-client";
+
+import { ConfirmAlert } from "./confirm-alert";
 
 export function AccountPasswordCard() {
   const router = useRouter();
   const session = useSession();
   const user = session?.data?.user;
 
-  const [currentPassword, setCurrentPassword] = React.useState('');
-  const [newPassword, setNewPassword] = React.useState('');
-  const [confirmPassword, setConfirmPassword] = React.useState('');
+  const [currentPassword, setCurrentPassword] = React.useState("");
+  const [newPassword, setNewPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
   const [showCurrentPassword, setShowCurrentPassword] = React.useState(false);
   const [showNewPassword, setShowNewPassword] = React.useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
@@ -34,9 +36,9 @@ export function AccountPasswordCard() {
 
   useEffect(() => {
     if (user) {
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
     }
   }, [user]);
 
@@ -46,13 +48,13 @@ export function AccountPasswordCard() {
   ) {
     if (user) {
       if (newPassword !== confirmPassword) {
-        toast.error('Die neuen Passwörter stimmen nicht überein.');
+        toast.error("Die neuen Passwörter stimmen nicht überein.");
         return;
       }
 
       if (currentPassword === newPassword) {
         toast.error(
-          'Das neue Passwort darf nicht mit dem aktuellen Passwort übereinstimmen.',
+          "Das neue Passwort darf nicht mit dem aktuellen Passwort übereinstimmen.",
         );
         return;
       }
@@ -63,7 +65,7 @@ export function AccountPasswordCard() {
       });
       if (passwordChangeError) {
         toast.error(
-          passwordChangeError.status + ': ' + passwordChangeError.message,
+          passwordChangeError.status + ": " + passwordChangeError.message,
         );
         return;
       }
@@ -72,12 +74,12 @@ export function AccountPasswordCard() {
     const { error: signOutError } = await authClient.signOut();
 
     if (signOutError) {
-      toast.error(signOutError.status + ': ' + signOutError.message);
+      toast.error(signOutError.status + ": " + signOutError.message);
       return;
     }
 
-    router.replace('/signin');
-    toast.success('Passwort erfolgreich aktualisiert!');
+    router.replace("/signin");
+    toast.success("Passwort erfolgreich aktualisiert!");
   }
 
   return (
@@ -99,7 +101,7 @@ export function AccountPasswordCard() {
               <div className="relative">
                 <Input
                   id="currentPassword"
-                  type={showCurrentPassword ? 'text' : 'password'}
+                  type={showCurrentPassword ? "text" : "password"}
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   required
@@ -125,7 +127,7 @@ export function AccountPasswordCard() {
                   <Input
                     id="newPassword"
                     aria-invalid={newPassword !== confirmPassword}
-                    type={showNewPassword ? 'text' : 'password'}
+                    type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     required
@@ -146,7 +148,7 @@ export function AccountPasswordCard() {
                   <Input
                     id="confirmPassword"
                     aria-invalid={confirmPassword !== newPassword}
-                    type={showConfirmPassword ? 'text' : 'password'}
+                    type={showConfirmPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     className="pr-7"

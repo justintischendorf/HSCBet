@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { Copy } from 'lucide-react';
-import { Button } from './ui/button';
-import { useRef } from 'react';
+import { Copy } from "lucide-react";
+import { useRef } from "react";
+
+import { Button } from "./ui/button";
 
 export default function CopyButton(props: {
   textToCopy?: string;
@@ -26,26 +27,26 @@ export default function CopyButton(props: {
     const startX = rect.left + rect.width / 2;
     const startY = rect.top + rect.height / 2;
 
-    const canvas = document.createElement('canvas');
-    canvas.style.position = 'fixed';
-    canvas.style.left = '0';
-    canvas.style.top = '0';
-    canvas.style.pointerEvents = 'none';
-    canvas.style.zIndex = '9999';
+    const canvas = document.createElement("canvas");
+    canvas.style.position = "fixed";
+    canvas.style.left = "0";
+    canvas.style.top = "0";
+    canvas.style.pointerEvents = "none";
+    canvas.style.zIndex = "9999";
     document.body.appendChild(canvas);
 
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext("2d")!;
 
     const dpr = window.devicePixelRatio || 1;
     function resize() {
       canvas.width = Math.floor(window.innerWidth * dpr);
       canvas.height = Math.floor(window.innerHeight * dpr);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
+      canvas.style.width = window.innerWidth + "px";
+      canvas.style.height = window.innerHeight + "px";
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     resize();
-    window.addEventListener('resize', resize);
+    window.addEventListener("resize", resize);
 
     type Particle = {
       x: number;
@@ -62,7 +63,7 @@ export default function CopyButton(props: {
     const particles: Particle[] = [];
     const count = 14 + Math.floor(Math.random() * 8);
 
-    const DEFAULT_COLORS = ['#ffed00', '#fffbcc', '#d2e1e6', '#2e6c7a'];
+    const DEFAULT_COLORS = ["#ffed00", "#fffbcc", "#d2e1e6", "#2e6c7a"];
     const palette =
       props.colors && props.colors.length ? props.colors : DEFAULT_COLORS;
 
@@ -118,7 +119,7 @@ export default function CopyButton(props: {
       if (particles.length > 0) {
         requestAnimationFrame(frame);
       } else {
-        window.removeEventListener('resize', resize);
+        window.removeEventListener("resize", resize);
         if (canvas.parentElement) canvas.parentElement.removeChild(canvas);
       }
     }
@@ -132,7 +133,7 @@ export default function CopyButton(props: {
       ref={buttonRef}
       variant="ghost"
       size="icon-sm"
-      onClick={() => handleCopyToClipboard(props.textToCopy || ':)')}
+      onClick={() => handleCopyToClipboard(props.textToCopy || ":)")}
     >
       <Copy />
     </Button>

@@ -1,6 +1,8 @@
 import IORedis from "ioredis";
-import type { ChanelName, Options, Payload } from "./types";
+
 import { createLogger } from "@repo/logger";
+
+import type { ChanelName, Options, Payload } from "./types";
 
 const logger = createLogger("PubSubManager");
 

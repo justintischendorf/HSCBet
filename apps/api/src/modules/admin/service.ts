@@ -1,9 +1,31 @@
 import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
-import { AdminModel } from "./model";
+
 import { IdParams } from "../../global/models";
+import { AdminModel } from "./model";
 
 const logger = createLogger("api:admin");
+
+const KICKOFF_TIME_ZONE = "Europe/Berlin";
+
+function berlinKickoffToUtc(dateTimeStr: string): Date {
+  const isoLocal = dateTimeStr.replace(/Z$/, "");
+  const naiveUtc = new Date(`${isoLocal}Z`);
+
+  const offsetPart = new Intl.DateTimeFormat("en-US", {
+    timeZone: KICKOFF_TIME_ZONE,
+    timeZoneName: "longOffset",
+  })
+    .formatToParts(naiveUtc)
+    .find((part) => part.type === "timeZoneName")?.value;
+  const match = offsetPart?.match(/GMT([+-]\d{1,2})(?::(\d{2}))?/);
+  const hours = Number(match?.[1] ?? 0);
+  const minutes = Number(match?.[2] ?? 0);
+  const offsetMs =
+    (Math.abs(hours) * 60 + minutes) * 60_000 * Math.sign(hours || 1);
+
+  return new Date(naiveUtc.getTime() - offsetMs);
+}
 
 export abstract class AdminService {
   // --------------------------------------------------------------------------> GET api/admin/all-seasons
@@ -35,7 +57,7 @@ export abstract class AdminService {
         league: body.league,
         game: {
           create: body.game.map((g) => ({
-            date: new Date(g.date),
+            date: berlinKickoffToUtc(g.date),
             host: g.host,
             guest: g.guest,
           })),

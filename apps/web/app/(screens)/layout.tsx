@@ -1,23 +1,24 @@
 "use client";
 
+import { QueryClientProvider } from "@tanstack/react-query";
+import { LogOut } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { toast } from "sonner";
+
+import { TwoFactorWarning } from "@/components/2fa-warning";
+import Footer from "@/components/footer";
+import { InboxPopover } from "@/components/inbox-popover";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Navbar } from "@/components/navbar";
-import { Button } from "@/components/ui/button";
-import { authClient, useSession } from "@/lib/auth-client";
-import { LogOut } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import Image from "next/image";
-import React from "react";
-import Footer from "@/components/footer";
-import { TwoFactorWarning } from "@/components/2fa-warning";
-import { Skeleton } from "@/components/ui/skeleton";
 import NavbarAvatar from "@/components/navbar-avatar";
-import Link from "next/link";
-import { queryClient } from "@/lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useSocket } from "@/hooks/use-socket";
-import { InboxPopover } from "@/components/inbox-popover";
+import { authClient, useSession } from "@/lib/auth-client";
+import { queryClient } from "@/lib/queryClient";
 
 export default function ScreensLayout({
   children,

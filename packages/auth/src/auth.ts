@@ -1,12 +1,16 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
-import { prisma } from "@repo/database";
-import { twoFactor } from "better-auth/plugins/two-factor";
 import { emailOTP } from "better-auth/plugins/email-otp";
+import { twoFactor } from "better-auth/plugins/two-factor";
+
 import { MailService } from "@repo/api/mail";
+import { prisma } from "@repo/database";
 
 type OTPType =
-  "sign-in" | "email-verification" | "forget-password" | "change-email";
+  | "sign-in"
+  | "email-verification"
+  | "forget-password"
+  | "change-email";
 
 const otpEmailSubjects: Record<OTPType, string> = {
   "sign-in": "Dein Anmeldecode",

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { AccountCredentialsCard } from '@/components/account-credentials-card';
-import { AccountPasswordCard } from '@/components/account-password-card';
-import AccountDeleteCard from '@/components/account-delete-card';
-import { Separator } from '@/components/ui/separator';
-import { useSession } from '@/lib/auth-client';
-import { Skeleton } from '@/components/ui/skeleton';
+import { AccountCredentialsCard } from "@/components/account-credentials-card";
+import AccountDeleteCard from "@/components/account-delete-card";
+import { AccountPasswordCard } from "@/components/account-password-card";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useSession } from "@/lib/auth-client";
 
 export default function AccountSettings() {
   const session = useSession();

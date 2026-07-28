@@ -1,4 +1,6 @@
-import { Button } from '@/components/ui/button';
+import { Users } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 import {
   Empty,
   EmptyContent,
@@ -6,9 +8,9 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from '@/components/ui/empty';
-import { NewGroupPopup } from './new-group-popup';
-import { Users } from 'lucide-react';
+} from "@/components/ui/empty";
+
+import { NewGroupPopup } from "./new-group-popup";
 
 export function EmptyGroups() {
   return (

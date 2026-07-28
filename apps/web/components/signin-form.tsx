@@ -1,49 +1,51 @@
-'use client';
+"use client";
 
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { REGEXP_ONLY_DIGITS } from "input-otp";
+import { Eye, EyeOff } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from '@/components/ui/field';
-import Image from 'next/image';
-import { Input } from '@/components/ui/input';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { authClient } from '@/lib/auth-client';
-import { toast } from 'sonner';
-import React from 'react';
-import { Eye, EyeOff } from 'lucide-react';
-import Footer from './footer';
-import { REGEXP_ONLY_DIGITS } from 'input-otp';
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth-client";
+import { cn } from "@/lib/utils";
+
+import { BackupAccordion } from "./backup-accordion";
+import Footer from "./footer";
 import {
   AlertDialog,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogDescription,
-} from './ui/alert-dialog';
+} from "./ui/alert-dialog";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
   InputOTPSeparator,
-} from './ui/input-otp';
-import { BackupAccordion } from './backup-accordion';
+} from "./ui/input-otp";
 
 export function SigninForm({
   className,
   ...props
-}: React.ComponentProps<'div'>) {
+}: React.ComponentProps<"div">) {
   const router = useRouter();
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
-  const [code, setCode] = React.useState('');
+  const [code, setCode] = React.useState("");
   const [codeDialogOpen, setCodeDialogOpen] = React.useState(false);
 
   async function handleLogin() {
@@ -57,14 +59,14 @@ export function SigninForm({
           if (context.data.twoFactorRedirect) {
             setCodeDialogOpen(true);
           } else {
-            router.replace('/dashboard');
+            router.replace("/dashboard");
           }
         },
       },
     );
 
     if (error) {
-      toast.error(error.status + ': ' + error.message);
+      toast.error(error.status + ": " + error.message);
       return;
     }
   }
@@ -76,15 +78,15 @@ export function SigninForm({
     });
 
     if (error) {
-      toast.error('Ungültiger Code. Bitte versuche es erneut.');
+      toast.error("Ungültiger Code. Bitte versuche es erneut.");
       return;
     }
 
-    router.replace('/dashboard');
+    router.replace("/dashboard");
   }
 
   return (
-    <div className={cn('flex flex-col gap-6', className)} {...props}>
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
           <form
@@ -125,7 +127,7 @@ export function SigninForm({
                 <div className="relative">
                   <Input
                     id="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -147,7 +149,7 @@ export function SigninForm({
                 oder
               </FieldSeparator>
               <FieldDescription className="text-center">
-                Du hast noch keinen Account?{' '}
+                Du hast noch keinen Account?{" "}
                 <Link href="/signup">Registrieren</Link>
               </FieldDescription>
             </FieldGroup>

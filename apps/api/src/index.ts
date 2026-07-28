@@ -1,20 +1,22 @@
-import { Elysia } from "elysia";
-import { cors } from "@elysiajs/cors";
-import { createLogger } from "@repo/logger";
-import { socket } from "./modules/socket";
-import { authPlugin } from "./modules/auth";
-import { media } from "./modules/media";
-import { S3Service } from "./global/services/s3-service";
-import { contextPlugin } from "./context";
 import cron, { Patterns } from "@elysia/cron";
+import { cors } from "@elysiajs/cors";
+import { Elysia } from "elysia";
 import { rateLimit } from "elysia-rate-limit";
-import { season } from "./modules/season";
+
+import { createLogger } from "@repo/logger";
+
+import { contextPlugin } from "./context";
+import { S3Service } from "./global/services/s3-service";
 import { admin } from "./modules/admin";
-import { tip } from "./modules/tip";
+import { authPlugin } from "./modules/auth";
 import { group } from "./modules/group";
 import { mail } from "./modules/mail";
+import { media } from "./modules/media";
 import { notification } from "./modules/notification";
 import { rank } from "./modules/rank";
+import { season } from "./modules/season";
+import { socket } from "./modules/socket";
+import { tip } from "./modules/tip";
 
 const logger = createLogger("api");
 
@@ -22,7 +24,7 @@ const app = new Elysia({ prefix: "/api" })
   .use(contextPlugin)
   .use(
     cors({
-      origin: process.env.WEB_SERVER_URL,
+      origin: process.env.WEB_SERVER_URL?.replace(/\/$/, ""),
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -35,7 +37,7 @@ const app = new Elysia({ prefix: "/api" })
       generator: (request, server) => {
         const forwardedFor = request.headers.get("x-forwarded-for");
         if (forwardedFor) {
-          return forwardedFor.split(",")[0].trim();
+          return forwardedFor.split(",")[0]?.trim() ?? "unknown";
         }
         const ip = server?.requestIP(request)?.address;
         return ip || "unknown";

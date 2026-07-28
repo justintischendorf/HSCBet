@@ -10,7 +10,7 @@
         "prettier": "^3.7.4",
         "prettier-plugin-tailwindcss": "^0.8.0",
         "turbo": "^2.9.18",
-        "typescript": "5.9.2",
+        "typescript": "6.0.3",
       },
     },
     "apps/api": {
@@ -68,7 +68,7 @@
         "@types/react": "^19",
         "@types/react-dom": "^19",
         "tailwindcss": "^4",
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
     "packages/auth": {
@@ -82,7 +82,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
     "packages/bucket": {
@@ -96,7 +96,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
     "packages/database": {
@@ -111,7 +111,7 @@
         "prisma": "^7.8.0",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
     "packages/logger": {
@@ -120,7 +120,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
     "packages/pub-sub": {
@@ -134,7 +134,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
     "packages/queue": {
@@ -148,7 +148,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
     "packages/treaty": {
@@ -162,7 +162,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
     "packages/worker": {
@@ -174,7 +174,7 @@
         "@types/bun": "latest",
       },
       "peerDependencies": {
-        "typescript": "^5",
+        "typescript": "^6",
       },
     },
   },
@@ -1550,7 +1550,7 @@
 
     "type-is": ["type-is@2.1.0", "", { "dependencies": { "content-type": "^2.0.0", "media-typer": "^1.1.0", "mime-types": "^3.0.0" } }, "sha512-faYHw0anBbc/kWF3zFTEnxSFOAGUX9GFbOBthvDdLsIlEoWOFOtS0zgCiQYwIskL9iGXZL3kAXD8OoZ4GmMATA=="],
 
-    "typescript": ["typescript@5.9.2", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-CWBzXQrc/qOkhidw1OzBTQuYRbfyxDXJMVJ1XNwUHGROVmuaeiEm3OslpZ1RV96d7SKKjZKrSJu3+t/xlw3R9A=="],
+    "typescript": ["typescript@6.0.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "uint8array-extras": ["uint8array-extras@1.5.0", "", {}, "sha512-rvKSBiC5zqCCiDZ9kAOszZcDvdAHwwIKJG33Ykj43OKcWsnmcBRL09YTU4nOeHZ8Y2a7l1MgTd08SBe9A8Qj6A=="],
 

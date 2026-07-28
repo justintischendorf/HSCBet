@@ -6,13 +6,13 @@ on:
   pull_request:
     branches: [main, develop]
 
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   ci:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [25.x]
 
     steps:
       - uses: actions/checkout@v4
@@ -28,4 +28,4 @@ jobs:
 
       - name: Check formatting
         run: |
-          bun run oxfmt apps packages
+          bun run oxfmt --check apps packages

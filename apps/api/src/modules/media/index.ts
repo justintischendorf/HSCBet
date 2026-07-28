@@ -1,10 +1,12 @@
 import Elysia, { t } from "elysia";
+
 import { prisma } from "@repo/database";
-import { sessionPlugin } from "../auth";
+
+import { contextPlugin } from "../../context";
 import { IdParams } from "../../global/models";
+import { sessionPlugin } from "../auth";
 import { MediaModel } from "./model";
 import { MediaService } from "./service";
-import { contextPlugin } from "../../context";
 
 export const media = new Elysia({ prefix: "/media" })
   .use(contextPlugin)

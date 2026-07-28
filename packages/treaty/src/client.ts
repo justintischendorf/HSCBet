@@ -1,5 +1,6 @@
 import { treaty } from "@elysia/eden";
 import type { Treaty } from "@elysia/eden/treaty2";
+
 import type { App } from "@repo/api";
 import { createLogger } from "@repo/logger";
 

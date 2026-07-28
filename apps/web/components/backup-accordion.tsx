@@ -1,19 +1,21 @@
+import { useRouter } from "next/navigation";
+import React from "react";
+import { toast } from "sonner";
+
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
-import { Input } from './ui/input';
-import { Button } from './ui/button';
-import { authClient } from '@/lib/auth-client';
-import React from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+} from "@/components/ui/accordion";
+import { authClient } from "@/lib/auth-client";
+
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 export function BackupAccordion() {
   const router = useRouter();
-  const [backupCode, setBackupCode] = React.useState('');
+  const [backupCode, setBackupCode] = React.useState("");
 
   const handleVerify = async () => {
     const { error } = await authClient.twoFactor.verifyBackupCode({
@@ -21,10 +23,10 @@ export function BackupAccordion() {
     });
 
     if (error) {
-      toast.error(error.message || 'Fehler bei der Verifizierung');
+      toast.error(error.message || "Fehler bei der Verifizierung");
       return;
     }
-    router.replace('/dashboard');
+    router.replace("/dashboard");
   };
 
   return (

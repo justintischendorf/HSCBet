@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import * as React from 'react';
+import { useMutation } from "@tanstack/react-query";
+import * as React from "react";
+import { toast } from "sonner";
 
-import { cn } from '@/lib/utils';
-import { useMediaQuery } from '@/hooks/use-media-query';
-import { Button } from '@/components/ui/button';
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerContent,
@@ -20,23 +20,24 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from '@/components/ui/drawer';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { InputGroupPicture, uploadGroupPicture } from './input-group-picture';
-import { Field, FieldDescription, FieldLabel } from '@/components/ui/field';
-import { Textarea } from '@/components/ui/textarea';
-import { apiClient } from '@/lib/api-client';
-import { useSession } from '@/lib/auth-client';
-import { toast } from 'sonner';
-import { queryClient } from '@/lib/queryClient';
-import { useMutation } from '@tanstack/react-query';
-import { Spinner } from '@/components/ui/spinner';
-import { MimeType } from '@repo/database';
+} from "@/components/ui/drawer";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { apiClient } from "@/lib/api-client";
+import { useSession } from "@/lib/auth-client";
+import { queryClient } from "@/lib/queryClient";
+import { cn } from "@/lib/utils";
+import { MimeType } from "@repo/database";
+
+import { InputGroupPicture, uploadGroupPicture } from "./input-group-picture";
 
 export function NewGroupPopup() {
   const [open, setOpen] = React.useState(false);
-  const isDesktop = useMediaQuery('(min-width: 768px)');
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
     return (
@@ -80,14 +81,13 @@ export function NewGroupPopup() {
 function GroupForm({
   className,
   setOpen,
-}: React.ComponentProps<'form'> & {
+}: React.ComponentProps<"form"> & {
   setOpen: (open: boolean) => void;
 }) {
   const session = useSession();
   const user = session?.data?.user;
-  const [name, setName] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [length, setLength] = React.useState(0);
+  const [name, setName] = React.useState("");
+  const [description, setDescription] = React.useState("");
   const [available, setAvailable] = React.useState(64);
   const [pendingFile, setPendingFile] = React.useState<File | null>(null);
   const [isUploadingPicture, setIsUploadingPicture] = React.useState(false);
@@ -98,7 +98,7 @@ function GroupForm({
       mimetype: MimeType;
       size: number;
     }) => {
-      return apiClient.api.media.upload['get-presigned-url'].post(input);
+      return apiClient.api.media.upload["get-presigned-url"].post(input);
     },
   });
 
@@ -125,31 +125,31 @@ function GroupForm({
       fileId = uploaded.fileId;
     }
 
-    const { data: group, error: groupError } = await createGroup({
+    const { error: groupError } = await createGroup({
       name,
       description,
       fileId,
       user: {
-        id: user?.id ?? '',
-        name: user?.name ?? '',
-        email: user?.email ?? '',
+        id: user?.id ?? "",
+        name: user?.name ?? "",
+        email: user?.email ?? "",
       },
     });
 
     if (groupError) {
-      toast.error(groupError.status + ': ' + groupError.value.message);
+      toast.error(groupError.status + ": " + groupError.value.message);
       return;
     }
 
-    toast.success('Gruppe erfolgreich erstellt!');
+    toast.success("Gruppe erfolgreich erstellt!");
     setOpen(false);
     setPendingFile(null);
-    queryClient.invalidateQueries({ queryKey: ['groups'] });
+    queryClient.invalidateQueries({ queryKey: ["groups"] });
   }
 
   return (
     <form
-      className={cn('grid items-start gap-6', className)}
+      className={cn("grid items-start gap-6", className)}
       onSubmit={async (e) => {
         e.preventDefault();
         await handleGroupCreation();
@@ -194,7 +194,6 @@ function GroupForm({
             onChange={(e) => {
               e.preventDefault();
               setDescription(e.target.value);
-              setLength(e.target.value.length);
               setAvailable(64 - e.target.value.length);
             }}
           />

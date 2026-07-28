@@ -1,11 +1,13 @@
 import { Position, prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
+
 import { TipEvaluationService } from "../../global/services/tip-evaluation-service";
 
 const logger = createLogger("api:rank");
 
 const WINNER_POINTS = 50;
 const EXACT_RESULT_BONUS_MULTIPLIER = 2;
+const WRONG_TIP_PENALTY = -25;
 const MIN_EVALUATED_TIPS_FOR_RANK = 3;
 
 function getPositionForPoints(points: number): Position {
@@ -62,7 +64,7 @@ export abstract class RankService {
         guestPoints,
       });
 
-      let points = 0;
+      let points = WRONG_TIP_PENALTY;
       if (isWinnerCorrect) {
         points = WINNER_POINTS;
 
@@ -87,15 +89,17 @@ export abstract class RankService {
       totalPoints += points;
     }
 
+    const clampedTotalPoints = Math.max(0, totalPoints);
+
     const position: Position =
       evaluatedTips.length >= MIN_EVALUATED_TIPS_FOR_RANK
-        ? getPositionForPoints(totalPoints)
+        ? getPositionForPoints(clampedTotalPoints)
         : "DEFAULT";
 
     return prisma.rank.upsert({
       where: { userId: user.id },
-      create: { userId: user.id, points: totalPoints, position },
-      update: { points: totalPoints, position },
+      create: { userId: user.id, points: clampedTotalPoints, position },
+      update: { points: clampedTotalPoints, position },
     });
   }
 }

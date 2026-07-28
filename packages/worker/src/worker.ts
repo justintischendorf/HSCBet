@@ -1,6 +1,7 @@
-import { QueueManager } from "../../queue/src/client";
-import { PubSubManager } from "../../pub-sub/src/client";
 import { createLogger } from "@repo/logger";
+
+import { PubSubManager } from "../../pub-sub/src/client";
+import { QueueManager } from "../../queue/src/client";
 
 const logger = createLogger("Worker");
 
