@@ -56,7 +56,10 @@ export abstract class SeasonService {
 
     return seasons.map((season) => {
       const evaluatedTips = season.tips.filter(
-        (tip) => tip.game.date <= new Date(),
+        (tip) =>
+          tip.game.date <= new Date() &&
+          tip.game.hostPoints !== null &&
+          tip.game.guestPoints !== null,
       );
 
       const correct = evaluatedTips.filter((tip) =>

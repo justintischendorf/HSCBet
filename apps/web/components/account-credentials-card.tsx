@@ -27,6 +27,8 @@ import {
 } from "./input-profile-picture";
 import { Spinner } from "./ui/spinner";
 
+const MAX_USERNAME_LENGTH = 22;
+
 export function AccountCredentialsCard({
   user,
 }: {
@@ -36,6 +38,9 @@ export function AccountCredentialsCard({
   const [showChangeCredentialsConfirm, setShowChangeCredentialsConfirm] =
     React.useState(false);
   const [username, setUsername] = React.useState(user?.name || "");
+  const [usernameAvailable, setUsernameAvailable] = React.useState(
+    MAX_USERNAME_LENGTH - (user?.name?.length ?? 0),
+  );
   const [email, setEmail] = React.useState(user?.email || "");
   const [pendingFile, setPendingFile] = React.useState<File | null>(null);
   const [removeExistingPicture, setRemoveExistingPicture] =
@@ -55,6 +60,7 @@ export function AccountCredentialsCard({
   useEffect(() => {
     if (user) {
       setUsername(user.name || "");
+      setUsernameAvailable(MAX_USERNAME_LENGTH - (user.name?.length ?? 0));
       setEmail(user.email || "");
     }
   }, [user]);
@@ -139,12 +145,23 @@ export function AccountCredentialsCard({
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="username">Nutzername</Label>
+              <div className="flex items-baseline justify-between">
+                <Label htmlFor="username">Nutzername</Label>
+                <p className="text-sm text-muted-foreground">
+                  {usernameAvailable}
+                </p>
+              </div>
               <Input
                 id="username"
                 type="text"
+                maxLength={MAX_USERNAME_LENGTH}
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                  setUsernameAvailable(
+                    MAX_USERNAME_LENGTH - e.target.value.length,
+                  );
+                }}
                 required
               />
             </div>

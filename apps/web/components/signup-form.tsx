@@ -23,12 +23,17 @@ import { cn } from "@/lib/utils";
 import Footer from "./footer";
 import PasswordSafetyLevel from "./password-safety-level";
 
+const MAX_USERNAME_LENGTH = 22;
+
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
   const [username, setUsername] = React.useState("");
+  const [usernameAvailable, setUsernameAvailable] = React.useState(
+    MAX_USERNAME_LENGTH,
+  );
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
@@ -76,11 +81,22 @@ export function SignupForm({
                 </p>
               </div>
               <Field>
-                <FieldLabel htmlFor="useername">Nutzername</FieldLabel>
+                <div className="flex items-baseline justify-between">
+                  <FieldLabel htmlFor="username">Nutzername</FieldLabel>
+                  <p className="text-sm text-muted-foreground">
+                    {usernameAvailable}
+                  </p>
+                </div>
                 <Input
                   id="username"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  maxLength={MAX_USERNAME_LENGTH}
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                    setUsernameAvailable(
+                      MAX_USERNAME_LENGTH - e.target.value.length,
+                    );
+                  }}
                   type="text"
                   placeholder="Dein Nutzername"
                   required
@@ -155,7 +171,9 @@ export function SignupForm({
                     </div>
                   </Field>
                 </Field>
-                <PasswordSafetyLevel input={password} />
+                <div className="pt-2">
+                  <PasswordSafetyLevel input={password} />
+                </div>
               </Field>
               <Field>
                 <Button type="submit">Account erstellen</Button>

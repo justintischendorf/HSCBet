@@ -2,7 +2,7 @@ import { t, type UnwrapSchema } from "elysia";
 
 export namespace GroupModel {
   export const CreateNewGroup = t.Object({
-    name: t.String({ maxLength: 20 }),
+    name: t.String({ maxLength: 18 }),
     description: t.String({ maxLength: 64 }),
     fileId: t.Optional(t.String()),
     user: t.Object({

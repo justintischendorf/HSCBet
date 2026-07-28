@@ -23,7 +23,6 @@ import {
 } from "@/components/ui/drawer";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
 import { Textarea } from "@/components/ui/textarea";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -88,6 +87,7 @@ function GroupForm({
   const user = session?.data?.user;
   const [name, setName] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [nameAvailable, setNameAvailable] = React.useState(18);
   const [available, setAvailable] = React.useState(64);
   const [pendingFile, setPendingFile] = React.useState<File | null>(null);
   const [isUploadingPicture, setIsUploadingPicture] = React.useState(false);
@@ -163,18 +163,25 @@ function GroupForm({
         />
       </div>
       <div className="grid gap-3">
-        <Label htmlFor="name">Name</Label>
-        <Input
-          required
-          type="text"
-          maxLength={20}
-          id="name"
-          value={name}
-          onChange={(e) => {
-            e.preventDefault();
-            setName(e.target.value);
-          }}
-        />
+        <Field>
+          <FieldLabel htmlFor="name">Name</FieldLabel>
+          <div className="flex items-baseline justify-between">
+            <FieldDescription>Der Name deiner Gruppe</FieldDescription>
+            <p className="text-sm">{nameAvailable}</p>
+          </div>
+          <Input
+            required
+            type="text"
+            maxLength={18}
+            id="name"
+            value={name}
+            onChange={(e) => {
+              e.preventDefault();
+              setName(e.target.value);
+              setNameAvailable(18 - e.target.value.length);
+            }}
+          />
+        </Field>
       </div>
       <div className="grid gap-3">
         <Field>
