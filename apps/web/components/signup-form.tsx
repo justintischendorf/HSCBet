@@ -31,9 +31,8 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
   const router = useRouter();
   const [username, setUsername] = React.useState("");
-  const [usernameAvailable, setUsernameAvailable] = React.useState(
-    MAX_USERNAME_LENGTH,
-  );
+  const [usernameAvailable, setUsernameAvailable] =
+    React.useState(MAX_USERNAME_LENGTH);
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [showPassword, setShowPassword] = React.useState(false);
