@@ -49,7 +49,13 @@ export abstract class RankService {
       include: { game: true },
     });
 
-    const evaluatedTips = tips.filter((tip) => tip.game.date <= new Date());
+    const evaluatedTips = tips.filter(
+      (tip) =>
+        tip.game.date <= new Date() &&
+        tip.game.hostPoints !== null &&
+        tip.game.guestPoints !== null,
+    );
+    const evaluatedTipIds = new Set(evaluatedTips.map((tip) => tip.id));
 
     let totalPoints = 0;
 
@@ -88,6 +94,16 @@ export abstract class RankService {
 
       totalPoints += points;
     }
+
+    const staleTips = tips.filter(
+      (tip) => !evaluatedTipIds.has(tip.id) && tip.result !== 0,
+    );
+
+    await Promise.all(
+      staleTips.map((tip) =>
+        prisma.tip.update({ where: { id: tip.id }, data: { result: 0 } }),
+      ),
+    );
 
     const clampedTotalPoints = Math.max(0, totalPoints);
 

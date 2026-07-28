@@ -156,10 +156,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                             <div
                               key={user.id}
                               className={cn(
-                                "flex items-center gap-2.5 rounded-lg border px-3 py-2 min-w-0",
-                                isGroupLeader
-                                  ? "border-huk-accent bg-huk-accent/10"
-                                  : "border-border bg-muted",
+                                "flex items-center gap-2.5 rounded-lg border px-3 py-2 min-w-0 border-border bg-muted",
                               )}
                             >
                               <Avatar size="sm" className="shrink-0">
@@ -179,7 +176,6 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                                   {isGroupLeader && (
                                     <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-huk-accent px-1.5 py-0.5 text-[10px] font-medium text-black">
                                       <Crown className="size-2.5" />
-                                      Leader
                                     </span>
                                   )}
                                 </div>
@@ -188,6 +184,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                                 </span>
                               </div>
                               <Image
+                                loading="eager"
                                 src={POSITION_ICONS[position]}
                                 alt={POSITION_LABELS[position]}
                                 title={POSITION_LABELS[position]}

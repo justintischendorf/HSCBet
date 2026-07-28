@@ -1,4 +1,4 @@
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP } from "better-auth/plugins/email-otp";
 import { twoFactor } from "better-auth/plugins/two-factor";
@@ -18,6 +18,16 @@ const otpEmailSubjects: Record<OTPType, string> = {
   "forget-password": "Passwort zurücksetzen",
   "change-email": "Bestätige deine neue E-Mail-Adresse",
 };
+
+const MAX_USERNAME_LENGTH = 22;
+
+function assertValidUsername(name: unknown) {
+  if (typeof name === "string" && name.length > MAX_USERNAME_LENGTH) {
+    throw new APIError("BAD_REQUEST", {
+      message: `Der Nutzername darf höchstens ${MAX_USERNAME_LENGTH} Zeichen lang sein.`,
+    });
+  }
+}
 
 export const auth = betterAuth({
   appName: "HSCBet",
@@ -41,6 +51,9 @@ export const auth = betterAuth({
   databaseHooks: {
     user: {
       create: {
+        before: async (user) => {
+          assertValidUsername(user.name);
+        },
         after: async (user) => {
           await prisma.rank.create({
             data: {
@@ -49,6 +62,11 @@ export const auth = betterAuth({
               position: "DEFAULT",
             },
           });
+        },
+      },
+      update: {
+        before: async (user) => {
+          assertValidUsername(user.name);
         },
       },
     },

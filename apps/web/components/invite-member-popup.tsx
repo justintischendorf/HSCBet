@@ -55,8 +55,8 @@ export function InviteMemberPopup({
         </DialogTrigger>
         <DialogContent className="sm:max-w-106.25">
           <DialogHeader>
-            <div className="mx-auto mb-1 flex size-14 items-center justify-center rounded-full bg-huk-accent/15">
-              <UserPlus className="size-6 text-huk-accent" />
+            <div className="mx-auto mb-1 flex size-14 items-center justify-center rounded-full bg-huk-accent">
+              <UserPlus className="size-6 text-foreground dark:text-background" />
             </div>
             <DialogTitle className="text-center">Spieler einladen</DialogTitle>
             <DialogDescription className="text-center">
@@ -141,7 +141,6 @@ function InviteForm({
             required
             type="text"
             id="player-id"
-            placeholder="z. B. MHonM17FULo9MYD1iCMErRBeZrJzgF7F"
             className="font-mono text-sm"
             value={playerId}
             onChange={(e) => {

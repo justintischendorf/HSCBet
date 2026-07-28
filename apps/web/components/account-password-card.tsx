@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label";
 import { authClient, useSession } from "@/lib/auth-client";
 
 import { ConfirmAlert } from "./confirm-alert";
+import PasswordSafetyLevel from "./password-safety-level";
 
 export function AccountPasswordCard() {
   const router = useRouter();
@@ -168,6 +169,7 @@ export function AccountPasswordCard() {
                 </div>
               </div>
             </div>
+            <PasswordSafetyLevel input={newPassword} />
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-2 mt-5">
