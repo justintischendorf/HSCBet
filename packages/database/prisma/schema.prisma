@@ -127,9 +127,9 @@ model Game {
   date        DateTime
   host        String
   guest       String
-  hostPoints  Int?     @default(0)
-  guestPoints Int?     @default(0)
-  result      Int?     @default(0)
+  hostPoints  Int?
+  guestPoints Int?
+  result      Int?
   tips        Tip[]
 }
 

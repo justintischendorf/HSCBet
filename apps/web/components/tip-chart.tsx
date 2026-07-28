@@ -45,18 +45,31 @@ export function TipChart() {
     return <Skeleton className="h-150 w-full" />;
   }
 
+  function getSeasonTitle(seasonId: unknown): string {
+    return (
+      chartData.find((item) => item.seasonId === seasonId)?.title ??
+      String(seasonId)
+    );
+  }
+
   return (
     <ChartContainer config={chartConfig} className="min-h-50 w-full">
       <BarChart accessibilityLayer data={chartData}>
         <CartesianGrid vertical={false} />
         <XAxis
-          dataKey="title"
+          dataKey="seasonId"
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => value.slice(7, 16)}
+          tickFormatter={(value) => getSeasonTitle(value).slice(7, 16)}
         />
-        <ChartTooltip content={<ChartTooltipContent />} />
+        <ChartTooltip
+          content={
+            <ChartTooltipContent
+              labelFormatter={(value) => getSeasonTitle(value)}
+            />
+          }
+        />
         <Bar dataKey="correct" fill="var(--color-correct)" radius={4} />
         <Bar dataKey="incorrect" fill="var(--color-incorrect)" radius={4} />
       </BarChart>
