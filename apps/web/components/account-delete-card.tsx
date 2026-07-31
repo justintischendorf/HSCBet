@@ -110,6 +110,7 @@ export default function AccountDeleteCard() {
         onConfirm={async () => {
           await handleDeleteAccount();
         }}
+        title="Account löschen?"
       />
     </Card>
   );

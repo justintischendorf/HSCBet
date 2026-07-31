@@ -14,6 +14,7 @@ type ConfirmAlertProps = {
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
   message: string;
+  title: string;
 };
 
 export function ConfirmAlert({
@@ -21,12 +22,13 @@ export function ConfirmAlert({
   onOpenChange,
   onConfirm,
   message,
+  title,
 }: ConfirmAlertProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Bist du dir wirklich sicher?</AlertDialogTitle>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{message}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

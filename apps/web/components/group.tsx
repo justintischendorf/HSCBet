@@ -174,7 +174,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                                     {user.name}
                                   </span>
                                   {isGroupLeader && (
-                                    <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-huk-accent px-1.5 py-0.5 text-[10px] font-medium text-black">
+                                    <span className="flex shrink-0 items-center gap-0.5 rounded-full bg-huk-accent px-1.5 py-0.5 text-[10px] font-medium text-background">
                                       <Crown className="size-2.5" />
                                     </span>
                                   )}
@@ -240,6 +240,7 @@ export default function Group({ group }: { group: GroupWithUsers }) {
         onConfirm={async () => {
           await handleLeaveGroup(group.id);
         }}
+        title="Gruppe verlassen?"
       />
     </div>
   );
