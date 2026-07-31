@@ -206,7 +206,9 @@ export default function AccountSettings() {
 
               <div className="flex flex-row gap-4 w-full">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-huk-accent shrink-0">
-                  <span className="text-sm font-bold text-black">1</span>
+                  <span className="text-sm font-bold text-foreground dark:text-background">
+                    1
+                  </span>
                 </div>
                 <p className="text-left text-sm text-muted-foreground">
                   Scanne den QR-Code mit deiner Authenticator-App z.B. Google
@@ -225,7 +227,9 @@ export default function AccountSettings() {
 
               <div className="flex flex-row gap-4">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-huk-accent shrink-0">
-                  <span className="text-sm font-bold text-black">2</span>
+                  <span className="text-sm font-bold text-foreground dark:text-background">
+                    2
+                  </span>
                 </div>
                 <div className="flex flex-col gap-2">
                   <p className="text-left text-sm text-muted-foreground">
@@ -260,7 +264,9 @@ export default function AccountSettings() {
 
               <div className="flex flex-row gap-4">
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-huk-accent shrink-0">
-                  <span className="text-sm font-bold text-black">3</span>
+                  <span className="text-sm font-bold text-foreground dark:text-background">
+                    3
+                  </span>
                 </div>
                 <p className="text-left text-sm text-muted-foreground">
                   Gib den 6-stelligen Code aus deiner Authenticator-App ein, um
