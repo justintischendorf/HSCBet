@@ -160,7 +160,7 @@ export function InboxPopover() {
         <Button variant="outline" size="icon" className="relative">
           <Inbox className="h-5 w-5" />
           {unreadCount > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-huk-accent px-1 text-[10px] font-medium text-black">
+            <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-huk-accent px-1 text-[10px] font-medium text-foreground dark:text-background">
               {unreadCount > 99 ? "99+" : unreadCount}
             </span>
           )}
@@ -351,6 +351,7 @@ export function InboxPopover() {
         open={showDeleteAllReadConfirm}
         onOpenChange={setShowDeleteAllReadConfirm}
         onConfirm={handleDeleteAllRead}
+        title="Alle gelesenen Benachrichtigungen löschen?"
       />
     </Popover>
   );

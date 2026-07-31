@@ -185,6 +185,7 @@ export function AccountPasswordCard() {
         onConfirm={async () => {
           await handleUpdatePassword(currentPassword, newPassword);
         }}
+        title="Passwort ändern?"
       />
     </Card>
   );

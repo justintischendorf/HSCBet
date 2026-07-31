@@ -68,8 +68,8 @@ export function InputGroupPicture({
                 onFileChange(selected);
               }}
             />
-            <span className="pointer-events-none absolute inset-0 rounded-full bg-black/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100" />
-            <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100">
+            <span className="pointer-events-none absolute inset-0 rounded-full bg-background/45 opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100" />
+            <span className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center text-foreground opacity-0 transition-opacity duration-200 group-hover:opacity-100 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100">
               <Camera className="size-9" />
             </span>
           </Avatar>

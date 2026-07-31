@@ -169,7 +169,13 @@ export default function DashboardScreen() {
     <main className="w-full sm:py-16 py-8 px-4 md:px-12 sm:px-6">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold tracking-tight">
-          {!user ? <Skeleton className="h-9 w-48" /> : `Hallo ${user.name}!`}
+          {!user ? (
+            <Skeleton className="h-9 w-48" />
+          ) : (
+            <>
+              Hallo <span className="dark:text-huk-accent">{user.name}</span>!
+            </>
+          )}
         </h1>
         <div className="flex sm:flex-row flex-col items-end justify-between gap-4">
           <p className="text-base">
@@ -260,7 +266,7 @@ export default function DashboardScreen() {
         <DialogContent>
           <DialogHeader>
             <div className="mb-1 flex size-11 items-center justify-center rounded-full bg-huk-accent">
-              <MailWarning className="size-5 text-black" />
+              <MailWarning className="size-5 text-foreground dark:text-background" />
             </div>
             <DialogTitle>E-Mail-Adresse bestätigen</DialogTitle>
             <DialogDescription>
@@ -271,7 +277,7 @@ export default function DashboardScreen() {
           </DialogHeader>
 
           <div className="flex items-start gap-2.5 rounded-lg bg-muted/60 p-3 text-xs text-muted-foreground">
-            <ShieldAlert className="mt-0.5 size-4 shrink-0 text-huk-accent" />
+            <ShieldAlert className="mt-0.5 size-4 shrink-0 text-black dark:text-huk-accent" />
             <p>
               Das ist besonders wichtig solltest du dein Passwort einmal
               vergessen, sodass wir sicher sein können, dass die Email-Adresse

@@ -196,6 +196,7 @@ export function AccountCredentialsCard({
         onConfirm={async () => {
           await handleUpdateUserCredentials(username, email);
         }}
+        title="Kontoinformationen ändern?"
       />
     </Card>
   );
