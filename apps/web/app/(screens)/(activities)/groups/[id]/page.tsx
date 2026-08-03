@@ -118,7 +118,6 @@ export default function GroupStats() {
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-background">
-                <TableHead> Position </TableHead>
                 <TableHead className="w-32 sm:w-40 sticky left-0 z-20 bg-background border-r">
                   Name
                 </TableHead>
@@ -162,17 +161,13 @@ export default function GroupStats() {
             </TableHeader>
             <TableBody>
               {userList.map((user) => {
-                let place: number = 0;
                 const position = user.rank?.position;
                 const positionSlug = position
                   ? POSITION_ASSET_SLUGS[position]
                   : "none";
 
-                place += 1;
-
                 return (
                   <TableRow key={user.id} className="hover:bg-background">
-                    <TableCell className="text-center"> {place}</TableCell>
                     <TableCell className="sticky left-0 z-10 bg-background border-r font-medium">
                       {user.name}
                     </TableCell>
