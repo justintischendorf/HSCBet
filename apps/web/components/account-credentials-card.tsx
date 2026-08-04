@@ -179,7 +179,7 @@ export function AccountCredentialsCard({
         </CardContent>
         <CardFooter className="flex-col gap-2 mt-5">
           <Button
-            variant="outline"
+            variant="secondary"
             type="submit"
             className="w-full"
             disabled={isSubmitting}
