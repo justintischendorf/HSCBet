@@ -1,4 +1,4 @@
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, TriangleAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
@@ -60,11 +60,15 @@ export default function AccountDeleteCard() {
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border-destructive bg-destructive/10">
       <CardHeader>
-        <CardTitle>Account</CardTitle>
+        <CardTitle className="flex items-center gap-2 text-destructive">
+          <TriangleAlert className="size-4 shrink-0" />
+          Account löschen
+        </CardTitle>
         <CardDescription>
-          Lösche deinen Account und alle damit verbundenen Daten.
+          Diese Aktion ist unwiderruflich und löscht deinen Account
+          einschließlich aller damit verbundenen Daten.
         </CardDescription>
       </CardHeader>
       <form

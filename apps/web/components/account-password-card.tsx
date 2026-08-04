@@ -173,7 +173,7 @@ export function AccountPasswordCard() {
           </div>
         </CardContent>
         <CardFooter className="flex-col gap-2 mt-5">
-          <Button type="submit" variant="outline" className="w-full">
+          <Button type="submit" variant="secondary" className="w-full">
             Passwort ändern
           </Button>
         </CardFooter>
