@@ -60,7 +60,7 @@ export default function AccountDeleteCard() {
   }
 
   return (
-    <Card className="w-full border-destructive bg-destructive/10">
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-destructive">
           <TriangleAlert className="size-4 shrink-0" />
