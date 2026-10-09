@@ -89,4 +89,22 @@ export const group = new Elysia({ prefix: "/group" })
     {
       body: GroupModel.LeaveGroup,
     },
+  )
+
+  // --------------------------------------------------------------------------> PATCH api/group/editGroup
+  //                                                                             - edit a group, only leader can edit
+  .patch(
+    "/editGroup",
+    async ({ set, user, body, store }) => {
+      const { s3Manager } = store;
+
+      set.status = 200;
+      return {
+        success: true,
+        group: await GroupService.editGroup({ user, body, s3Manager }),
+      };
+    },
+    {
+      body: GroupModel.EditGroup,
+    },
   );

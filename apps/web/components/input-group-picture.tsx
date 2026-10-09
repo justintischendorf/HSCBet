@@ -16,23 +16,27 @@ export function InputGroupPicture({
   file,
   onFileChange,
   fallbackChar,
+  initialImageUrl,
 }: {
   file: File | null;
   onFileChange: (file: File | null) => void;
   fallbackChar: string;
+  initialImageUrl?: string;
 }) {
-  const [previewUrl, setPreviewUrl] = useState<string | undefined>();
+  const [previewUrl, setPreviewUrl] = useState<string | undefined>(
+    initialImageUrl,
+  );
 
   useEffect(() => {
     if (!file) {
-      setPreviewUrl(undefined);
+      setPreviewUrl(initialImageUrl);
       return;
     }
 
     const url = URL.createObjectURL(file);
     setPreviewUrl(url);
     return () => URL.revokeObjectURL(url);
-  }, [file]);
+  }, [file, initialImageUrl]);
 
   return (
     <Field className="w-fit items-center gap-6">
@@ -138,13 +142,19 @@ export async function uploadGroupPicture(
   }
 
   try {
-    await fetch(presignedUrlData.pre_signed_url, {
+    const uploadResponse = await fetch(presignedUrlData.pre_signed_url, {
       method: "PUT",
       headers: {
         "Content-Type": file.type,
       },
       body: file,
     });
+
+    // fetch only rejects on network errors, S3 errors (e.g. NoSuchBucket) come back as a response
+    if (!uploadResponse.ok) {
+      toast.error("Failed to upload file: HTTP " + uploadResponse.status);
+      return;
+    }
   } catch (err) {
     toast.error("Failed to upload file." + err);
     return;

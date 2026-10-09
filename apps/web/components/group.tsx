@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import type { GroupModel, Position } from "@repo/database";
 
 import { ConfirmAlert } from "./confirm-alert";
+import { EditGroupPopup } from "./edit-group-popup";
 import { InviteMemberPopup } from "./invite-member-popup";
 import {
   Accordion,
@@ -206,6 +207,29 @@ export default function Group({ group }: { group: GroupWithUsers }) {
       </Accordion>
 
       <div className="flex flex-wrap items-center gap-2 border-t border-border px-4 py-3.5 sm:justify-end">
+        {isLeader && (
+          <InviteMemberPopup groupId={group.id} groupName={group.name} />
+        )}
+        {isLeader && (
+          <EditGroupPopup
+            group={{
+              id: group.id,
+              name: group.name,
+              description: group.description ?? "",
+              imageUrl,
+            }}
+          />
+        )}
+        <Button
+          size="lg"
+          className="flex-1 sm:flex-none"
+          onClick={() => {
+            router.replace(`/groups/${group.id}`);
+          }}
+        >
+          Statistiken anzeigen
+          <MoveRight />
+        </Button>
         <Button
           variant="destructive"
           size="lg"
@@ -217,19 +241,6 @@ export default function Group({ group }: { group: GroupWithUsers }) {
         >
           {isLeavingGroup && <Spinner />}
           Gruppe verlassen
-        </Button>
-        {isLeader && (
-          <InviteMemberPopup groupId={group.id} groupName={group.name} />
-        )}
-        <Button
-          size="lg"
-          className="flex-1 sm:flex-none"
-          onClick={() => {
-            router.replace(`/groups/${group.id}`);
-          }}
-        >
-          Statistiken anzeigen
-          <MoveRight />
         </Button>
       </div>
 

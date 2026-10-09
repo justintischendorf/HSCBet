@@ -142,6 +142,73 @@ export abstract class GroupService {
     return group;
   }
 
+  // --------------------------------------------------------------------------> PATCH api/group/editGroup
+  //                                                                             - edit name, description and picture of a group (leader only)
+  //                                                                             - fileId: undefined = keep, null = remove, string = replace
+  static async editGroup({
+    user,
+    body,
+    s3Manager,
+  }: {
+    user: { id: string };
+    body: (typeof GroupModel.EditGroup)["static"];
+    s3Manager: S3Manager;
+  }) {
+    logger.info("editing group " + body.groupId);
+
+    const group = await prisma.group.findUnique({
+      where: { id: body.groupId },
+      include: { files: { select: { id: true, s3Key: true } } },
+    });
+
+    if (!group) {
+      throw new Error("Gruppe nicht gefunden");
+    }
+
+    if (group.leaderId !== user.id) {
+      throw new Error("Nur der Gruppenleiter kann die Gruppe bearbeiten");
+    }
+
+    if (body.fileId) {
+      const file = await prisma.file.findUnique({
+        where: { id: body.fileId },
+        select: { userId: true },
+      });
+
+      if (!file || file.userId !== user.id) {
+        throw new Error("Bild nicht gefunden");
+      }
+    }
+
+    const updatedGroup = await prisma.group.update({
+      where: { id: body.groupId },
+      data: {
+        name: body.name,
+        description: body.description,
+        ...(body.fileId !== undefined && {
+          files: {
+            set: body.fileId ? [{ id: body.fileId }] : [],
+          },
+        }),
+      },
+    });
+
+    if (body.fileId !== undefined) {
+      const replacedFiles = group.files.filter(
+        (file) => file.id !== body.fileId,
+      );
+
+      await Promise.all(
+        replacedFiles.map(async (file) => {
+          await prisma.file.delete({ where: { id: file.id } });
+          await s3Manager.deleteFile(file.s3Key);
+        }),
+      );
+    }
+
+    return updatedGroup;
+  }
+
   // --------------------------------------------------------------------------> POST api/group/:id/invite
   //                                                                             - invite a player to the group by their id (leader only)
   //                                                                             - the invite notification itself is created asynchronously
