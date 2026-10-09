@@ -19,6 +19,14 @@ export namespace GroupModel {
   export const InviteToGroup = t.Object({
     playerId: t.String(),
   });
+
+  export const EditGroup = t.Object({
+    groupId: t.String(),
+    name: t.String({ maxLength: 18 }),
+    description: t.String({ maxLength: 64 }),
+    // undefined = keep current picture, null = remove picture, string = replace picture
+    fileId: t.Optional(t.Nullable(t.String())),
+  });
 }
 
 export type GroupModel = {
