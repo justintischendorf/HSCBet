@@ -56,7 +56,7 @@ export default function ScreensLayout({
             >
               <Image
                 loading="eager"
-                src="assets/logos/logo.light.svg"
+                src="assets/logos/logo-hscbet.light.svg"
                 alt="Logo"
                 width={40}
                 height={40}
@@ -64,7 +64,7 @@ export default function ScreensLayout({
               />
               <Image
                 loading="eager"
-                src="assets/logos/logo.dark.svg"
+                src="assets/logos/logo-hscbet.dark.svg"
                 alt="Logo"
                 width={40}
                 height={40}

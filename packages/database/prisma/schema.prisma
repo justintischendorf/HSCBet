@@ -30,6 +30,8 @@ model User {
   tips             Tip[]
   groups           Group[]        @relation("GroupMembers")
   ledGroups        Group[]        @relation("GroupLeader")
+  favoriteGroupId  String?
+  favoriteGroup    Group?         @relation("FavoriteGroup", fields: [favoriteGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   notifications    Notification[]
 
   @@unique([email])
@@ -167,16 +169,16 @@ model Group {
   leaderId      String
   leader        User           @relation("GroupLeader", fields: [leaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   members       User[]         @relation("GroupMembers")
+  favoritedBy   User[]         @relation("FavoriteGroup")
   notifications Notification[]
   createdAt     DateTime       @default(now())
 }
 
 model Rank {
-  id       String   @id @default(cuid())
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  userId   String   @unique
-  points   Int      @default(0)
-  position Position @default(DEFAULT)
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  userId String @unique
+  points Int    @default(0)
 }
 
 model Notification {
@@ -194,13 +196,4 @@ model Notification {
 enum NotificationType {
   GENERIC
   GROUP_INVITE
-}
-
-enum Position {
-  BRONZE
-  SILVER
-  GOLD
-  PLATINUM
-  DIAMOND
-  DEFAULT
 }

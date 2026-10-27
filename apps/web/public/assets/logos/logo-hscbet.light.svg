@@ -1,0 +1,18 @@
+<svg width="480" height="480" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="icon">
+    <rect width="480" height="480" rx="112" fill="#FFED00"/>
+    <circle cx="240" cy="240" r="164" fill="#001631"/>
+    <g fill="#FFED00">
+    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(0 240 240)"/>
+    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(45 240 240)"/>
+    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(90 240 240)"/>
+    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(135 240 240)"/>
+    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(180 240 240)"/>
+    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(225 240 240)"/>
+    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(270 240 240)"/>
+    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(315 240 240)"/>
+    </g>
+    <circle cx="240" cy="240" r="108" fill="none" stroke="#FFED00" stroke-width="12"/>
+    <path d="M182 244L224 286L300 198" fill="none" stroke="#FFED00" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>

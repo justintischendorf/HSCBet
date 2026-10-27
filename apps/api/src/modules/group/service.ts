@@ -13,31 +13,83 @@ const MAX_GROUP_MEMBERS = 16;
 export abstract class GroupService {
   // --------------------------------------------------------------------------> GET api/group
   //                                                                             - get all groups for user from the database
+  //                                                                             - favoriteGroupId falls back to the oldest group if none is set
   static async getAllGroupsForUser({ user }: { user: { id: string } }) {
     logger.info("fetching all groups for user from the database");
 
-    return await prisma.group.findMany({
-      where: {
-        members: {
-          some: { id: user.id },
-        },
-      },
-      include: {
-        leader: {
-          select: { id: true, name: true, image: true },
-        },
-        members: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            rank: { select: { points: true, position: true } },
+    const [groups, dbUser] = await Promise.all([
+      prisma.group.findMany({
+        where: {
+          members: {
+            some: { id: user.id },
           },
         },
-        files: {
-          select: { id: true },
+        include: {
+          leader: {
+            select: { id: true, name: true, image: true },
+          },
+          members: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              rank: { select: { points: true } },
+              tips: { select: { result: true } },
+            },
+          },
+          files: {
+            select: { id: true },
+          },
         },
-      },
+        orderBy: { createdAt: "asc" },
+      }),
+      prisma.user.findUnique({
+        where: { id: user.id },
+        select: { favoriteGroupId: true },
+      }),
+    ]);
+
+    const favoriteGroupId =
+      groups.find((group) => group.id === dbUser?.favoriteGroupId)?.id ??
+      groups[0]?.id ??
+      null;
+
+    return {
+      group: groups.map((group) => ({
+        ...group,
+        members: group.members.map(({ tips, ...member }) => ({
+          ...member,
+          tipCount: tips.length,
+          correctTipCount: tips.filter((tip) => (tip.result ?? 0) > 0).length,
+        })),
+      })),
+      favoriteGroupId,
+    };
+  }
+
+  // --------------------------------------------------------------------------> PATCH api/group/favorite
+  //                                                                             - mark a group as favorite, user must be a member
+  static async setFavoriteGroup({
+    user,
+    body,
+  }: {
+    user: { id: string };
+    body: (typeof GroupModel.SetFavoriteGroup)["static"];
+  }) {
+    logger.info("setting favorite group " + body.groupId + " for " + user.id);
+
+    const group = await prisma.group.findFirst({
+      where: { id: body.groupId, members: { some: { id: user.id } } },
+      select: { id: true },
+    });
+
+    if (!group) {
+      throw new Error("Gruppe nicht gefunden");
+    }
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { favoriteGroupId: group.id },
     });
   }
 
@@ -62,7 +114,7 @@ export abstract class GroupService {
             id: true,
             name: true,
             image: true,
-            rank: { select: { points: true, position: true } },
+            rank: { select: { points: true } },
           },
         },
       },

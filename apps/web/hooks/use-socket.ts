@@ -4,6 +4,7 @@ import { apiClient } from "@/lib/api-client";
 import { queryClient } from "@/lib/queryClient";
 import { createLogger } from "@repo/logger";
 
+import { groupsQueryKey } from "./use-groups";
 import { notificationsQueryKey } from "./use-notifications";
 import { rankQueryKey } from "./use-rank";
 import { seasonStatsQueryKey } from "./use-season-stats";
@@ -99,6 +100,7 @@ async function handleNotificationUpdate(
       await queryClient.invalidateQueries({ queryKey: rankQueryKey });
       await queryClient.invalidateQueries({ queryKey: seasonStatsQueryKey });
       await apiClient.api.rank["evaluate-points"].patch();
+      await queryClient.invalidateQueries({ queryKey: groupsQueryKey });
       await createNotification("Ein Spiel wurde aktualisiert.");
       break;
     case "seasons_updated":
