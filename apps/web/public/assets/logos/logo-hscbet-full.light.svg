@@ -1,28 +1,19 @@
 <svg width="1010" height="480" viewBox="0 0 1010 480" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g transform="translate(0 40) scale(0.8333)">
+<g transform="translate(20 60) scale(0.75)">
   <g id="icon">
-    <rect width="480" height="480" rx="112" fill="#FFED00"/>
-    <circle cx="240" cy="240" r="164" fill="#001631"/>
-    <g fill="#FFED00">
-    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(0 240 240)"/>
-    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(45 240 240)"/>
-    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(90 240 240)"/>
-    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(135 240 240)"/>
-    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(180 240 240)"/>
-    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(225 240 240)"/>
-    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(270 240 240)"/>
-    <rect x="222" y="76" width="36" height="44" rx="6" transform="rotate(315 240 240)"/>
-    </g>
-    <circle cx="240" cy="240" r="108" fill="none" stroke="#FFED00" stroke-width="12"/>
-    <path d="M182 244L224 286L300 198" fill="none" stroke="#FFED00" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="240" cy="240" r="232" fill="#FFED00"/>
+    <circle cx="240" cy="240" r="205" fill="none" stroke="#001631" stroke-width="54" stroke-dasharray="60 101.01" stroke-dashoffset="30" transform="rotate(-90 240 240)"/>
+    <circle cx="240" cy="240" r="166" fill="none" stroke="#001631" stroke-width="5"/>
+    <circle cx="240" cy="240" r="140" fill="none" stroke="#001631" stroke-width="10" stroke-dasharray="18.33 18.33" stroke-dashoffset="9.16"/>
+    <circle cx="240" cy="240" r="116" fill="none" stroke="#001631" stroke-width="3"/>
   </g>
 </g>
-  <g transform="translate(460 9.80) scale(0.9591)" fill="none" stroke-width="22" stroke-linejoin="miter">
-    <path transform="translate(11 0)" d="M0 196V284M68 196V284M0 240H68" stroke="#001631"/>
+  <g transform="translate(480 31.30) scale(0.8696)" fill="none" stroke-width="14" stroke-linejoin="miter">
+    <path transform="translate(7 0)" d="M0 196V284M68 196V284M0 240H68" stroke="#001631"/>
     <path transform="translate(113 0)" d="M62 206Q54 196 36 196H28Q6 196 6 218Q6 240 28 240H36Q58 240 58 262Q58 284 36 284H28Q10 284 2 274" stroke="#001631"/>
-    <path transform="translate(211 0)" d="M75.1 208.9A44 44 0 1 0 75.1 271.1" stroke="#001631"/>
-    <path transform="translate(322 0)" d="M0 196H36Q56 196 56 218Q56 240 36 240H0ZM0 240H40Q60 240 60 262Q60 284 40 284H0Z" stroke="#001631"/>
-    <path transform="translate(416 0)" d="M2 256H58A28 28 0 1 0 51.4 274" stroke="#001631"/>
-    <path transform="translate(510 0)" d="M18 200V266Q18 284 36 284H42M0 228H38" stroke="#001631"/>
+    <path transform="translate(215 0)" d="M75.1 208.9A44 44 0 1 0 75.1 271.1" stroke="#001631"/>
+    <path transform="translate(330 0)" d="M0 196H36Q56 196 56 218Q56 240 36 240H0ZM0 240H40Q60 240 60 262Q60 284 40 284H0Z" stroke="#001631"/>
+    <path transform="translate(428 0)" d="M2 256H58A28 28 0 1 0 51.4 274" stroke="#001631"/>
+    <path transform="translate(526 0)" d="M18 200V266Q18 284 36 284H42M0 228H38" stroke="#001631"/>
   </g>
 </svg>
