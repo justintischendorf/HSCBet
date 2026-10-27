@@ -118,6 +118,67 @@ const app = new Elysia({ prefix: "/api" })
       };
     }
 
+    if (error instanceof Error && error.message === "FORBIDDEN") {
+      set.status = 403;
+      logger.warn("Keine Berechtigung");
+      return {
+        success: false,
+        message: "Du hast keine Berechtigung für diese Aktion",
+        error: "FORBIDDEN",
+      };
+    }
+
+    if (error instanceof Error && error.message === "INVALID_SEASON_RANGE") {
+      set.status = 422;
+      logger.warn("Ungültiger Saisonzeitraum");
+      return {
+        success: false,
+        message: "Das Startdatum muss vor dem Enddatum liegen",
+        error: "INVALID_SEASON_RANGE",
+      };
+    }
+
+    if (error instanceof Error && error.message === "SEASON_NOT_FOUND") {
+      set.status = 404;
+      logger.warn("Saison nicht gefunden");
+      return {
+        success: false,
+        message: "Saison nicht gefunden",
+        error: "SEASON_NOT_FOUND",
+      };
+    }
+
+    if (error instanceof Error && error.message === "SEASON_EXCLUDES_GAMES") {
+      set.status = 422;
+      logger.warn("Saisonzeitraum schließt bestehende Spiele aus");
+      return {
+        success: false,
+        message:
+          "Der Zeitraum muss alle Spiele der Saison enthalten. Verschiebe oder lösche diese Spiele zuerst.",
+        error: "SEASON_EXCLUDES_GAMES",
+      };
+    }
+
+    if (error instanceof Error && error.message === "GAME_NOT_FOUND") {
+      set.status = 404;
+      logger.warn("Spiel nicht gefunden");
+      return {
+        success: false,
+        message: "Spiel nicht gefunden",
+        error: "GAME_NOT_FOUND",
+      };
+    }
+
+    if (error instanceof Error && error.message === "GAME_OUTSIDE_SEASON") {
+      set.status = 422;
+      logger.warn("Spiel liegt außerhalb des Saisonzeitraums");
+      return {
+        success: false,
+        message: "Das Spiel muss innerhalb des Saisonzeitraums liegen",
+        error: "GAME_OUTSIDE_SEASON",
+      };
+    }
+
     if (error instanceof Error && error.message.includes("validation")) {
       set.status = 422;
       logger.warn("Validierungsfehler");

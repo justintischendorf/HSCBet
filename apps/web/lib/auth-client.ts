@@ -1,4 +1,4 @@
-import { emailOTPClient } from "better-auth/client/plugins";
+import { adminClient, emailOTPClient } from "better-auth/client/plugins";
 import { twoFactorClient } from "better-auth/plugins/two-factor";
 import { createAuthClient } from "better-auth/react";
 
@@ -10,7 +10,7 @@ if (!authBaseURL) {
 }
 
 export const authClient = createAuthClient({
-  plugins: [twoFactorClient(), emailOTPClient()],
+  plugins: [twoFactorClient(), emailOTPClient(), adminClient()],
   baseURL: authBaseURL.replace(/\/+$/, ""),
 });
 

@@ -14,7 +14,8 @@
     "db:generate": "cd packages/database && bun prisma generate",
     "db:migrate:dev": "cd packages/database && bun prisma migrate dev",
     "db:migrate:reset": "cd packages/database && bunx prisma migrate reset --force",
-    "db:seed": "bun packages/database/prisma/seed.ts"
+    "db:seed": "bun scripts/seed.ts",
+    "db:admin": "bun scripts/admin.ts"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

@@ -25,5 +25,5 @@ type GroupeInvitedPayload = {
 };
 
 type SeasonsUpdatedPayload = {
-  eventType: "seasons_updated";
+  eventType: "seasons_updated" | "season_changed";
 };

@@ -33,6 +33,10 @@ model User {
   favoriteGroupId  String?
   favoriteGroup    Group?         @relation("FavoriteGroup", fields: [favoriteGroupId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   notifications    Notification[]
+  role             String?        @default("user")
+  banned           Boolean?       @default(false)
+  banReason        String?
+  banExpires       DateTime?
 
   @@unique([email])
   @@map("user")
@@ -48,6 +52,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@map("session")
