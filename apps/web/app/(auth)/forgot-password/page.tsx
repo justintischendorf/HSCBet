@@ -106,7 +106,7 @@ export default function ForgotPasswordScreen() {
           alt="Logo"
           width={80}
           height={80}
-          className="size-10"
+          className="size-15"
         />
       </div>
       <div className="max-w-4xl mx-auto">

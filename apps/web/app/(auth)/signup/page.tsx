@@ -13,7 +13,7 @@ export default function SignupScreen() {
             alt="Logo"
             width={100}
             height={100}
-            className="size-25 block dark:hidden"
+            className="size-15 block dark:hidden"
           />
           <Image
             loading="eager"
@@ -21,7 +21,7 @@ export default function SignupScreen() {
             alt="Logo"
             width={100}
             height={100}
-            className="size-25 hidden dark:block"
+            className="size-15 hidden dark:block"
           />
         </div>
         <SignupForm />

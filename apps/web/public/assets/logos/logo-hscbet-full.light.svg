@@ -1,11 +1,44 @@
 <svg width="909" height="480" viewBox="0 0 909 480" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g transform="translate(0 60) scale(0.75)">
   <g id="icon">
-    <circle cx="240" cy="240" r="232" fill="#FFED00"/>
-    <circle cx="240" cy="240" r="205" fill="none" stroke="#001631" stroke-width="54" stroke-dasharray="60 101.01" stroke-dashoffset="30" transform="rotate(-90 240 240)"/>
-    <circle cx="240" cy="240" r="166" fill="none" stroke="#001631" stroke-width="5"/>
-    <circle cx="240" cy="240" r="140" fill="none" stroke="#001631" stroke-width="10" stroke-dasharray="18.33 18.33" stroke-dashoffset="9.16"/>
-    <circle cx="240" cy="240" r="116" fill="none" stroke="#001631" stroke-width="3"/>
+    <defs>
+      <linearGradient id="chipSide" x1="-226" y1="0" x2="226" y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#8F8200"/><stop offset="0.3" stop-color="#E6D500"/>
+        <stop offset="0.55" stop-color="#FFED00"/><stop offset="1" stop-color="#7A6F00"/>
+      </linearGradient>
+      <linearGradient id="chipSideN" x1="-226" y1="0" x2="226" y2="0" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#000814"/><stop offset="0.55" stop-color="#0A2A50"/>
+        <stop offset="1" stop-color="#000814"/>
+      </linearGradient>
+      <radialGradient id="chipGloss" cx="170" cy="120" r="330" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55"/><stop offset="0.6" stop-color="#FFFFFF" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="chipInlay" cx="240" cy="200" r="130" gradientUnits="userSpaceOnUse">
+        <stop offset="0" stop-color="#FFF6A0"/><stop offset="1" stop-color="#FFED00"/>
+      </radialGradient>
+      <radialGradient id="chipShadow" cx="0" cy="0" r="1">
+        <stop offset="0" stop-color="#000000" stop-opacity="0.35"/><stop offset="1" stop-color="#000000" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <g transform="translate(240 218) rotate(-14)">
+      <ellipse cx="10" cy="180" rx="215" ry="30" fill="url(#chipShadow)"/>
+      <path d="M226 0A226 140.12 0 0 1 -226 0L-226 44A226 140.12 0 0 0 226 44Z" fill="url(#chipSide)"/>
+      <path d="M226.00 0.00 L225.99 1.27 L225.96 2.54 L225.92 3.82 L225.85 5.09 L225.77 6.36 L225.66 7.63 L225.54 8.90 L225.40 10.17 L225.25 11.44 L225.07 12.71 L224.87 13.97 L224.66 15.24 L224.43 16.50 L224.18 17.77 L223.91 19.03 L223.62 20.29 L223.62 64.29 L223.91 63.03 L224.18 61.77 L224.43 60.50 L224.66 59.24 L224.87 57.97 L225.07 56.71 L225.25 55.44 L225.40 54.17 L225.54 52.90 L225.66 51.63 L225.77 50.36 L225.85 49.09 L225.92 47.82 L225.96 46.54 L225.99 45.27 L226.00 44.00ZM181.26 83.69 L178.78 85.72 L176.24 87.72 L173.64 89.69 L170.98 91.63 L168.27 93.54 L165.50 95.42 L162.68 97.26 L159.81 99.08 L156.88 100.86 L153.90 102.61 L150.87 104.33 L147.78 106.01 L144.66 107.66 L141.48 109.27 L138.25 110.84 L134.98 112.38 L134.98 156.38 L138.25 154.84 L141.48 153.27 L144.66 151.66 L147.78 150.01 L150.87 148.33 L153.90 146.61 L156.88 144.86 L159.81 143.08 L162.68 141.26 L165.50 139.42 L168.27 137.54 L170.98 135.63 L173.64 133.69 L176.24 131.72 L178.78 129.72 L181.26 127.69ZM32.72 138.64 L28.66 138.99 L24.58 139.29 L20.50 139.54 L16.40 139.75 L12.31 139.91 L8.21 140.03 L4.10 140.10 L0.00 140.12 L-4.10 140.10 L-8.21 140.03 L-12.31 139.91 L-16.40 139.75 L-20.50 139.54 L-24.58 139.29 L-28.66 138.99 L-32.72 138.64 L-32.72 182.64 L-28.66 182.99 L-24.58 183.29 L-20.50 183.54 L-16.40 183.75 L-12.31 183.91 L-8.21 184.03 L-4.10 184.10 L0.00 184.12 L4.10 184.10 L8.21 184.03 L12.31 183.91 L16.40 183.75 L20.50 183.54 L24.58 183.29 L28.66 182.99 L32.72 182.64ZM-134.98 112.38 L-138.25 110.84 L-141.48 109.27 L-144.66 107.66 L-147.78 106.01 L-150.87 104.33 L-153.90 102.61 L-156.88 100.86 L-159.81 99.08 L-162.68 97.26 L-165.50 95.42 L-168.27 93.54 L-170.98 91.63 L-173.64 89.69 L-176.24 87.72 L-178.78 85.72 L-181.26 83.69 L-181.26 127.69 L-178.78 129.72 L-176.24 131.72 L-173.64 133.69 L-170.98 135.63 L-168.27 137.54 L-165.50 139.42 L-162.68 141.26 L-159.81 143.08 L-156.88 144.86 L-153.90 146.61 L-150.87 148.33 L-147.78 150.01 L-144.66 151.66 L-141.48 153.27 L-138.25 154.84 L-134.98 156.38ZM-223.62 20.29 L-223.91 19.03 L-224.18 17.77 L-224.43 16.50 L-224.66 15.24 L-224.87 13.97 L-225.07 12.71 L-225.25 11.44 L-225.40 10.17 L-225.54 8.90 L-225.66 7.63 L-225.77 6.36 L-225.85 5.09 L-225.92 3.82 L-225.96 2.54 L-225.99 1.27 L-226.00 0.00 L-226.00 44.00 L-225.99 45.27 L-225.96 46.54 L-225.92 47.82 L-225.85 49.09 L-225.77 50.36 L-225.66 51.63 L-225.54 52.90 L-225.40 54.17 L-225.25 55.44 L-225.07 56.71 L-224.87 57.97 L-224.66 59.24 L-224.43 60.50 L-224.18 61.77 L-223.91 63.03 L-223.62 64.29Z" fill="url(#chipSideN)"/>
+      <path d="M226 22.0A226 140.12 0 0 1 -226 22.0" fill="none" stroke="#000000" stroke-opacity="0.12" stroke-width="2"/>
+      <g transform="scale(1 0.62) translate(-240 -240)">
+        <circle cx="240" cy="240" r="226" fill="#FFED00"/>
+        <circle cx="240" cy="240" r="199" fill="none" stroke="#001631" stroke-width="54" stroke-dasharray="57.83 98.47" stroke-dashoffset="28.91" transform="rotate(-90 240 240)"/>
+        <circle cx="240" cy="240" r="220" fill="none" stroke="#FFED00" stroke-width="3" stroke-dasharray="4 8"/>
+        <circle cx="240" cy="240" r="166" fill="none" stroke="#001631" stroke-width="5"/>
+        <circle cx="240" cy="240" r="140" fill="none" stroke="#001631" stroke-width="10" stroke-dasharray="18.33 18.33" stroke-dashoffset="9.16"/>
+        <circle cx="240" cy="240" r="118" fill="url(#chipInlay)" stroke="#001631" stroke-width="3"/>
+        <circle cx="240" cy="240" r="104" fill="none" stroke="#001631" stroke-width="1.5" stroke-opacity="0.6"/>
+        <path d="M240 178L282 240L240 302L198 240Z" fill="#001631"/>
+        <path d="M240 196L270 240L240 284L210 240Z" fill="none" stroke="#FFED00" stroke-width="3"/>
+        <circle cx="240" cy="240" r="226" fill="url(#chipGloss)"/>
+        <circle cx="240" cy="240" r="224.5" fill="none" stroke="#B8A900" stroke-width="3"/>
+      </g>
+    </g>
   </g>
 </g>
 <path d="M461.3 253.8H470V230.8H436.7V253.8H445.5V270.8H404V253.8H413.4V192.4H404V175.4H445.4V192.4H436.6V213.7H470V192.4H461.3V175.4H502.6V192.4H493.3V253.8H502.6V270.8H461.3V253.8Z" fill="#001631" fill-rule="evenodd"/>

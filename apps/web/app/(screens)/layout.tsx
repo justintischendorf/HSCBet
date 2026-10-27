@@ -60,7 +60,7 @@ export default function ScreensLayout({
                 alt="Logo"
                 width={40}
                 height={40}
-                className="size-10 block dark:hidden"
+                className="size-12 block dark:hidden"
               />
               <Image
                 loading="eager"
@@ -68,7 +68,7 @@ export default function ScreensLayout({
                 alt="Logo"
                 width={40}
                 height={40}
-                className="size-10 hidden dark:block"
+                className="size-12 hidden dark:block"
               />
             </Link>
             <div className="order-3 flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">

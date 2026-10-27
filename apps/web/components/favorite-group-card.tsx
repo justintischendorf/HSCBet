@@ -142,7 +142,7 @@ export function FavoriteGroupCard() {
                       {isCurrentUser && " (Du)"}
                     </span>
                     {member.id === group.leader.id && (
-                      <span className="flex shrink-0 items-center rounded-full bg-huk-accent px-1.5 py-0.5 text-background">
+                      <span className="flex shrink-0 items-center rounded-full bg-huk-accent px-1.5 py-0.5 text-foreground dark:text-background">
                         <Crown className="size-2.5" />
                       </span>
                     )}
