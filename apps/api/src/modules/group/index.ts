@@ -16,9 +16,24 @@ export const group = new Elysia({ prefix: "/group" })
     set.status = 200;
     return {
       success: true,
-      group: await GroupService.getAllGroupsForUser({ user }),
+      ...(await GroupService.getAllGroupsForUser({ user })),
     };
   })
+
+  // --------------------------------------------------------------------------> PATCH api/group/favorite
+  //                                                                             - mark a group as favorite, shown on the dashboard
+  .patch(
+    "/favorite",
+    async ({ set, user, body }) => {
+      await GroupService.setFavoriteGroup({ user, body });
+
+      set.status = 200;
+      return { success: true };
+    },
+    {
+      body: GroupModel.SetFavoriteGroup,
+    },
+  )
 
   // --------------------------------------------------------------------------> GET api/group/:id
   //                                                                             - get group by id

@@ -1,6 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
 import { Crown, MoveRight } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
@@ -9,10 +8,11 @@ import { apiClient } from "@/lib/api-client";
 import { useSession } from "@/lib/auth-client";
 import { queryClient } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
-import type { GroupModel, Position } from "@repo/database";
+import type { GroupModel } from "@repo/database";
 
 import { ConfirmAlert } from "./confirm-alert";
 import { EditGroupPopup } from "./edit-group-popup";
+import { FavoriteGroupButton } from "./favorite-group-button";
 import { InviteMemberPopup } from "./invite-member-popup";
 import {
   Accordion,
@@ -34,30 +34,18 @@ type GroupWithUsers = GroupModel & {
     id: string;
     name: string;
     image: string | null;
-    rank: { points: number; position: Position } | null;
+    rank: { points: number } | null;
   }[];
   files: { id: string }[];
 };
 
-const POSITION_LABELS: Record<Position, string> = {
-  BRONZE: "Bronze",
-  SILVER: "Silber",
-  GOLD: "Gold",
-  PLATINUM: "Platin",
-  DIAMOND: "Diamant",
-  DEFAULT: "Kein Rang",
-};
-
-const POSITION_ICONS: Record<Position, string> = {
-  BRONZE: "/assets/images/rank-bronze.svg",
-  SILVER: "/assets/images/rank-silver.svg",
-  GOLD: "/assets/images/rank-gold.svg",
-  PLATINUM: "/assets/images/rank-platinum.svg",
-  DIAMOND: "/assets/images/rank-diamond.svg",
-  DEFAULT: "/assets/images/rank-none.svg",
-};
-
-export default function Group({ group }: { group: GroupWithUsers }) {
+export default function Group({
+  group,
+  isFavorite,
+}: {
+  group: GroupWithUsers;
+  isFavorite: boolean;
+}) {
   const router = useRouter();
   const { data: session } = useSession();
   const isLeader = session?.user?.id === group.leader.id;
@@ -95,11 +83,16 @@ export default function Group({ group }: { group: GroupWithUsers }) {
   });
 
   return (
-    <div className="w-full rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+    <div className="relative w-full rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+      <FavoriteGroupButton
+        groupId={group.id}
+        isFavorite={isFavorite}
+        className="absolute top-5 right-11 z-10"
+      />
       <Accordion type="single" collapsible>
         <AccordionItem value="group" className="border-none">
           <AccordionTrigger className="rounded-none px-4 py-3.5 hover:bg-muted/40 hover:no-underline transition-colors">
-            <div className="flex flex-row items-center gap-3.5 w-full min-w-0">
+            <div className="flex flex-row items-center gap-3.5 w-full min-w-0 pr-10">
               <Avatar className="size-13 shrink-0">
                 <AvatarImage
                   id="profile-picture"
@@ -149,8 +142,6 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         {rankedMembers.map((user) => {
                           const points: number = user.rank?.points ?? 0;
-                          const position: Position =
-                            user.rank?.position ?? "DEFAULT";
                           const isGroupLeader = user.id === group.leader.id;
 
                           return (
@@ -184,15 +175,6 @@ export default function Group({ group }: { group: GroupWithUsers }) {
                                   {points} {points === 1 ? "Punkt" : "Punkte"}
                                 </span>
                               </div>
-                              <Image
-                                loading="eager"
-                                src={POSITION_ICONS[position]}
-                                alt={POSITION_LABELS[position]}
-                                title={POSITION_LABELS[position]}
-                                width={40}
-                                height={42}
-                                className="h-10 w-auto shrink-0"
-                              />
                             </div>
                           );
                         })}

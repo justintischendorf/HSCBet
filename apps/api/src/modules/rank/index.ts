@@ -7,7 +7,7 @@ export const rank = new Elysia({ prefix: "/rank" })
   .use(sessionPlugin)
 
   // --------------------------------------------------------------------------> GET api/rank
-  //                                                                             - get user rank from the database
+  //                                                                             - get user points from the database
   .get("/", async ({ set, user }) => {
     set.status = 200;
     return {
@@ -17,7 +17,7 @@ export const rank = new Elysia({ prefix: "/rank" })
   })
 
   // --------------------------------------------------------------------------> PATCH api/rank/evaluate-points
-  //                                                                             - update user rank score
+  //                                                                             - update user points
   .patch("/evaluate-points", async ({ set, user }) => {
     set.status = 200;
     return {

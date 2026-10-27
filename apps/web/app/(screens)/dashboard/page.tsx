@@ -2,10 +2,10 @@
 
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { MailWarning, ShieldAlert } from "lucide-react";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import { FavoriteGroupCard } from "@/components/favorite-group-card";
 import { TipChart } from "@/components/tip-chart";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,6 @@ import {
   notificationsQueryKey,
   notificationsQueryFn,
 } from "@/hooks/use-notifications";
-import { useRank } from "@/hooks/use-rank";
 import {
   seasonStatsQueryKey,
   seasonStatsQueryFn,
@@ -37,25 +36,6 @@ import { seasonsQueryKey, seasonsQueryFn } from "@/hooks/use-seasons";
 import { tipsQueryKey, tipsQueryFn } from "@/hooks/use-tips";
 import { authClient, useSession } from "@/lib/auth-client";
 import { queryClient } from "@/lib/queryClient";
-import { cn } from "@/lib/utils";
-import type { Position } from "@repo/database";
-
-const RANKS = [
-  { key: "bronze", label: "Bronze", threshold: 200 },
-  { key: "silver", label: "Silber", threshold: 400 },
-  { key: "gold", label: "Gold", threshold: 600 },
-  { key: "platinum", label: "Platin", threshold: 800 },
-  { key: "diamond", label: "Diamant", threshold: 1000 },
-] as const;
-
-const POSITION_ASSET_SLUGS: Record<Position, string> = {
-  BRONZE: "bronze",
-  SILVER: "silver",
-  GOLD: "gold",
-  PLATINUM: "platinum",
-  DIAMOND: "diamond",
-  DEFAULT: "none",
-};
 
 const RESEND_COOLDOWN_SECONDS = 20;
 
@@ -63,8 +43,6 @@ export default function DashboardScreen() {
   const session = useSession();
   const user = session?.data?.user;
   const mailVerified = session?.data?.user?.emailVerified;
-
-  const { isPending: isRankPending, data: rankData } = useRank();
 
   const [showVerifyDialog, setShowVerifyDialog] = useState(false);
   const [isSendingCode, setIsSendingCode] = useState(false);
@@ -160,11 +138,6 @@ export default function DashboardScreen() {
       });
   }, []);
 
-  const points = rankData?.data?.rank?.points;
-  const position = rankData?.data?.rank?.position;
-  const hasRank = !!position && position !== "DEFAULT";
-  const positionSlug = position ? POSITION_ASSET_SLUGS[position] : "none";
-
   return (
     <main className="w-full sm:py-16 py-8 px-4 md:px-12 sm:px-6">
       <div className="max-w-4xl mx-auto">
@@ -180,81 +153,12 @@ export default function DashboardScreen() {
         <div className="flex sm:flex-row flex-col items-end justify-between gap-4">
           <p className="text-base">
             Willkommen auf deinem Dashboard! Hier findest du eine Übersicht über
-            deine Aktivitäten und deinen aktuellen Rang.
+            deine Aktivitäten und die Punkte deiner favorisierten Gruppe.
           </p>
         </div>
         <Separator className="sm:my-8 my-6" />
         <div className="flex flex-col gap-6 md:gap-8">
-          <div className="flex flex-col gap-6 border border-border rounded-xl bg-card p-4 sm:p-6 shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              {isRankPending ? (
-                <Skeleton className="h-23.25 w-22" />
-              ) : (
-                <Image
-                  loading="eager"
-                  src={`/assets/images/rank-${positionSlug}.svg`}
-                  alt={position || "Rang"}
-                  width={88}
-                  height={93}
-                  className="w-22 h-23.25 shrink-0"
-                />
-              )}
-              <div className="flex flex-col">
-                <span className="text-sm text-muted-foreground">
-                  Aktueller Rang
-                </span>
-                <h2 className="text-xl font-semibold">
-                  {isRankPending ? (
-                    <Skeleton className="h-6 w-32" />
-                  ) : hasRank ? (
-                    RANKS.find((rank) => rank.key === positionSlug)?.label
-                  ) : (
-                    "Kein Rang"
-                  )}
-                </h2>
-                <span className="text-sm text-muted-foreground">
-                  {isRankPending ? (
-                    <Skeleton className=" mt-1 h-4 w-16" />
-                  ) : (
-                    `${points} Punkte`
-                  )}
-                </span>
-              </div>
-            </div>
-            <Separator />
-            <div className="grid grid-cols-5 gap-1.5 sm:gap-6">
-              {RANKS.map((rank) => {
-                return (
-                  <div
-                    key={rank.key}
-                    className={cn(
-                      "flex flex-col items-center gap-1 text-center transition-opacity min-w-0",
-                      !hasRank && "opacity-35 grayscale",
-                    )}
-                  >
-                    <Image
-                      loading="eager"
-                      src={`/assets/images/rank-${rank.key}.svg`}
-                      alt={rank.label}
-                      width={112}
-                      height={118}
-                      className={cn(
-                        "h-auto w-11 sm:w-14",
-                        rank.key === positionSlug &&
-                          "drop-shadow-[0_0_6px_var(--color-primary)]",
-                      )}
-                    />
-                    <span className="w-full truncate text-[10px] font-medium sm:text-sm">
-                      {rank.label}
-                    </span>
-                    <span className="w-full truncate text-[9px] text-muted-foreground sm:text-xs">
-                      {rank.threshold} P.
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <FavoriteGroupCard />
           <div className="flex flex-col gap-4 border border-border rounded-xl bg-card p-4 sm:p-6 shadow-sm">
             <h2 className="text-lg font-semibold">Tipp-Statistik</h2>
             <TipChart />
