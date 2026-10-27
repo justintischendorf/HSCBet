@@ -159,7 +159,7 @@ export function SigninForm({
               loading="eager"
               width={1920}
               height={1080}
-              src="/assets/images/max.png"
+              src="/assets/images/player.jpeg"
               alt="Image"
               className="absolute inset-0 h-full w-full object-cover"
             />

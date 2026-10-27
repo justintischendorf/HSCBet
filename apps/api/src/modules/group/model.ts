@@ -16,6 +16,10 @@ export namespace GroupModel {
     groupId: t.String(),
   });
 
+  export const SetFavoriteGroup = t.Object({
+    groupId: t.String(),
+  });
+
   export const InviteToGroup = t.Object({
     playerId: t.String(),
   });

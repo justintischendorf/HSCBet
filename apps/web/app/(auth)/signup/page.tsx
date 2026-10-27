@@ -9,19 +9,19 @@ export default function SignupScreen() {
         <div className="flex items-center justify-center mb-6">
           <Image
             loading="eager"
-            src="assets/logos/logo-konzern.light.svg"
+            src="assets/logos/logo-hscbet.light.svg"
             alt="Logo"
             width={100}
             height={100}
-            className="size-25 block dark:hidden"
+            className="size-15 block dark:hidden"
           />
           <Image
             loading="eager"
-            src="assets/logos/logo-konzern.dark.svg"
+            src="assets/logos/logo-hscbet.dark.svg"
             alt="Logo"
             width={100}
             height={100}
-            className="size-25 hidden dark:block"
+            className="size-15 hidden dark:block"
           />
         </div>
         <SignupForm />

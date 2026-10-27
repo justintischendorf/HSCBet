@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
@@ -13,7 +12,6 @@ import {
   ComboboxList,
 } from "@/components/ui/combobox";
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -26,16 +24,6 @@ import { useGroupById } from "@/hooks/use-groupById";
 import { useSeasons } from "@/hooks/use-seasons";
 import { useTips } from "@/hooks/use-tips";
 import { cn } from "@/lib/utils";
-import type { Position } from "@repo/database";
-
-const POSITION_ASSET_SLUGS: Record<Position, string> = {
-  BRONZE: "bronze",
-  SILVER: "silver",
-  GOLD: "gold",
-  PLATINUM: "platinum",
-  DIAMOND: "diamond",
-  DEFAULT: "none",
-};
 
 export default function GroupStats() {
   const params = useParams();
@@ -47,8 +35,7 @@ export default function GroupStats() {
     return seasonsResponse?.data?.season ?? [];
   }, [seasonsResponse?.data?.season]);
 
-  const { data: groupResponse, isPending: isGroupPending } =
-    useGroupById(groupId);
+  const { data: groupResponse } = useGroupById(groupId);
 
   const userList = useMemo(() => {
     const users = groupResponse?.data?.group?.members ?? [];
@@ -121,7 +108,6 @@ export default function GroupStats() {
                 <TableHead className="w-32 sm:w-40 sticky left-0 z-20 bg-background border-r">
                   Name
                 </TableHead>
-                <TableHead className="w-16 text-center">Rang</TableHead>
                 <TableHead className="w-16 text-center">Punkte</TableHead>
                 {gamesList.map((game) => {
                   const dateObj = new Date(game.date);
@@ -161,29 +147,10 @@ export default function GroupStats() {
             </TableHeader>
             <TableBody>
               {userList.map((user) => {
-                const position = user.rank?.position;
-                const positionSlug = position
-                  ? POSITION_ASSET_SLUGS[position]
-                  : "none";
-
                 return (
                   <TableRow key={user.id} className="hover:bg-background">
                     <TableCell className="sticky left-0 z-10 bg-background border-r font-medium">
                       {user.name}
-                    </TableCell>
-                    <TableCell className="text-center">
-                      {isGroupPending ? (
-                        <Skeleton className="h-10 w-10 mx-auto rounded-full" />
-                      ) : (
-                        <Image
-                          loading="eager"
-                          src={`/assets/images/rank-${positionSlug}.svg`}
-                          alt={position || "Rang"}
-                          width={40}
-                          height={40}
-                          className="w-10 h-10 mx-auto shrink-0 object-contain"
-                        />
-                      )}
                     </TableCell>
                     <TableCell className="text-center font-semibold tabular-nums">
                       {user.rank?.points ?? 0}

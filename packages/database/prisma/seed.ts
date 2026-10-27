@@ -1,6 +1,5 @@
 import { randomBytes, randomUUID, scrypt } from "node:crypto";
 
-import type { Position } from "../generated/prisma/client";
 import { prisma } from "../src/index";
 
 // Same scrypt parameters/format better-auth's default email/password hasher
@@ -31,19 +30,11 @@ async function hashPassword(password: string) {
   return `${salt}:${key.toString("hex")}`;
 }
 
-// Mirrors apps/api/src/modules/rank/service.ts so seeded points/positions stay
-// consistent with how the real app scores tips and assigns ranks.
+// Mirrors apps/api/src/modules/rank/service.ts so seeded points stay
+// consistent with how the real app scores tips.
 const WINNER_POINTS = 50;
 const EXACT_RESULT_BONUS_MULTIPLIER = 2;
 const WRONG_TIP_PENALTY = -25;
-
-function getPositionForPoints(points: number): Position {
-  if (points <= 200) return "BRONZE";
-  if (points <= 400) return "SILVER";
-  if (points <= 600) return "GOLD";
-  if (points <= 800) return "PLATINUM";
-  return "DIAMOND";
-}
 
 function tipResult(
   tipHost: number,
@@ -551,12 +542,9 @@ async function main() {
     data: {
       userId: mainUser.id,
       points: Math.max(0, mainUserPoints),
-      position: getPositionForPoints(mainUserPoints),
     },
   });
-  console.log(
-    `Hauptnutzer Punktestand: ${mainUserPoints} (${getPositionForPoints(mainUserPoints)})`,
-  );
+  console.log(`Hauptnutzer Punktestand: ${mainUserPoints}`);
 
   await prisma.notification.createMany({
     data: [
@@ -594,7 +582,6 @@ async function main() {
       data: {
         userId: user.id,
         points: demo.points,
-        position: getPositionForPoints(demo.points),
       },
     });
     demoUsers.push(user);
@@ -686,9 +673,24 @@ async function main() {
     },
   });
 
+  // Zweite, kleinere Gruppe mit einem anderen Leiter, damit sich der
+  // Favoriten-Wechsel auf dem Dashboard ausprobieren lässt.
+  await prisma.group.create({
+    data: {
+      name: "Büro-Tipprunde",
+      description: "Die Tipprunde aus dem Büro",
+      leaderId: demoUsers[0]!.id,
+      members: {
+        connect: [demoUsers[0]!, mainUser, demoUsers[2]!].map((u) => ({
+          id: u.id,
+        })),
+      },
+    },
+  });
+
   console.log("Fertig!");
   console.log(
-    `Login: test@example.com / ${MAIN_PASSWORD} (E-Mail nicht bestätigt, 2FA deaktiviert, Rang PLATINUM)`,
+    `Login: test@example.com / ${MAIN_PASSWORD} (E-Mail nicht bestätigt, 2FA deaktiviert)`,
   );
 }
 

@@ -59,7 +59,6 @@ export const auth = betterAuth({
             data: {
               userId: user.id,
               points: 0,
-              position: "DEFAULT",
             },
           });
         },
