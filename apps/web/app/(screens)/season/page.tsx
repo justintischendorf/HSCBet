@@ -21,16 +21,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSeasons } from "@/hooks/use-seasons";
+import { CLUB, NewGamePopup } from "@/components/new-game-popup";
+import { NewSeasonPopup } from "@/components/new-season-popup";
+import {
+  GameAdminActions,
+  SeasonAdminActions,
+} from "@/components/season-admin-actions";
+import { useIsAdmin } from "@/hooks/use-is-admin";
 
 export default function SeasonScreen() {
   const { data: seasonsResponse, isPending: isSeasonsPending } = useSeasons();
   const seasonsData = seasonsResponse?.data?.season;
   const seasonsList = seasonsData ?? [];
   const [selectedSeasonId, setSelectedSeasonId] = useState<string>("");
+  const isAdmin = useIsAdmin();
 
+  // also falls back to the newest season when the selected one was deleted
   useEffect(() => {
-    if (seasonsData && seasonsData.length > 0 && !selectedSeasonId) {
-      setSelectedSeasonId(seasonsData[0].id);
+    if (!seasonsData) return;
+    if (!seasonsData.some((s) => s.id === selectedSeasonId)) {
+      setSelectedSeasonId(seasonsData[0]?.id ?? "");
     }
   }, [seasonsData, selectedSeasonId]);
 
@@ -68,33 +78,45 @@ export default function SeasonScreen() {
             </span>
           </div>
         </div>
-        <p className="text-base mt-2">
-          Hier finden Sie Informationen zur aktuellen Saison wie auch zu
-          vergangenen Saisons, einschließlich Spielpläne und Ergebnissen.
-        </p>
+        <div className="flex sm:flex-row flex-col items-end justify-between gap-4">
+          <p className="text-base flex-1 min-w-0">
+            Hier finden Sie Informationen zur aktuellen Saison wie auch zu
+            vergangenen Saisons, einschließlich Spielpläne und Ergebnissen.
+          </p>
+          <div className="shrink-0 sm:w-auto w-full flex sm:flex-row flex-col gap-2">
+            <NewGamePopup season={currentSeason} />
+            <NewSeasonPopup />
+          </div>
+        </div>
         <Separator className="sm:my-8 my-6" />
         <div className="flex flex-col gap-6 md:gap-8">
-          <Combobox
-            items={seasonsList}
-            disabled={isSeasonsPending}
-            value={selectedSeasonId}
-            onValueChange={(val) => setSelectedSeasonId(val ?? "")}
-          >
-            <ComboboxInput
-              placeholder="Wähle eine Saison"
-              value={isSeasonsPending ? "Laden..." : selectedSeasonTitle}
-            />
-            <ComboboxContent>
-              <ComboboxEmpty>Keine Saison gefunden.</ComboboxEmpty>
-              <ComboboxList>
-                {(item) => (
-                  <ComboboxItem key={item.id} value={item.id}>
-                    {item.title}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
+          <div className="flex items-center gap-2">
+            <Combobox
+              items={seasonsList}
+              disabled={isSeasonsPending}
+              value={selectedSeasonId}
+              onValueChange={(val) => setSelectedSeasonId(val ?? "")}
+            >
+              <ComboboxInput
+                className="flex-1"
+                placeholder="Wähle eine Saison"
+                value={isSeasonsPending ? "Laden..." : selectedSeasonTitle}
+              />
+              <ComboboxContent>
+                <ComboboxEmpty>Keine Saison gefunden.</ComboboxEmpty>
+                <ComboboxList>
+                  {(item) => (
+                    <ComboboxItem key={item.id} value={item.id}>
+                      {item.title}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
+            {isAdmin && currentSeason && (
+              <SeasonAdminActions season={currentSeason} />
+            )}
+          </div>
 
           {isSeasonsPending ? (
             <Skeleton className="h-96 w-full" />
@@ -111,6 +133,7 @@ export default function SeasonScreen() {
                       Ergebnis
                     </TableHead>
                     <TableHead className="text-left">Gastteam</TableHead>
+                    {isAdmin && <TableHead className="w-10" />}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -127,17 +150,17 @@ export default function SeasonScreen() {
                         minute: "2-digit",
                       }) + " Uhr";
 
-                    const isCoburgHome = game.host === "HSC 2000 Coburg";
-                    const isCoburgAway = game.guest === "HSC 2000 Coburg";
+                    const isCoburgHome = game.host === CLUB;
+                    const isCoburgAway = game.guest === CLUB;
 
                     const hasPlayed =
                       game.hostPoints !== null && game.guestPoints !== null;
 
                     return (
-                      <Fragment key={game.host + game.guest}>
+                      <Fragment key={game.id}>
                         <TableRow className="border-none hover:bg-transparent md:hidden">
                           <TableCell
-                            colSpan={3}
+                            colSpan={isAdmin ? 4 : 3}
                             className="pt-3 pb-0 text-center text-xs text-muted-foreground"
                           >
                             {dateStr} · {timeOnly}
@@ -173,6 +196,14 @@ export default function SeasonScreen() {
                           >
                             {game.guest}
                           </TableCell>
+                          {isAdmin && currentSeason && (
+                            <TableCell className="py-3 px-0 text-right">
+                              <GameAdminActions
+                                season={currentSeason}
+                                game={game}
+                              />
+                            </TableCell>
+                          )}
                         </TableRow>
                       </Fragment>
                     );
