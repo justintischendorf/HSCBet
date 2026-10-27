@@ -1,6 +1,6 @@
 import { randomBytes, randomUUID, scrypt } from "node:crypto";
 
-import { prisma } from "../src/index";
+import { prisma } from "../packages/database/src/index";
 
 // Same scrypt parameters/format better-auth's default email/password hasher
 // uses, so the seeded credential account can log in through the real

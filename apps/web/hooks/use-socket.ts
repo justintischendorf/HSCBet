@@ -84,7 +84,8 @@ export function useSocket() {
 }
 
 interface eventTypes {
-  eventType: "game_updated" | "seasons_updated" | "group_invited";
+  eventType:
+    "game_updated" | "seasons_updated" | "season_changed" | "group_invited";
 }
 
 async function handleNotificationUpdate(
@@ -106,6 +107,15 @@ async function handleNotificationUpdate(
     case "seasons_updated":
       await createNotification("Die neue Saison ist verfügbar!");
       await queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
+      break;
+    case "season_changed":
+      // a deleted season removes its tips, so points have to be re-evaluated
+      await queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
+      await apiClient.api.rank["evaluate-points"].patch();
+      await queryClient.invalidateQueries({ queryKey: rankQueryKey });
+      await queryClient.invalidateQueries({ queryKey: seasonStatsQueryKey });
+      await queryClient.invalidateQueries({ queryKey: groupsQueryKey });
+      await createNotification("Eine Saison wurde aktualisiert.");
       break;
     case "group_invited":
       await queryClient.invalidateQueries({ queryKey: notificationsQueryKey });

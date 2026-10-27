@@ -1,5 +1,6 @@
 import { APIError, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
+import { admin } from "better-auth/plugins/admin";
 import { emailOTP } from "better-auth/plugins/email-otp";
 import { twoFactor } from "better-auth/plugins/two-factor";
 
@@ -33,6 +34,7 @@ export const auth = betterAuth({
   appName: "HSCBet",
   plugins: [
     twoFactor(),
+    admin(),
     emailOTP({
       async sendVerificationOTP({ email, otp, type }) {
         await MailService.sendForgotPasswordMail({
