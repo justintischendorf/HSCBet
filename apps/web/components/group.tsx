@@ -172,7 +172,8 @@ export default function Group({
                                   )}
                                 </div>
                                 <span className="text-xs text-muted-foreground tabular-nums">
-                                  {formatPoints(points)} {points === 1 ? "Punkt" : "Punkte"}
+                                  {formatPoints(points)}{" "}
+                                  {points === 1 ? "Punkt" : "Punkte"}
                                 </span>
                               </div>
                             </div>
