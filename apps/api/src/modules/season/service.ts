@@ -2,7 +2,6 @@ import { prisma } from "@repo/database";
 import { createLogger } from "@repo/logger";
 
 import { IdParams } from "../../global/models";
-import { TipEvaluationService } from "../../global/services/tip-evaluation-service";
 import { SeasonModel } from "./model";
 
 const logger = createLogger("api:season");
@@ -222,22 +221,6 @@ export abstract class SeasonService {
     return seasons;
   }
 
-  // --------------------------------------------------------------------------> GET api/season/:id
-  //                                                                             - get a season by its ID from the database
-  static async getSeasonByID({
-    params,
-  }: {
-    params: (typeof IdParams)["static"];
-  }) {
-    logger.info("fetching season by id: " + params.id);
-    const seasons = await prisma.season.findUnique({
-      where: {
-        id: params.id,
-      },
-    });
-    return seasons;
-  }
-
   // --------------------------------------------------------------------------> GET api/season/stats
   //                                                                             - get the correct/incorrect tip counts per season for the authenticated user
   static async getStats({ user }: { user: { id: string } }) {
@@ -262,13 +245,9 @@ export abstract class SeasonService {
           tip.game.guestPoints !== null,
       );
 
-      const correct = evaluatedTips.filter((tip) =>
-        TipEvaluationService.isWinnerCorrect({
-          tipHost: tip.tipHost,
-          tipGuest: tip.tipGuest,
-          hostPoints: tip.game.hostPoints ?? 0,
-          guestPoints: tip.game.guestPoints ?? 0,
-        }),
+      // a tip counts as correct once it scored points
+      const correct = evaluatedTips.filter(
+        (tip) => (tip.result ?? 0) > 0,
       ).length;
 
       return {

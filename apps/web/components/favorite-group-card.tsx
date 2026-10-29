@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { useGroups } from "@/hooks/use-groups";
 import { useSession } from "@/lib/auth-client";
-import { cn } from "@/lib/utils";
+import { cn, formatPoints } from "@/lib/utils";
 
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
@@ -110,7 +110,6 @@ export function FavoriteGroupCard() {
             <TableHead className="w-10 text-center">#</TableHead>
             <TableHead>Name</TableHead>
             <TableHead className="text-center">Tipps</TableHead>
-            <TableHead className="text-center">Richtig</TableHead>
             <TableHead className="text-right">Punkte</TableHead>
           </TableRow>
         </TableHeader>
@@ -151,11 +150,8 @@ export function FavoriteGroupCard() {
                 <TableCell className="text-center tabular-nums">
                   {member.tipCount}
                 </TableCell>
-                <TableCell className="text-center tabular-nums">
-                  {member.correctTipCount}
-                </TableCell>
                 <TableCell className="text-right font-semibold tabular-nums">
-                  {member.rank?.points ?? 0}
+                  {formatPoints(member.rank?.points ?? 0)}
                 </TableCell>
               </TableRow>
             );

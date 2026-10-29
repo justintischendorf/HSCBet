@@ -20,9 +20,3 @@ export const contextPlugin = new Elysia({ name: "context" })
   .state("s3Manager", s3Manager)
   .state("queueManager", queueManager)
   .state("pubSubManager", pubSubManager);
-
-export type WebAppStore = {
-  s3Manager: S3Manager;
-  queueManager: QueueManager;
-  pubSubManager: PubSubManager;
-};

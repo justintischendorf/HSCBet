@@ -58,17 +58,17 @@ export default function ScreensLayout({
                 loading="eager"
                 src="assets/logos/logo-hscbet.light.svg"
                 alt="Logo"
-                width={40}
-                height={40}
-                className="size-12 block dark:hidden"
+                width={100}
+                height={100}
+                className="size-30 block dark:hidden"
               />
               <Image
                 loading="eager"
-                src="assets/logos/logo-hscbet.dark.svg"
+                src="assets/logos/logo-hscbet-full.dark.svg"
                 alt="Logo"
-                width={40}
-                height={40}
-                className="size-12 hidden dark:block"
+                width={100}
+                height={100}
+                className="size-30 hidden dark:block"
               />
             </Link>
             <div className="order-3 flex flex-row flex-wrap items-center justify-center gap-2 sm:gap-2 w-full sm:w-auto">

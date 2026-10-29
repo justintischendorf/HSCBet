@@ -17,6 +17,7 @@ model User {
   name          String
   email         String
   emailVerified Boolean
+  approved      Boolean   @default(false)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
@@ -162,7 +163,7 @@ model Tip {
   userId    String
   tipHost   Int
   tipGuest  Int
-  result    Int?     @default(0)
+  result    Float?   @default(0)
 
   @@unique([userId, gameId])
 }
@@ -184,7 +185,7 @@ model Rank {
   id     String @id @default(cuid())
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   userId String @unique
-  points Int    @default(0)
+  points Float  @default(0)
 }
 
 model Notification {

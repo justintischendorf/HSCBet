@@ -23,7 +23,7 @@ import {
 import { useGroupById } from "@/hooks/use-groupById";
 import { useSeasons } from "@/hooks/use-seasons";
 import { useTips } from "@/hooks/use-tips";
-import { cn } from "@/lib/utils";
+import { cn, formatPoints } from "@/lib/utils";
 
 export default function GroupStats() {
   const params = useParams();
@@ -153,7 +153,7 @@ export default function GroupStats() {
                       {user.name}
                     </TableCell>
                     <TableCell className="text-center font-semibold tabular-nums">
-                      {user.rank?.points ?? 0}
+                      {formatPoints(user.rank?.points ?? 0)}
                     </TableCell>
                     {gamesList.map((game) => {
                       const userTip = tipList.find(
@@ -178,13 +178,11 @@ export default function GroupStats() {
                                       "rounded px-1.5 py-0.5 text-[10px] font-semibold leading-none tabular-nums",
                                       result > 0
                                         ? "bg-positive/10 text-positive"
-                                        : result < 0
-                                          ? "bg-destructive/10 text-destructive"
-                                          : "bg-muted text-muted-foreground",
+                                        : "bg-muted text-muted-foreground",
                                     )}
                                   >
                                     {result > 0 ? "+" : ""}
-                                    {result} Pkt.
+                                    {formatPoints(result)} Pkt.
                                   </span>
                                 );
                               })()}

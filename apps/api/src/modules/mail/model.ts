@@ -12,6 +12,17 @@ export namespace MailModel {
     subject: t.String(),
     html: t.String(),
   });
+
+  export const SendSignupReviewMail = t.Object({
+    userId: t.String(),
+    name: t.String(),
+    email: t.String(),
+  });
+
+  export const ReviewSignup = t.Object({
+    token: t.String(),
+    action: t.Union([t.Literal("approve"), t.Literal("reject")]),
+  });
 }
 
 export type MailModel = {

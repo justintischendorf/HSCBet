@@ -20,7 +20,7 @@
     "@repo/logger": "workspace:*",
     "@repo/queue": "workspace:*",
     "@repo/pubsub": "workspace:*",
-    "cors": "^2.8.6",
+    "better-auth": "^1.6.20",
     "elysia": "latest",
     "elysia-rate-limit": "^4.6.2",
     "resend": "^6.17.2"

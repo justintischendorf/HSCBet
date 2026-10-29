@@ -34,7 +34,7 @@ export abstract class GroupService {
               name: true,
               image: true,
               rank: { select: { points: true } },
-              tips: { select: { result: true } },
+              _count: { select: { tips: true } },
             },
           },
           files: {
@@ -57,10 +57,9 @@ export abstract class GroupService {
     return {
       group: groups.map((group) => ({
         ...group,
-        members: group.members.map(({ tips, ...member }) => ({
+        members: group.members.map(({ _count, ...member }) => ({
           ...member,
-          tipCount: tips.length,
-          correctTipCount: tips.filter((tip) => (tip.result ?? 0) > 0).length,
+          tipCount: _count.tips,
         })),
       })),
       favoriteGroupId,

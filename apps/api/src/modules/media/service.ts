@@ -110,25 +110,4 @@ export abstract class MediaService {
   }) {
     return await s3Manager.generateDownloadURL({ key: s3Key });
   }
-
-  static async fetchFiles({ userId }: { userId: string }) {
-    logger.info(`Fetching files for user ${userId}`);
-    const files = await prisma.file.findMany({
-      where: {
-        userId,
-      },
-      select: {
-        id: true,
-        filename: true,
-        mimetype: true,
-        size: true,
-        s3Key: true,
-        createdAt: true,
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    return files.map((f) => ({
-      ...f,
-    }));
-  }
 }
