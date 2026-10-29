@@ -179,6 +179,16 @@ const app = new Elysia({ prefix: "/api" })
       };
     }
 
+    if (error instanceof Error && error.message === "INCOMPLETE_GAME_RESULT") {
+      set.status = 422;
+      logger.warn("Spielergebnis unvollständig");
+      return {
+        success: false,
+        message: "Bitte trage die Tore beider Mannschaften ein",
+        error: "INCOMPLETE_GAME_RESULT",
+      };
+    }
+
     if (error instanceof Error && error.message.includes("validation")) {
       set.status = 422;
       logger.warn("Validierungsfehler");

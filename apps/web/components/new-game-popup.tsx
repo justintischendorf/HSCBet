@@ -28,7 +28,14 @@ import { ResponsiveDialog } from "./responsive-dialog";
 export const CLUB = "HSC 2000 Coburg";
 
 type Season = { id: string; title: string; from: Date; to: Date };
-type Game = { id: string; date: Date; host: string; guest: string };
+type Game = {
+  id: string;
+  date: Date;
+  host: string;
+  guest: string;
+  hostPoints: number | null;
+  guestPoints: number | null;
+};
 
 export function NewGamePopup({ season }: { season: Season | undefined }) {
   const [open, setOpen] = React.useState(false);
@@ -107,6 +114,12 @@ function GameForm({
     game ? (gameIsHome ? game.guest : game.host) : "",
   );
   const [isHome, setIsHome] = React.useState(gameIsHome);
+  const [hostPoints, setHostPoints] = React.useState(
+    game?.hostPoints?.toString() ?? "",
+  );
+  const [guestPoints, setGuestPoints] = React.useState(
+    game?.guestPoints?.toString() ?? "",
+  );
   const [calendarOpen, setCalendarOpen] = React.useState(false);
 
   const seasonFrom = new Date(season.from);
@@ -116,7 +129,11 @@ function GameForm({
     mutationFn: async (input: { date: Date; host: string; guest: string }) => {
       const seasonApi = apiClient.api.season({ id: season.id });
       return game
-        ? seasonApi.game({ gameId: game.id }).patch(input)
+        ? seasonApi.game({ gameId: game.id }).patch({
+            ...input,
+            hostPoints: hostPoints === "" ? null : Number(hostPoints),
+            guestPoints: guestPoints === "" ? null : Number(guestPoints),
+          })
         : seasonApi.game.post(input);
     },
   });
@@ -124,6 +141,11 @@ function GameForm({
   async function handleGameSubmit() {
     if (!date) {
       toast.error("Bitte wähle ein Datum für das Spiel aus.");
+      return;
+    }
+
+    if ((hostPoints === "") !== (guestPoints === "")) {
+      toast.error("Bitte trage die Tore beider Mannschaften ein.");
       return;
     }
 
@@ -245,6 +267,66 @@ function GameForm({
           />
         </Field>
       </div>
+      {game && (
+        <div className="grid gap-3">
+          <Field>
+            <FieldLabel htmlFor="hostPoints">Ergebnis</FieldLabel>
+            <FieldDescription>
+              Leer lassen, solange das Spiel noch nicht gespielt wurde
+            </FieldDescription>
+            <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-x-2 gap-y-1">
+              {[
+                { team: isHome ? CLUB : opponent, side: "Heim" },
+                null,
+                { team: isHome ? opponent : CLUB, side: "Gast" },
+              ].map((label, i) =>
+                label ? (
+                  <div key={i} className="min-w-0 text-center">
+                    <div className="text-xs text-muted-foreground">
+                      {label.side}
+                    </div>
+                    <div
+                      className={cn(
+                        "truncate text-sm",
+                        label.team === CLUB
+                          ? "font-semibold"
+                          : "text-muted-foreground",
+                      )}
+                    >
+                      {label.team || "Gegner"}
+                    </div>
+                  </div>
+                ) : (
+                  <span key={i} />
+                ),
+              )}
+              <Input
+                type="number"
+                id="hostPoints"
+                min={0}
+                step={1}
+                inputMode="numeric"
+                className="text-center"
+                aria-label={`Tore ${isHome ? CLUB : opponent || "Heimteam"}`}
+                value={hostPoints}
+                onChange={(e) => setHostPoints(e.target.value)}
+              />
+              <span className="self-center font-bold">:</span>
+              <Input
+                type="number"
+                id="guestPoints"
+                min={0}
+                step={1}
+                inputMode="numeric"
+                className="text-center"
+                aria-label={`Tore ${isHome ? opponent || "Gastteam" : CLUB}`}
+                value={guestPoints}
+                onChange={(e) => setGuestPoints(e.target.value)}
+              />
+            </div>
+          </Field>
+        </div>
+      )}
       <Button type="submit" disabled={isSavingGame}>
         {isSavingGame && <Spinner />}
         {game ? "Speichern" : "Spiel hinzufügen"}
