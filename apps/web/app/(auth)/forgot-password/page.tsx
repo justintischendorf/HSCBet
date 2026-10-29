@@ -149,7 +149,7 @@ export default function ForgotPasswordScreen() {
           </Field>
 
           {codeSent && (
-            <Field>
+            <Field className="flex flex-row w-1/3">
               <FieldLabel htmlFor="otp">Bestätigungscode</FieldLabel>
               <InputOTP
                 id="otp"
