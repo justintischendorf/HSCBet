@@ -46,39 +46,6 @@ export const media = new Elysia({ prefix: "/media" })
     },
   )
 
-  // --------------------------------------------------------------------------> GET api/media
-  //                                                                             - get all media files for the authenticated user
-  .get("/", async ({ user }) => {
-    return {
-      success: true,
-      files: await MediaService.fetchFiles({
-        userId: user.id,
-      }),
-    };
-  })
-
-  // --------------------------------------------------------------------------> DELETE api/media/:id
-  //                                                                             - delete a media file by its ID from the database and S3
-  .delete(
-    "/:id",
-    async ({ params: { id }, store, set }) => {
-      const { s3Manager } = store;
-      const { s3Key } = await MediaService.deleteMediaFromDb({ id });
-
-      if (s3Key) {
-        await s3Manager.deleteFile(s3Key);
-      }
-
-      set.status = 204;
-    },
-    {
-      params: IdParams,
-      response: {
-        204: t.Void(),
-      },
-    },
-  )
-
   // --------------------------------------------------------------------------> DELETE api/media/by-url
   //                                                                             - delete a media file by its URL from the database and S3
   .delete(
@@ -101,25 +68,6 @@ export const media = new Elysia({ prefix: "/media" })
         204: t.Void(),
       },
     },
-  )
-
-  // --------------------------------------------------------------------------> GET api/media/:id/download-url
-  //
-  .get(
-    "/:id/download-url",
-    async ({ params: { id }, store }) => {
-      const { s3Manager } = store;
-      const file = await prisma.file.findUniqueOrThrow({
-        where: { id },
-        select: { s3Key: true },
-      });
-      const url = await MediaService.generateDownloadURL({
-        s3Key: file.s3Key,
-        s3Manager,
-      });
-      return { url };
-    },
-    { params: IdParams },
   )
 
   // --------------------------------------------------------------------------> GET api/media/:id/image

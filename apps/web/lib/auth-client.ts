@@ -14,5 +14,4 @@ export const authClient = createAuthClient({
   baseURL: authBaseURL.replace(/\/+$/, ""),
 });
 
-export const { signIn, signUp, useSession, signOut, deleteUser, verifyEmail } =
-  authClient;
+export const { useSession } = authClient;

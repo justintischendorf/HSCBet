@@ -102,11 +102,19 @@ export default function ForgotPasswordScreen() {
       <div className="flex justify-center items-center mb-10">
         <Image
           loading="eager"
-          src="assets/logos/logo-hscbet.dark.svg"
+          src="assets/logos/logo-hscbet-full.light.svg"
           alt="Logo"
-          width={80}
-          height={80}
-          className="size-15"
+          width={100}
+          height={100}
+          className="size-40 block dark:hidden"
+        />
+        <Image
+          loading="eager"
+          src="assets/logos/logo-hscbet-full.dark.svg"
+          alt="Logo"
+          width={100}
+          height={100}
+          className="size-40 hidden dark:block"
         />
       </div>
       <div className="max-w-4xl mx-auto">

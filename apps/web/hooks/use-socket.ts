@@ -6,7 +6,6 @@ import { createLogger } from "@repo/logger";
 
 import { groupsQueryKey } from "./use-groups";
 import { notificationsQueryKey } from "./use-notifications";
-import { rankQueryKey } from "./use-rank";
 import { seasonStatsQueryKey } from "./use-season-stats";
 import { seasonsQueryKey } from "./use-seasons";
 
@@ -98,7 +97,6 @@ async function handleNotificationUpdate(
     case "game_updated":
       await queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
       await queryClient.invalidateQueries({ queryKey: notificationsQueryKey });
-      await queryClient.invalidateQueries({ queryKey: rankQueryKey });
       await queryClient.invalidateQueries({ queryKey: seasonStatsQueryKey });
       await apiClient.api.rank["evaluate-points"].patch();
       await queryClient.invalidateQueries({ queryKey: groupsQueryKey });
@@ -112,7 +110,6 @@ async function handleNotificationUpdate(
       // a deleted season removes its tips, so points have to be re-evaluated
       await queryClient.invalidateQueries({ queryKey: seasonsQueryKey });
       await apiClient.api.rank["evaluate-points"].patch();
-      await queryClient.invalidateQueries({ queryKey: rankQueryKey });
       await queryClient.invalidateQueries({ queryKey: seasonStatsQueryKey });
       await queryClient.invalidateQueries({ queryKey: groupsQueryKey });
       await createNotification("Eine Saison wurde aktualisiert.");

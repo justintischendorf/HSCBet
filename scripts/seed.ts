@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID, scrypt } from "node:crypto";
 
 import { prisma } from "../packages/database/src/index";
+import { evaluateAllPoints } from "./evaluate";
 
 // Same scrypt parameters/format better-auth's default email/password hasher
 // uses, so the seeded credential account can log in through the real
@@ -28,28 +29,6 @@ async function hashPassword(password: string) {
   const salt = randomBytes(16).toString("hex");
   const key = await scryptKey(password.normalize("NFKC"), salt);
   return `${salt}:${key.toString("hex")}`;
-}
-
-// Mirrors apps/api/src/modules/rank/service.ts so seeded points stay
-// consistent with how the real app scores tips.
-const WINNER_POINTS = 50;
-const EXACT_RESULT_BONUS_MULTIPLIER = 2;
-const WRONG_TIP_PENALTY = -25;
-
-function tipResult(
-  tipHost: number,
-  tipGuest: number,
-  hostPoints: number | null,
-  guestPoints: number | null,
-): number {
-  if (hostPoints === null || guestPoints === null) return 0;
-  if (tipHost === hostPoints && tipGuest === guestPoints) {
-    return WINNER_POINTS * EXACT_RESULT_BONUS_MULTIPLIER;
-  }
-  if (Math.sign(hostPoints - guestPoints) === Math.sign(tipHost - tipGuest)) {
-    return WINNER_POINTS;
-  }
-  return WRONG_TIP_PENALTY;
 }
 
 const CLUB = "HSC 2000 Coburg";
@@ -416,7 +395,6 @@ type DemoUserSeed = {
   email: string;
   name: string;
   emailVerified: boolean;
-  points: number;
 };
 
 const DEMO_USERS: DemoUserSeed[] = [
@@ -424,25 +402,21 @@ const DEMO_USERS: DemoUserSeed[] = [
     email: "anna.fischer@example.com",
     name: "Anna Fischer",
     emailVerified: true,
-    points: 550,
   },
   {
     email: "max.weber@example.com",
     name: "Max Weber",
     emailVerified: true,
-    points: 350,
   },
   {
     email: "laura.schmidt@example.com",
     name: "Laura Schmidt",
     emailVerified: true,
-    points: 150,
   },
   {
     email: "tom.vogel@example.com",
     name: "Tom Vogel",
     emailVerified: false,
-    points: 850,
   },
 ];
 
@@ -504,12 +478,12 @@ async function main() {
       name: "Test Nutzer",
       email: "test@example.com",
       emailVerified: false,
+      approved: true,
       twoFactorEnabled: false,
     },
   });
   await createAccount(mainUser.id, MAIN_PASSWORD);
 
-  let mainUserPoints = 0;
   for (const tip of MAIN_USER_TIPS) {
     const season = seasons[tip.seasonIndex]!;
     const gameSeed = SEASONS[tip.seasonIndex]!.games[tip.gameIndex]!;
@@ -519,13 +493,6 @@ async function main() {
         g.guest === gameSeed.guest &&
         g.date.getTime() === new Date(gameSeed.date).getTime(),
     )!;
-    const result = tipResult(
-      tip.tipHost,
-      tip.tipGuest,
-      gameSeed.hostPoints,
-      gameSeed.guestPoints,
-    );
-    mainUserPoints += result;
     await prisma.tip.create({
       data: {
         seasonId: season.id,
@@ -533,18 +500,11 @@ async function main() {
         userId: mainUser.id,
         tipHost: tip.tipHost,
         tipGuest: tip.tipGuest,
-        result,
       },
     });
   }
 
-  await prisma.rank.create({
-    data: {
-      userId: mainUser.id,
-      points: Math.max(0, mainUserPoints),
-    },
-  });
-  console.log(`Hauptnutzer Punktestand: ${mainUserPoints}`);
+  await prisma.rank.create({ data: { userId: mainUser.id } });
 
   await prisma.notification.createMany({
     data: [
@@ -574,16 +534,12 @@ async function main() {
         name: demo.name,
         email: demo.email,
         emailVerified: demo.emailVerified,
+        approved: true,
         twoFactorEnabled: false,
       },
     });
     await createAccount(user.id, MAIN_PASSWORD);
-    await prisma.rank.create({
-      data: {
-        userId: user.id,
-        points: demo.points,
-      },
-    });
+    await prisma.rank.create({ data: { userId: user.id } });
     demoUsers.push(user);
   }
 
@@ -648,12 +604,6 @@ async function main() {
             userId: demoUsers[userIdx]!.id,
             tipHost,
             tipGuest,
-            result: tipResult(
-              tipHost,
-              tipGuest,
-              gameSeed.hostPoints,
-              gameSeed.guestPoints,
-            ),
           },
         });
       }
@@ -687,6 +637,9 @@ async function main() {
       },
     },
   });
+
+  console.log("Berechne Punkte aller Nutzer ...");
+  await evaluateAllPoints();
 
   console.log("Fertig!");
   console.log(
