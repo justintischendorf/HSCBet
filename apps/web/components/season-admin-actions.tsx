@@ -27,7 +27,14 @@ type Season = {
   from: Date;
   to: Date;
 };
-type Game = { id: string; date: Date; host: string; guest: string };
+type Game = {
+  id: string;
+  date: Date;
+  host: string;
+  guest: string;
+  hostPoints: number | null;
+  guestPoints: number | null;
+};
 
 function ActionsMenu({
   label,

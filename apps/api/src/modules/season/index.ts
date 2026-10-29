@@ -121,7 +121,7 @@ export const season = new Elysia({ prefix: "/season" })
     },
     {
       params: SeasonModel.GameParams,
-      body: SeasonModel.AddGame,
+      body: SeasonModel.UpdateGame,
     },
   )
 

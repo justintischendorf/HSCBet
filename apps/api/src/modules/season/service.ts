@@ -152,7 +152,7 @@ export abstract class SeasonService {
     user,
   }: {
     params: (typeof SeasonModel.GameParams)["static"];
-    body: SeasonModel["AddGame"];
+    body: SeasonModel["UpdateGame"];
     user: { id: string; role?: string | null };
   }) {
     assertAdmin(user);
@@ -169,6 +169,10 @@ export abstract class SeasonService {
       throw new Error("GAME_OUTSIDE_SEASON");
     }
 
+    if ((body.hostPoints === null) !== (body.guestPoints === null)) {
+      throw new Error("INCOMPLETE_GAME_RESULT");
+    }
+
     logger.info("updating game with id: " + game.id);
 
     return await prisma.game.update({
@@ -177,6 +181,12 @@ export abstract class SeasonService {
         date: body.date,
         host: body.host,
         guest: body.guest,
+        hostPoints: body.hostPoints,
+        guestPoints: body.guestPoints,
+        result:
+          body.hostPoints !== null && body.guestPoints !== null
+            ? body.hostPoints - body.guestPoints
+            : null,
       },
     });
   }
