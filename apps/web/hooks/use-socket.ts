@@ -84,7 +84,10 @@ export function useSocket() {
 
 interface eventTypes {
   eventType:
-    "game_updated" | "seasons_updated" | "season_changed" | "group_invited";
+    | "game_updated"
+    | "seasons_updated"
+    | "season_changed"
+    | "group_invited";
 }
 
 async function handleNotificationUpdate(

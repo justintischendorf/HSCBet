@@ -2,6 +2,12 @@
 
 import { Fragment, useState, useEffect } from "react";
 
+import { CLUB, NewGamePopup } from "@/components/new-game-popup";
+import { NewSeasonPopup } from "@/components/new-season-popup";
+import {
+  GameAdminActions,
+  SeasonAdminActions,
+} from "@/components/season-admin-actions";
 import {
   Combobox,
   ComboboxContent,
@@ -20,14 +26,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSeasons } from "@/hooks/use-seasons";
-import { CLUB, NewGamePopup } from "@/components/new-game-popup";
-import { NewSeasonPopup } from "@/components/new-season-popup";
-import {
-  GameAdminActions,
-  SeasonAdminActions,
-} from "@/components/season-admin-actions";
 import { useIsAdmin } from "@/hooks/use-is-admin";
+import { useSeasons } from "@/hooks/use-seasons";
 
 export default function SeasonScreen() {
   const { data: seasonsResponse, isPending: isSeasonsPending } = useSeasons();
