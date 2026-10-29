@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { apiClient } from "@/lib/api-client";
 import { useSession } from "@/lib/auth-client";
 import { queryClient } from "@/lib/queryClient";
-import { cn } from "@/lib/utils";
+import { cn, formatPoints } from "@/lib/utils";
 import type { GroupModel } from "@repo/database";
 
 import { ConfirmAlert } from "./confirm-alert";
@@ -172,7 +172,7 @@ export default function Group({
                                   )}
                                 </div>
                                 <span className="text-xs text-muted-foreground tabular-nums">
-                                  {points} {points === 1 ? "Punkt" : "Punkte"}
+                                  {formatPoints(points)} {points === 1 ? "Punkt" : "Punkte"}
                                 </span>
                               </div>
                             </div>

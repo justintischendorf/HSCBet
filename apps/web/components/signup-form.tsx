@@ -3,7 +3,6 @@
 import { Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React from "react";
 import { toast } from "sonner";
 
@@ -29,7 +28,6 @@ export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const router = useRouter();
   const [username, setUsername] = React.useState("");
   const [usernameAvailable, setUsernameAvailable] =
     React.useState(MAX_USERNAME_LENGTH);
@@ -39,12 +37,13 @@ export function SignupForm({
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
-  async function handleSignup() {
+  async function handleSignupRequest() {
     if (password !== confirmPassword) {
       toast.error("Passwörter stimmen nicht überein");
       return;
     }
 
+    // account is created unapproved, admin gets the review mail
     const { error: signupError } = await authClient.signUp.email({
       name: username,
       email: email,
@@ -56,8 +55,14 @@ export function SignupForm({
       return;
     }
 
-    toast.success("Account erfolgreich erstellt");
-    router.push("/dashboard");
+    toast.success(
+      "Anfrage gesendet! Du bekommst eine E-Mail, sobald über deine Registrierung entschieden wurde.",
+    );
+    setUsername("");
+    setUsernameAvailable(MAX_USERNAME_LENGTH);
+    setEmail("");
+    setPassword("");
+    setConfirmPassword("");
   }
 
   return (
@@ -68,7 +73,7 @@ export function SignupForm({
             className="p-6 md:p-8"
             onSubmit={(e) => {
               e.preventDefault();
-              handleSignup();
+              handleSignupRequest();
             }}
           >
             <FieldGroup>

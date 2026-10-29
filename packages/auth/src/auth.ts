@@ -63,11 +63,32 @@ export const auth = betterAuth({
               points: 0,
             },
           });
+
+          // new accounts start unapproved, admin decides via review mail
+          await MailService.sendSignupReviewMail({
+            body: { userId: user.id, name: user.name, email: user.email },
+          });
         },
       },
       update: {
         before: async (user) => {
           assertValidUsername(user.name);
+        },
+      },
+    },
+    session: {
+      create: {
+        before: async (session) => {
+          const user = await prisma.user.findUnique({
+            where: { id: session.userId },
+            select: { approved: true },
+          });
+
+          if (!user?.approved) {
+            throw new APIError("FORBIDDEN", {
+              message: "Dein Account wurde noch nicht freigegeben.",
+            });
+          }
         },
       },
     },
@@ -106,6 +127,8 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    // no session on signup, account has to be approved first
+    autoSignIn: false,
   },
   baseURL: process.env.BETTER_AUTH_URL,
   secret: process.env.BETTER_AUTH_SECRET,

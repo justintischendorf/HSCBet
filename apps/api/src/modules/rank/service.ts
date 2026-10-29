@@ -5,35 +5,22 @@ import { TipEvaluationService } from "../../global/services/tip-evaluation-servi
 
 const logger = createLogger("api:rank");
 
-const WINNER_POINTS = 50;
-const EXACT_RESULT_BONUS_MULTIPLIER = 2;
-const WRONG_TIP_PENALTY = -25;
-
 export abstract class RankService {
-  // --------------------------------------------------------------------------> GET api/rank
-  //                                                                             - get user points from the database
-  static async getRankById({ user }: { user: { id: string } }) {
-    logger.info("fetching points by ID" + user.id);
-    return prisma.rank.upsert({
-      where: {
-        userId: user.id,
-      },
-      create: {
-        userId: user.id,
-        points: 0,
-      },
-      update: {},
-    });
-  }
-
   // --------------------------------------------------------------------------> PATCH api/rank/evaluate-points
   //                                                                             - update user points
   static async evaluatePoints({ user }: { user: { id: string } }) {
     logger.info("updating points in the database for user with id: " + user.id);
 
+    // points depend on the other tips of the same game, so all of them are loaded
     const tips = await prisma.tip.findMany({
       where: { userId: user.id },
-      include: { game: true },
+      include: {
+        game: {
+          include: {
+            tips: { select: { id: true, tipHost: true, tipGuest: true } },
+          },
+        },
+      },
     });
 
     const evaluatedTips = tips.filter(
@@ -47,30 +34,12 @@ export abstract class RankService {
     let totalPoints = 0;
 
     for (const tip of evaluatedTips) {
-      const hostPoints = tip.game.hostPoints ?? 0;
-      const guestPoints = tip.game.guestPoints ?? 0;
-
-      const isWinnerCorrect = TipEvaluationService.isWinnerCorrect({
-        tipHost: tip.tipHost,
-        tipGuest: tip.tipGuest,
-        hostPoints,
-        guestPoints,
-      });
-
-      let points = WRONG_TIP_PENALTY;
-      if (isWinnerCorrect) {
-        points = WINNER_POINTS;
-
-        const isExactResult = TipEvaluationService.isExactResult({
-          tipHost: tip.tipHost,
-          tipGuest: tip.tipGuest,
-          hostPoints,
-          guestPoints,
-        });
-        if (isExactResult) {
-          points *= EXACT_RESULT_BONUS_MULTIPLIER;
-        }
-      }
+      const points =
+        TipEvaluationService.scoreGameTips({
+          hostPoints: tip.game.hostPoints ?? 0,
+          guestPoints: tip.game.guestPoints ?? 0,
+          tips: tip.game.tips,
+        }).get(tip.id) ?? 0;
 
       if (tip.result !== points) {
         await prisma.tip.update({
@@ -92,12 +61,10 @@ export abstract class RankService {
       ),
     );
 
-    const clampedTotalPoints = Math.max(0, totalPoints);
-
     return prisma.rank.upsert({
       where: { userId: user.id },
-      create: { userId: user.id, points: clampedTotalPoints },
-      update: { points: clampedTotalPoints },
+      create: { userId: user.id, points: totalPoints },
+      update: { points: totalPoints },
     });
   }
 }

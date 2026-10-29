@@ -11,16 +11,16 @@ export default function SigninScreen() {
             loading="eager"
             src="assets/logos/logo-hscbet-full.light.svg"
             alt="Logo"
-            width={200}
-            height={200}
+            width={100}
+            height={100}
             className="size-40 block dark:hidden"
           />
           <Image
             loading="eager"
             src="assets/logos/logo-hscbet-full.dark.svg"
             alt="Logo"
-            width={200}
-            height={200}
+            width={100}
+            height={100}
             className="size-40 hidden dark:block"
           />
         </div>
