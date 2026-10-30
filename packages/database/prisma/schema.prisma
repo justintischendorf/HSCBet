@@ -1,15 +1,13 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
   output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
 }
 
 model User {
@@ -169,10 +167,10 @@ model Tip {
 }
 
 model Group {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  files       File[]
+  id            String         @id @default(cuid())
+  name          String
+  description   String?
+  files         File[]
   leaderId      String
   leader        User           @relation("GroupLeader", fields: [leaderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   members       User[]         @relation("GroupMembers")

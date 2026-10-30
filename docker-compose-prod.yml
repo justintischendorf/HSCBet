@@ -24,10 +24,11 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-postgres}@postgres:5432/${DATABASE_NAME:-hscbet}?schema=public
-      DATABASE_HOST: postgres
+      DATABASE_URL: file:/app/data/hscbet.db
     ports:
-      - '${WEB_SERVER_PORT:-3000}:3000'
+      - "${WEB_SERVER_PORT:-3000}:3000"
+    volumes:
+      - sqlite_data:/app/data
     depends_on:
       api:
         condition: service_started
@@ -43,16 +44,15 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-postgres}@postgres:5432/${DATABASE_NAME:-hscbet}?schema=public
-      DATABASE_HOST: postgres
+      DATABASE_URL: file:/app/data/hscbet.db
       REDIS_HOST: redis
       REDIS_PORT: 6379
       MINIO_ENDPOINT: http://minio:9000
     ports:
-      - '${API_SERVER_PORT:-3001}:3001'
+      - "${API_SERVER_PORT:-3001}:3001"
+    volumes:
+      - sqlite_data:/app/data
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_started
       minio:
@@ -70,12 +70,11 @@ services:
     env_file:
       - .env
     environment:
-      DATABASE_URL: postgresql://${DATABASE_USER:-postgres}:${DATABASE_PASSWORD:-postgres}@postgres:5432/${DATABASE_NAME:-hscbet}?schema=public
+      DATABASE_URL: file:/app/data/hscbet.db
     working_dir: /app/packages/database
-    entrypoint: ['bunx', 'prisma', 'migrate', 'deploy']
-    depends_on:
-      postgres:
-        condition: service_healthy
+    entrypoint: ["bunx", "prisma", "migrate", "deploy"]
+    volumes:
+      - sqlite_data:/app/data
 
   # ----------------------------------------------------------
   # Worker
@@ -92,27 +91,6 @@ services:
       - redis
 
   # ----------------------------------------------------------
-  # PostgreSQL Datenbank
-  # ----------------------------------------------------------
-  postgres:
-    image: postgres:16-alpine
-    restart: unless-stopped
-    environment:
-      POSTGRES_USER: ${DATABASE_USER:-postgres}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-postgres}
-      POSTGRES_DB: ${DATABASE_NAME:-hscbet}
-    ports:
-      - '${DATABASE_PORT:-5432}:5432'
-    volumes:
-      - postgres_data_prod:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DATABASE_USER:-postgres} -d ${DATABASE_NAME:-hscbet}']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-
-  # ----------------------------------------------------------
   # MinIO Speicher
   # ----------------------------------------------------------
   minio:
@@ -123,8 +101,8 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio_password}
     command: server /data --console-address ":9001"
     ports:
-      - '${MINIO_PORT:-9000}:9000'
-      - '${MINIO_CONSOLE_PORT:-9001}:9001'
+      - "${MINIO_PORT:-9000}:9000"
+      - "${MINIO_CONSOLE_PORT:-9001}:9001"
     volumes:
       - minio_data:/data
 
@@ -141,7 +119,7 @@ services:
       MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-junge-welt}
     depends_on:
       - minio
-    entrypoint: ['/bin/sh', '-c']
+    entrypoint: ["/bin/sh", "-c"]
     command:
       - |
         until mc alias set local http://minio:9000 $$MINIO_ROOT_USER $$MINIO_ROOT_PASSWORD; do
@@ -157,7 +135,7 @@ services:
     image: redis:7
     restart: unless-stopped
     ports:
-      - '${REDIS_PORT:-6379}:6379'
+      - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis_data:/data
 
@@ -165,7 +143,7 @@ services:
 # Named Volumes
 # ----------------------------------------------------------
 volumes:
-  postgres_data_prod:
+  sqlite_data:
     driver: local
   minio_data:
     driver: local

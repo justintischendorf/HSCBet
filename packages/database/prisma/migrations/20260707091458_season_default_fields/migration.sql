@@ -1,4 +1,0 @@
--- AlterTable
-ALTER TABLE "Game" ALTER COLUMN "hostPoints" SET DEFAULT 0,
-ALTER COLUMN "guestPoints" SET DEFAULT 0,
-ALTER COLUMN "result" SET DEFAULT 0;
