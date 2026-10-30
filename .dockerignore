@@ -7,3 +7,5 @@ node_modules
 .git
 **/*.log
 packages/database/data
+packages/database/generated
+**/.env

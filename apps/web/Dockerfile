@@ -14,15 +14,16 @@ WORKDIR /app
 
 COPY . .
 
-RUN bun install --frozen-lockfile
-RUN cd packages/database && bunx prisma generate
-
 ARG NEXT_PUBLIC_API_SERVER_URL
 ARG NEXT_PUBLIC_WS_URL
 ARG NEXT_PUBLIC_AUTH_BASE_URL
 ENV NEXT_PUBLIC_API_SERVER_URL=$NEXT_PUBLIC_API_SERVER_URL
 ENV NEXT_PUBLIC_WS_URL=$NEXT_PUBLIC_WS_URL
 ENV NEXT_PUBLIC_AUTH_BASE_URL=$NEXT_PUBLIC_AUTH_BASE_URL
+ENV DATABASE_URL=file:./data/hscbet.db
+
+RUN bun install --frozen-lockfile
+RUN cd packages/database && bunx prisma generate
 
 WORKDIR /app/apps/web
 
