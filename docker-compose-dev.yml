@@ -34,7 +34,7 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minio}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minio_password}
-      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-junge-welt}
+      MINIO_BUCKET_NAME: ${MINIO_BUCKET_NAME:-hscbet-bucket}
     depends_on:
       - minio
     entrypoint: ["/bin/sh", "-c"]
@@ -67,6 +67,9 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
+    volumes:
+      # dieselbe SQLite-Datei wie API und Scripts
+      - ./packages/database/data:/app/packages/database/data
     depends_on:
       - redis
 
