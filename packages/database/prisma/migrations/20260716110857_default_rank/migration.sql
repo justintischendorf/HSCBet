@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE "Rank" ALTER COLUMN "position" SET DEFAULT 'DEFAULT';
